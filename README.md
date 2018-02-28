@@ -1,4 +1,2 @@
 # Houdini
-Houdini learning database
-
-Ckeck [wiki](https://github.com/kiryha/Houdini/wiki) for content
+Houdini learning database. Check [wiki](https://github.com/kiryha/Houdini/wiki) for content!
