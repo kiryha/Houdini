@@ -1,4 +1,4 @@
 # Houdini
 Houdini learning database
 
-Ckeck repository wiki for content
+Ckeck [wiki](https://github.com/kiryha/Houdini/wiki) for content
