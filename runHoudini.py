@@ -19,12 +19,15 @@ def getOTL():
     Build HOUDINI_OTLSCAN_PATH value:
     Get all subfolders of <root3D>/hda folder and combine to one string
     '''
+
     pathOTL = ''
     listPaths = os.walk('{0}/hda'.format(root3D)) # Get list of sub folders
+
     for folder in listPaths:
         path = folder[0].replace('\\', '/')
-        if path.split('/')[-1] != 'backup': # Exclude backup folders
+        if not 'backup' in path: # Exclude backup folders
             pathOTL += '{};'.format(folder[0].replace('\\', '/'))
+
     pathOTL = pathOTL + '&' # Add Houdini standard OTL paths
     return pathOTL
 
