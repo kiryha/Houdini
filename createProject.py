@@ -18,7 +18,7 @@ from PySide.QtGui import *
 # COMMON VARIABLES
 # Documentation paths
 DOCS = 'https://github.com/kiryha/Houdini/wiki'
-HELP = 'https://github.com/kiryha/Houdini/wiki/houdini-basics#run-new-project'
+HELP = 'https://github.com/kiryha/Houdini/wiki/Tools#create-project'
 # Project paths
 rootPipeline_SRC = os.path.dirname(__file__)
 # Folder names to skip when copyTree
