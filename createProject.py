@@ -10,6 +10,7 @@ import webbrowser
 
 # UI import
 from MOTHER.ui import createProject_Main
+from MOTHER.ui import createProject_SG
 
 # Py Side import
 from PySide.QtGui import *
@@ -24,6 +25,16 @@ rootPipeline_SRC = os.path.dirname(__file__)
 filterFolders = ['.dev', '.git', '.idea', 'hips']
 # Houdini project folders
 listHoudiniProjectDirs = ['comp', 'geo', 'hda', 'render', 'scenes', 'sim', 'tex']
+
+# SHOTGUN PROJECT SETUP
+class ShotgunSetup(QMainWindow, createProject_SG.Ui_SetupShotgun):
+    '''
+    Setup project data in Shotgun.
+    Create assets and shots entities.
+    '''
+    def __init__(self):
+        super(ShotgunSetup, self).__init__()
+        self.setupUi(self)
 
 # MAIN MODULE
 class CreateProject(QMainWindow, createProject_Main.Ui_CreateProject):
@@ -51,6 +62,7 @@ class CreateProject(QMainWindow, createProject_Main.Ui_CreateProject):
         self.act_help.triggered.connect(lambda:  self.help(HELP))
         self.btn_create.clicked.connect(self.createProject)
         self.btn_setFolder.clicked.connect(self.selectProjectFolder)
+        self.btn_setupSG.clicked.connect(self.setupShotgun)
         self.lin_name.textChanged.connect(self.updateProjectPath)
         self.buildProjectPath()
 
@@ -59,6 +71,13 @@ class CreateProject(QMainWindow, createProject_Main.Ui_CreateProject):
         Open pipeline documentation in web browser
         '''
         webbrowser.open(URL)
+
+    def setupShotgun(self):
+        '''
+        Run User Manager
+        '''
+        self.sg = ShotgunSetup()
+        self.sg.show()
 
     def selectProjectFolder(self):
         '''

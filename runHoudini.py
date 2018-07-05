@@ -42,4 +42,4 @@ os.environ['HOUDINI_OTLSCAN_PATH'] = getOTL()
 subprocess.Popen(houdini)
 
 # Prevent closing CMD window
-raw_input()
+# raw_input()
