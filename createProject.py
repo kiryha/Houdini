@@ -27,13 +27,12 @@ filterFolders = ['.dev', '.git', '.idea', 'hips']
 filterFiles = ['createProject.py', 'createProject.bat', 'README.md']
 
 # PROJECT FOLDER STRUCTURE
+# Nested lists basic block is ['FOLDERNAME', []]
 # Reel-sequence-shot structure
 RSS = [
-    ['REEL_01',[
-        ['010',[
-            ['SHOT_010', []],
-            ['SHOT_020', []]
-        ]]
+    ['010',[
+        ['SHOT_010', []],
+        ['SHOT_020', []]
     ]]
 ]
 # Assets-shots structure
@@ -48,8 +47,12 @@ AS = [
 ]
 # Folders structure
 folders = [
-    ['EDIT', []],
+    ['EDIT', [
+        ['OUT', []],
+        ['PROJECT', []]
+    ]],
     ['PREP', [
+        ['ART', []],
         ['SRC', []],
         ['PIPELINE', []],
         ]],
@@ -115,7 +118,6 @@ class CreateProject(QMainWindow, createProject_Main.Ui_CreateProject):
         self.btn_setupSG.clicked.connect(self.setupShotgun)
         self.lin_name.textChanged.connect(self.updateProjectPath)
         self.buildProjectPath()
-
 
     def help(self, URL):
         '''

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'E:\256\PROJECTS\NSI\PREP\PIPELINE\.dev\UI\createProject_Main_02.ui'
 #
-# Created: Thu Jul 05 11:55:45 2018
+# Created: Mon Jul 09 14:34:29 2018
 #      by: pyside-uic 0.2.15 running on PySide 1.2.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -12,7 +12,7 @@ from PySide import QtCore, QtGui
 class Ui_CreateProject(object):
     def setupUi(self, CreateProject):
         CreateProject.setObjectName("CreateProject")
-        CreateProject.resize(340, 348)
+        CreateProject.resize(260, 300)
         self.centralwidget = QtGui.QWidget(CreateProject)
         self.centralwidget.setObjectName("centralwidget")
         self.verticalLayout = QtGui.QVBoxLayout(self.centralwidget)
@@ -25,7 +25,7 @@ class Ui_CreateProject(object):
         self.verticalLayout_2 = QtGui.QVBoxLayout(self.groupBox_2)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
         self.btn_setFolder = QtGui.QPushButton(self.groupBox_2)
-        self.btn_setFolder.setMinimumSize(QtCore.QSize(120, 0))
+        self.btn_setFolder.setMinimumSize(QtCore.QSize(100, 0))
         self.btn_setFolder.setObjectName("btn_setFolder")
         self.verticalLayout_2.addWidget(self.btn_setFolder)
         self.groupBox = QtGui.QGroupBox(self.splitter)
@@ -64,7 +64,7 @@ class Ui_CreateProject(object):
         self.verticalLayout.addWidget(self.btn_create)
         CreateProject.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(CreateProject)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 340, 26))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 260, 21))
         self.menubar.setObjectName("menubar")
         self.menuHelp = QtGui.QMenu(self.menubar)
         self.menuHelp.setObjectName("menuHelp")
