@@ -21,10 +21,60 @@ DOCS = 'https://github.com/kiryha/Houdini/wiki'
 HELP = 'https://github.com/kiryha/Houdini/wiki/Tools#create-project'
 # Project paths
 rootPipeline_SRC = os.path.dirname(__file__)
-# Folder names to skip when copyTree
+# Folder names to skip when run copyTree
 filterFolders = ['.dev', '.git', '.idea', 'hips']
-# Houdini project folders
-listHoudiniProjectDirs = ['comp', 'geo', 'hda', 'render', 'scenes', 'sim', 'tex']
+# File names to skip when run copyTree
+filterFiles = ['createProject.py', 'createProject.bat', 'README.md']
+
+# PROJECT FOLDER STRUCTURE
+# Reel-sequence-shot structure
+RSS = [
+    ['REEL_01',[
+        ['010',[
+            ['SHOT_010', []],
+            ['SHOT_020', []]
+        ]]
+    ]]
+]
+# Assets-shots structure
+AS = [
+    ['ASSETS', [
+        ['CHARACTERS', []],
+        ['ENVIRONMENTS', []],
+        ['PROPS', []],
+        ['STATIC', []]
+    ]],
+    ['SHOTS', RSS]
+]
+# Folders structure
+folders = [
+    ['EDIT', []],
+    ['PREP', [
+        ['SRC', []],
+        ['PIPELINE', []],
+        ]],
+    ['PROD', [
+        ['2D', [
+            ['COMP', RSS]
+        ]],
+        ['3D', [
+            ['comp',[]],
+            ['geo',[
+                ['ABC', AS],
+                ['GEO', AS],
+                ['FBX', AS]
+            ]],
+            ['hda',AS],
+            ['render',[
+                ['BLAST', RSS],
+                ['RENDER', RSS]
+            ]],
+            ['scenes', AS],
+            ['sim',AS],
+            ['tex',AS],
+        ]],
+    ]]
+            ]
 
 # SHOTGUN PROJECT SETUP
 class ShotgunSetup(QMainWindow, createProject_SG.Ui_SetupShotgun):
@@ -65,6 +115,7 @@ class CreateProject(QMainWindow, createProject_Main.Ui_CreateProject):
         self.btn_setupSG.clicked.connect(self.setupShotgun)
         self.lin_name.textChanged.connect(self.updateProjectPath)
         self.buildProjectPath()
+
 
     def help(self, URL):
         '''
@@ -117,29 +168,60 @@ class CreateProject(QMainWindow, createProject_Main.Ui_CreateProject):
                 if not folder in filterFolders:
                     self.copyTree(src, new)
             else:
-                if not os.path.exists(new):
-                    shutil.copy2(src, new)
+                if not item in filterFiles:
+                    if not os.path.exists(new):
+                        shutil.copy2(src, new)
 
-    def createProject(self):
+    def createProject_HDD(self):
+        '''
+        Create project on HDD
+        :return:
+        '''
         projectRoot = self.lab_path.text()
 
-        # Create ROOT
-        if not os.path.exists(projectRoot):
-            os.makedirs(projectRoot)
+        def createFolder(path):
+            # Create folder from input path
+            if not os.path.exists(path):
+                os.mkdir(path)
 
-        # Create Houdini Project Folder (temp)
-        root3D = '{0}/PROD/3D'.format(projectRoot)
-        os.makedirs(root3D)
 
-        for folder in listHoudiniProjectDirs:
-            os.makedirs('{}/{}'.format(root3D, folder))
+        def addFolders(pathRoot, list):
+            '''
+            Recursively build folder structure based on template (folders list)
+            :param pathRoot:
+            :param list:
+            :return:
+            '''
+            if list:
+                for folder in list:
+                    folderName = folder[0]
+                    path = '{}/{}'.format(pathRoot, folderName)
+                    createFolder(path)
+                    addFolders(path, folder[1])
+
+        # Create project root folder
+        createFolder(projectRoot)
+        # Create nested folder structure
+        addFolders(projectRoot, folders)
 
         # Copy PIPELINE
         rootPipeline_NEW = '{}/PREP/PIPELINE'.format(projectRoot)
         self.copyTree(rootPipeline_SRC, rootPipeline_NEW)
 
-        # Report
-        print '>> Project created in {}'.format(projectRoot)
+    def createProject_SG(self):
+        pass
+
+    def createProject(self):
+        '''
+        Create project procedure
+        '''
+        # Create folder structure on HDD and copy pipeline files
+        self.createProject_HDD()
+        # Create project in Shotgun
+        if self.chb_skipSG.isChecked() != True:
+            self.createProject_SG()
+        # Report about creation
+        print '>> Project created in {}'.format(self.lab_path.text())
 
 
 # Run Create Project script
