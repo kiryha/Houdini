@@ -29,8 +29,9 @@ filterFiles = ['createProject.py', 'createProject.bat', 'README.md']
 
 # PROJECT FOLDER STRUCTURE
 # Nested lists basic block is ['FOLDERNAME', []]
-# Reel-sequence-shot structure
-RSS = [
+# Sequence-shot structure
+# Add reel level for a big projects
+SS = [
     ['010',[
         ['SHOT_010', []],
         ['SHOT_020', []]
@@ -44,7 +45,7 @@ AS = [
         ['PROPS', []],
         ['STATIC', []]
     ]],
-    ['SHOTS', RSS]
+    ['SHOTS', SS]
     ]
 # Folders structure
 folders = [
@@ -59,10 +60,10 @@ folders = [
         ]],
     ['PROD', [
         ['2D', [
-            ['COMP', RSS]
+            ['COMP', SS]
         ]],
         ['3D', [
-            ['comp',[]],
+            ['comp', []],
             ['geo',[
                 ['ABC', AS],
                 ['GEO', AS],
@@ -70,16 +71,16 @@ folders = [
             ]],
             ['hda',AS],
             ['render',[
-                ['BLAST', RSS],
-                ['RENDER', RSS]
+                ['BLAST', SS],
+                ['RENDER', SS]
             ]],
             ['scenes', [
-                ['ANIMATION', RSS],
-                ['LAYOUT', RSS],
-                ['RENDER', RSS]
+                ['ANIMATION', SS],
+                ['LAYOUT', SS],
+                ['RENDER', SS]
             ]],
-            ['sim',AS],
-            ['tex',AS],
+            ['sim', AS],
+            ['tex', AS],
         ]],
     ]]
     ]
@@ -88,22 +89,29 @@ folders = [
 class Warning(QWidget, createProject_Warning.Ui_warning):
     '''
     Warning window.
-    Show existing project path, send back to a parent class (CreateProject.createProject function) user choice (OK or NO)
+    Show existing project path,
+    send back to a parent class (CreateProject.createProject function) user choice (OK or NO)
     '''
     def __init__(self, parent, message):
         super(Warning, self).__init__()
+
+        # SETUP UI
         self.setupUi(self)
         self.parent = parent
-        self.lab_warning.setText('FOLDER <{0}> EXIST!'.format(message))
+        self.lab_warning.setText('Folder <{0}> exists!'.format(message))
 
+        # SETUP FUNCTIONALITY
         self.btn_proceed.clicked.connect(self.proceed)
         self.btn_proceed.clicked.connect(self.close)
         self.btn_cancel.clicked.connect(self.cancel)
         self.btn_cancel.clicked.connect(self.close)
 
     def proceed(self):
+        # PROCEED button
         CreateProject.createProject(self.parent, 'OK')
+
     def cancel(self):
+        # CANCEL button
         CreateProject.createProject(self.parent, 'NO')
 
 # SHOTGUN PROJECT SETUP
@@ -114,6 +122,8 @@ class ShotgunSetup(QMainWindow, createProject_SG.Ui_SetupShotgun):
     '''
     def __init__(self):
         super(ShotgunSetup, self).__init__()
+
+        # SETUP UI
         self.setupUi(self)
 
 # MAIN MODULE
@@ -182,7 +192,10 @@ class CreateProject(QMainWindow, createProject_Main.Ui_CreateProject):
         self.lab_path.setText('{0}/{1}'.format(self.projectFolder, projectName)) # Build full project path and update UI
 
     def createFolder(self, path):
-        # Create folder from input path
+        '''
+        Create folder from input path
+        :param path: Path to create folder
+        '''
         if not os.path.exists(path):
             os.mkdir(path)
 
