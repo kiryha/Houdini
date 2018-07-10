@@ -11,6 +11,7 @@ import webbrowser
 # UI import
 from MOTHER.ui import createProject_Main
 from MOTHER.ui import createProject_SG
+from MOTHER.ui import createProject_Warning
 
 # Py Side import
 from PySide.QtGui import *
@@ -44,7 +45,7 @@ AS = [
         ['STATIC', []]
     ]],
     ['SHOTS', RSS]
-]
+    ]
 # Folders structure
 folders = [
     ['EDIT', [
@@ -72,12 +73,38 @@ folders = [
                 ['BLAST', RSS],
                 ['RENDER', RSS]
             ]],
-            ['scenes', AS],
+            ['scenes', [
+                ['ANIMATION', RSS],
+                ['LAYOUT', RSS],
+                ['RENDER', RSS]
+            ]],
             ['sim',AS],
             ['tex',AS],
         ]],
     ]]
-            ]
+    ]
+
+# WARNING WINDOW
+class Warning(QWidget, createProject_Warning.Ui_warning):
+    '''
+    Warning window.
+    Show existing project path, send back to a parent class (CreateProject.createProject function) user choice (OK or NO)
+    '''
+    def __init__(self, parent, message):
+        super(Warning, self).__init__()
+        self.setupUi(self)
+        self.parent = parent
+        self.lab_warning.setText('FOLDER <{0}> EXIST!'.format(message))
+
+        self.btn_proceed.clicked.connect(self.proceed)
+        self.btn_proceed.clicked.connect(self.close)
+        self.btn_cancel.clicked.connect(self.cancel)
+        self.btn_cancel.clicked.connect(self.close)
+
+    def proceed(self):
+        CreateProject.createProject(self.parent, 'OK')
+    def cancel(self):
+        CreateProject.createProject(self.parent, 'NO')
 
 # SHOTGUN PROJECT SETUP
 class ShotgunSetup(QMainWindow, createProject_SG.Ui_SetupShotgun):
@@ -154,6 +181,25 @@ class CreateProject(QMainWindow, createProject_Main.Ui_CreateProject):
         projectName = self.lin_name.text().replace(' ', '_') # Get project name from UI
         self.lab_path.setText('{0}/{1}'.format(self.projectFolder, projectName)) # Build full project path and update UI
 
+    def createFolder(self, path):
+        # Create folder from input path
+        if not os.path.exists(path):
+            os.mkdir(path)
+
+    def createFolders(self, pathRoot, list):
+        '''
+        Recursively build folder structure based on template (folders list)
+        :param pathRoot:
+        :param list:
+        :return:
+        '''
+        if list:
+            for folder in list:
+                folderName = folder[0]
+                path = '{}/{}'.format(pathRoot, folderName)
+                self.createFolder(path)
+                self.createFolders(path, folder[1])
+
     def copyTree(self, SRC, NEW):
         '''
         Copy all folder content RECURSION.
@@ -174,56 +220,63 @@ class CreateProject(QMainWindow, createProject_Main.Ui_CreateProject):
                     if not os.path.exists(new):
                         shutil.copy2(src, new)
 
-    def createProject_HDD(self):
+    def createProject_HDD(self, projectRoot):
         '''
-        Create project on HDD
+        Create project on HDD in project root folder and copy pipeline files
         :return:
         '''
-        projectRoot = self.lab_path.text()
 
-        def createFolder(path):
-            # Create folder from input path
-            if not os.path.exists(path):
-                os.mkdir(path)
-
-
-        def addFolders(pathRoot, list):
-            '''
-            Recursively build folder structure based on template (folders list)
-            :param pathRoot:
-            :param list:
-            :return:
-            '''
-            if list:
-                for folder in list:
-                    folderName = folder[0]
-                    path = '{}/{}'.format(pathRoot, folderName)
-                    createFolder(path)
-                    addFolders(path, folder[1])
-
-        # Create project root folder
-        createFolder(projectRoot)
         # Create nested folder structure
-        addFolders(projectRoot, folders)
-
+        self.createFolders(projectRoot, folders)
         # Copy PIPELINE
         rootPipeline_NEW = '{}/PREP/PIPELINE'.format(projectRoot)
         self.copyTree(rootPipeline_SRC, rootPipeline_NEW)
 
-    def createProject_SG(self):
-        pass
+        print '>> Folder structure with pipeline files created in {0}/'.format(projectRoot)
 
-    def createProject(self):
+    def createProject_SG(self, projectName):
+        print '>> Project {0} created in Shotgun.'.format(projectName)
+
+    def createProject(self, catchWarning = None):
         '''
-        Create project procedure
+        Create new project on HDD and in Shotgun:
+        :param catchWarning: returned value from Warning class (OK or NO)
         '''
+
+        projectRoot = self.lab_path.text()
+        projectName = self.lin_name.text()
+
+        # HDD
         # Create folder structure on HDD and copy pipeline files
-        self.createProject_HDD()
+
+        if os.path.exists(projectRoot):
+            # If project folder already exists
+            if catchWarning == None:
+                # Run warning dialog
+                self.warning = Warning(self, projectRoot)  # Run SNV window
+                win = self.warning.show()
+
+                if not win:  # Prevent script to run further before user reply in warning UI
+                    return
+
+            elif catchWarning == 'OK':
+                # Create project structure on HDD in existing folder
+                self.createProject_HDD(projectRoot)
+            else:
+                return
+        else:
+            # Create new project structure on HDD
+            self.createFolder(projectRoot)
+            self.createProject_HDD(projectRoot)
+
+        # SHOTGUN
         # Create project in Shotgun
         if self.chb_skipSG.isChecked() != True:
-            self.createProject_SG()
+            self.createProject_SG(projectName)
+
         # Report about creation
-        print '>> Project created in {}'.format(self.lab_path.text())
+        print '>> Project creation complete!'
+        print '>> Run Houdini with {0}/PREP/PIPELINE/runHoudini.bat and create some magic!'.format(projectRoot)
 
 
 # Run Create Project script
