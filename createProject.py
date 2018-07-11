@@ -60,7 +60,8 @@ folders = [
         ]],
     ['PROD', [
         ['2D', [
-            ['COMP', SS]
+            ['COMP', SS],
+            ['RENDER', SS]
         ]],
         ['3D', [
             ['comp', []],
@@ -70,10 +71,7 @@ folders = [
                 ['FBX', AS]
             ]],
             ['hda',AS],
-            ['render',[
-                ['BLAST', SS],
-                ['RENDER', SS]
-            ]],
+            ['render', SS],
             ['scenes', [
                 ['ANIMATION', SS],
                 ['LAYOUT', SS],

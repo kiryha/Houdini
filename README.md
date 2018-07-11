@@ -17,7 +17,8 @@ Example Houdini scenes are located in the **hips** folder.
 Go and check examples and tutorials in [Houdini pipeline wiki](https://github.com/kiryha/Houdini/wiki)!
 
 ### Requirements
-Install Python 2.7 to C:/Python27
+Install Python 2.7 X64 to C:/Python27
+Install PySide
 
 ### Current state
 Supported OS: Windows  
