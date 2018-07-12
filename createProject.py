@@ -162,14 +162,14 @@ class CreateProject(QMainWindow, createProject_Main.Ui_CreateProject):
 
     def setupShotgun(self):
         '''
-        Run User Manager
+        Run Shotgun Setup window
         '''
         self.sg = ShotgunSetup()
         self.sg.show()
 
     def selectProjectFolder(self):
         '''
-        Allow user to select project location
+        Let user to select project location
         '''
         self.projectFolder = QFileDialog.getExistingDirectory(self, 'Select folder to store the project', 'C:/').replace('\\', '/')
         self.lab_path.setText(self.projectFolder)
