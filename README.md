@@ -10,6 +10,8 @@ The pipeline would be heavily rely on [Animation DNA](https://github.com/kiryha/
 ### How to use
 Download repository as a zip file, extract to any temp location and run setupProject.bat. Select directory to hold the project, enter project name and press "CREATE PROJECT" to build a project folder structure with a pipeline.
 
+Check [installation tutorial](https://github.com/kiryha/Houdini/wiki/pipeline-tutorials#requirments-and-installation) for more details.
+
 ### Learning database
 Despite the tools are not ready yet, Houdini learning database is full of useful materials, and it constantly updates.
 Example Houdini scenes are located in the **hips** folder.
@@ -17,7 +19,7 @@ Example Houdini scenes are located in the **hips** folder.
 Go and check examples and tutorials in [Houdini pipeline wiki](https://github.com/kiryha/Houdini/wiki)!
 
 ### Requirements
-[Install Python and PySide](https://github.com/kiryha/Houdini/wiki/Pipeline-tutorials#installation)
+Windows, Python 2.7, PySide
 
 ### Current state
 Supported OS: Windows  
