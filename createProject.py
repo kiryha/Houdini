@@ -12,6 +12,7 @@ import webbrowser
 from MOTHER.ui import createProject_Main
 from MOTHER.ui import createProject_SG
 from MOTHER.ui import createProject_Warning
+from MOTHER.ui import createProject_Shots
 
 # Py Side import
 from PySide.QtGui import *
@@ -28,25 +29,33 @@ filterFolders = ['.dev', '.git', '.idea', 'hips']
 filterFiles = ['createProject.py', 'createProject.bat', 'README.md']
 
 # PROJECT FOLDER STRUCTURE
-# Nested lists basic block is ['FOLDERNAME', []]
-# Sequence-shot structure
-# Add reel level for a big projects
-SS = [
+# LATER WOULD BE REPLACED WITH UI
+# Shots structure
+SHOTS = [
     ['010',[
         ['SHOT_010', []],
         ['SHOT_020', []]
     ]]
-]
-# Assets-shots structure
-AS = [
-    ['ASSETS', [
-        ['CHARACTERS', []],
-        ['ENVIRONMENTS', []],
-        ['PROPS', []],
-        ['STATIC', []]
-    ]],
-    ['SHOTS', SS]
+        ]
+# Assets structure
+ASSETS = [
+    ['CHARACTERS', []],
+    ['ENVIRONMENTS', []],
+    ['PROPS', []],
+    ['STATIC', []]
+        ]
+# Types structure
+TYPES = [
+    ['ASSETS', ASSETS],
+    ['SHOTS', SHOTS]
     ]
+# Formats structure
+FORMATS = [
+    ['ABC', []],
+    ['GEO', []],
+    ['FBX', []]
+    ]
+
 # Folders structure
 folders = [
     ['EDIT', [
@@ -60,28 +69,51 @@ folders = [
         ]],
     ['PROD', [
         ['2D', [
-            ['COMP', SS],
-            ['RENDER', SS]
+            ['COMP', SHOTS],
+            ['RENDER', SHOTS]
         ]],
         ['3D', [
-            ['comp', []],
-            ['geo',[
-                ['ABC', AS],
-                ['GEO', AS],
-                ['FBX', AS]
+            ['lib', [
+                ['ANIMATION', []]
             ]],
-            ['hda',AS],
-            ['render', SS],
+            ['geo',TYPES],
+            ['hda',TYPES],
+            ['render', SHOTS],
             ['scenes', [
-                ['ANIMATION', SS],
-                ['LAYOUT', SS],
-                ['RENDER', SS]
+                ['ASSETS', ASSETS],
+                ['ANIMATION', SHOTS],
+                ['LAYOUT', SHOTS],
+                ['LOOKDEV', TYPES],
+                ['RENDER', SHOTS]
             ]],
-            ['sim', AS],
-            ['tex', AS],
+            ['sim', TYPES],
+            ['tex', TYPES],
         ]],
     ]]
     ]
+
+# WARNING WINDOW
+class ShotBuilder(QWidget, createProject_Shots.Ui_ShotBuilder):
+    '''
+    Warning window.
+    Show existing project path,
+    send back to a parent class (CreateProject.createProject function) user choice (OK or NO)
+    '''
+    def __init__(self):
+        super(ShotBuilder, self).__init__()
+
+        # SETUP UI
+        self.setupUi(self)
+        self.lin_shots.setText("'010': ['SHOT_010', 'SHOT_020']")
+
+        # SETUP FUNCTIONALITY
+        self.btn_save.clicked.connect(self.save)
+
+
+    def save(self):
+        print self.lin_shots.text()
+        CreateProject.SHOTS = self.lin_shots.text()
+
 
 # WARNING WINDOW
 class Warning(QWidget, createProject_Warning.Ui_warning):
@@ -131,6 +163,10 @@ class CreateProject(QMainWindow, createProject_Main.Ui_CreateProject):
     Set project name and location in UI, create folder structure, copy pipeline files
     '''
 
+    # GLOBAL VARIABLES
+    SHOTS = {} # '010': ['SHOT_010', 'SHOT_020']
+    ASSETS = {'CHARACTERS': [], 'ENVIRONMENTS': [], 'PROPS': [], 'STATIC':[]}
+
     def __init__(self):
         super(CreateProject, self).__init__()
 
@@ -151,6 +187,8 @@ class CreateProject(QMainWindow, createProject_Main.Ui_CreateProject):
         self.btn_create.clicked.connect(self.createProject)
         self.btn_setFolder.clicked.connect(self.selectProjectFolder)
         self.btn_setupSG.clicked.connect(self.setupShotgun)
+        self.btn_setupShots.clicked.connect(self.setupShots)
+
         self.lin_name.textChanged.connect(self.updateProjectPath)
         self.buildProjectPath()
 
@@ -166,6 +204,13 @@ class CreateProject(QMainWindow, createProject_Main.Ui_CreateProject):
         '''
         self.sg = ShotgunSetup()
         self.sg.show()
+
+    def setupShots(self):
+        '''
+        Run Shots Setup window
+        '''
+        self.sb = ShotBuilder()
+        self.sb.show()
 
     def selectProjectFolder(self):
         '''
@@ -253,6 +298,9 @@ class CreateProject(QMainWindow, createProject_Main.Ui_CreateProject):
         Create new project on HDD and in Shotgun:
         :param catchWarning: returned value from Warning class (OK or NO)
         '''
+
+        print '>> SHOTS: {}'.format(SHOTS)
+        print '>> ASSETS: {}'.format(ASSETS)
 
         projectRoot = self.lab_path.text()
         projectName = self.lin_name.text()

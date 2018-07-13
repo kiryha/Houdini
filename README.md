@@ -8,7 +8,8 @@ for a single artist or animation studio. It is full CG oriented pipeline which c
 The pipeline would be heavily rely on [Animation DNA](https://github.com/kiryha/AnimationDNA/wiki) structure and ideas.
 
 ### How to use
-Download repository as a zip file, extract to any temp location and run setupProject.bat. Select directory to hold the project, enter project name and press "CREATE PROJECT" to build a project folder structure with a pipeline.
+Download repository as a zip file, extract to any temp location and run **setupProject.bat**. 
+Select directory to hold the project, enter project name and press "CREATE PROJECT" to build a project folder structure with a pipeline.
 
 Check [installation tutorial](https://github.com/kiryha/Houdini/wiki/pipeline-tutorials#requirments-and-installation) for more details.
 
