@@ -6,13 +6,15 @@ import os, subprocess
 
 # DEFINE VARIABLES
 # Pipeline root folder
-rootPipeline = os.path.dirname(__file__)
+rootPipeline = os.path.dirname(__file__).replace('\\','/')
 # Project root folder
-rootProject = os.path.dirname(os.path.dirname(rootPipeline))
+rootProject = os.path.dirname(os.path.dirname(rootPipeline)).replace('\\','/')
 # Houdini JOB root
 root3D = '{0}/PROD/3D'.format(rootProject)
 # Houdini install dir
+PC = os.environ['COMPUTERNAME']
 houdini = 'C:/Program Files/Side Effects Software/Houdini 16.5.439/bin/houdinifx.exe'
+# houdini = 'C:/Program Files/Side Effects Software/Houdini 16.0.504.20/bin/houdinifx.exe'
 
 def getOTL():
     '''
@@ -36,10 +38,17 @@ def getOTL():
 os.environ['JOB'] = root3D
 # Houdini digital assets folder including sub folders
 os.environ['HOUDINI_OTLSCAN_PATH'] = getOTL()
+# Houdini path
+os.environ['HOUDINI_PATH'] = '{}/MOTHER/houdini;&'.format(rootPipeline)
+# Icons
+# os.environ['HOUDINI_UI_ICON_PATH'] = '{}/MOTHER/icons'.format(rootPipeline)
+# Houdini current user pref folder in MyDocuments (win)
+# os.environ['home'] = '{}/Documents/houdiniUserPrefs'.format(os.path.expanduser("~"))
+
 
 
 # Run Houdini
 subprocess.Popen(houdini)
 
 # Prevent closing CMD window
-# raw_input()
+raw_input()

@@ -74,7 +74,8 @@ folders = [
         ]],
         ['3D', [
             ['lib', [
-                ['ANIMATION', []]
+                ['ANIMATION', []],
+                ['MATERIALS', ASSETS] # Or TYPES ?
             ]],
             ['geo',TYPES],
             ['hda',TYPES],
