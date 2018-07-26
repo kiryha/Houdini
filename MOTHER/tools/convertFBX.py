@@ -4,14 +4,8 @@
 # Cache geometry in GEO_<FBX name> subnetworks
 
 import hou
-import json
-import os
 
-# LOAD CHARACTER DATA FROM DATABASE
-rootMother = os.path.dirname(os.path.dirname(__file__)).replace('\\','/')
-dataFile = '{0}/database/CHARACTERS.json'.format(rootMother)
-dataCharacters = json.load(open(dataFile))
-CHARACTERS = dataCharacters
+from MOTHER.dna import dna
 
 # DEFINE COMMON VARIABLES
 # Get selection and scenes root
@@ -29,20 +23,6 @@ def checkConditions():
         print '>> Nothing selected! Select FBX subnetwork!'
         return 0
 
-def setupCharacterMaterials(mat, characterName):
-    '''
-    Asign materials to a character (via groups)
-    Param: mat - material SOP node
-    '''
-    n = 1
-    groupLists = CHARACTERS[characterName]['MAT'].keys()
-    matNumber = len(groupLists)
-    mat.parm('num_materials').set(matNumber)
-    for groupList in groupLists:
-        mat.parm('group{}'.format(n)).set(groupList)
-        mat.parm('shop_materialpath{}'.format(n)).set(CHARACTERS[characterName]['MAT'][groupList])
-        n += 1
-
 def getLastFrame(node):
     '''
     Return last frame of translate X animation from input node
@@ -59,12 +39,13 @@ def convert_FBX(FBX):
     '''
     Create Geometry node and import all FBX part inside
     '''
-    # Create Geometry node to store FBX parts
-    geometry = OBJ.createNode('geo', run_init_scripts=False)
+
     nameGEO = 'GEO_{}'.format(FBX.name())
 
     # Check if converted geometry exists
     if hou.node('/obj/{}'.format(nameGEO)) == None:
+        # Create Geometry node to store FBX parts
+        geometry = OBJ.createNode('geo', run_init_scripts=False)
         geometry.setName(nameGEO)
         geometry.moveToGoodPosition()
         # Get all paerts inside FBX container
@@ -98,7 +79,8 @@ def convert_FBX(FBX):
         mat.setNextInput(merge)
         mat.setName('MATERIAL')
         # Asign Materials to a character
-        setupCharacterMaterials(mat, characterName)
+        characterData = dna.getCharacterData(characterName)
+        dna.setupCharacterMaterials(mat, characterData)
 
         # Create groupdelete node
         gdel = geometry.createNode('groupdelete')
@@ -109,9 +91,7 @@ def convert_FBX(FBX):
         # Create FileCache
         fileName = FBX.name().split('_')[0]
         cache = geometry.createNode('filecache')
-        cache.parm('file').set(
-            '$JOB/lib/ANIMATION/CHARACTERS/{2}/GEO/{0}/{1}/{0}_{1}.$F.bgeo.sc'.format(fileName, fileVersion,
-                                                                                      characterName))
+        cache.parm('file').set('$JOB/lib/ANIMATION/CHARACTERS/{2}/GEO/{0}/{1}/{0}_{1}.$F.bgeo.sc'.format(fileName, fileVersion, characterName))
         cache.parm('f2').deleteAllKeyframes()  # Delete expression on end frame
         cache.parm('f2').set(lastFrame)  # Sete end frame
         cache.setNextInput(gdel)
@@ -128,7 +108,6 @@ def convert_FBX(FBX):
 
 # Check if everything is fine and run script
 def run():
-
     if checkConditions() != 0:
         # Get selected FBX container and scene root
         for FBX in FBXS:

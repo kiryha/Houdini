@@ -7,9 +7,10 @@
 
   <toolshelf name="mother" label="MOTHER">
     <memberTool name="fbx_to_geo"/>
+    <memberTool name="import_animation"/>
   </toolshelf>
 
-  <tool name="fbx_to_geo" label="FBX&gt;GEO" icon="PLASMA_App">
+  <tool name="fbx_to_geo" label="FBX &gt; GEO" icon="PLASMA_App">
     <script scriptType="python"><![CDATA[import os, sys
 path = os.environ['JOB'].replace('PROD/3D', 'PREP/PIPELINE/MOTHER/tools')
 sys.path.append(path)
