@@ -63,7 +63,7 @@ folders = [
         ['PROJECT', []]
     ]],
     ['PREP', [
-        ['ART', []],
+        ['ART', []], 
         ['SRC', []],
         ['PIPELINE', []],
         ]],
@@ -78,7 +78,7 @@ folders = [
                 ['MATERIALS', ASSETS] # Or TYPES ?
             ]],
             ['geo',TYPES],
-            ['hda',TYPES],
+            ['hda',ASSETS],
             ['render', SHOTS],
             ['scenes', [
                 ['ASSETS', ASSETS],

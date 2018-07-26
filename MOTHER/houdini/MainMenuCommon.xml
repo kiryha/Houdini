@@ -10,7 +10,7 @@
 
       <scriptItem id="motherHelp">
           <label>Mother Help</label>
-	  <scriptCode><![CDATA[
+      <scriptCode><![CDATA[
 print 'https://github.com/kiryha/Houdini/wiki'
       ]]></scriptCode>
         </scriptItem>

@@ -1,4 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <shelfDocument>
-  <toolshelf name="mother" label="MOTHER"/>
+  <!-- This file contains definitions of shelves, toolbars, and tools.
+ It should not be hand-edited when it is being used by the application.
+ Note, that two definitions of the same element are not allowed in
+ a single file. -->
+
+  <toolshelf name="mother" label="MOTHER">
+    <memberTool name="fbx_to_geo"/>
+  </toolshelf>
+
+  <tool name="fbx_to_geo" label="FBX&gt;GEO" icon="PLASMA_App">
+    <script scriptType="python"><![CDATA[import os, sys
+path = os.environ['JOB'].replace('PROD/3D', 'PREP/PIPELINE/MOTHER/tools')
+sys.path.append(path)
+
+import convertFBX
+]]></script>
+  </tool>
 </shelfDocument>
