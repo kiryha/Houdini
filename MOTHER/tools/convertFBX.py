@@ -4,28 +4,22 @@
 # Cache geometry in GEO_<FBX name> subnetworks
 
 import hou
+import json
+import os
 
-# DATABASE DRAFT
+# LOAD CHARACTER DATA FROM DATABASE
+rootMother = os.path.dirname(os.path.dirname(__file__)).replace('\\','/')
+dataFile = '{0}/database/CHARACTERS.json'.format(rootMother)
+dataCharacters = json.load(open(dataFile))
+CHARACTERS = dataCharacters
 
-# CHARACTERS DICTIONARY
-# Materials dictionary (MAT):
-# KEY = groups string (list of group names divided by space), VALUE = path to material in scene (from MATLIB HDA) for that list of groups
-CHARACTERS = {'ROMA': {
-    'MAT': {
-        'ROMA_EYE_L_OUT ROMA_EYE_R_OUT': '/obj/MATERIALS/GENERAL/GEN_EYE',
-        'ROMA_EYE_L_BLACK ROMA_EYE_R_BLACK': '/obj/MATERIALS/GENERAL/GEN_PUPIL',
-        'ROMA_ARMS ROMA_BEARD ROMA_HEAD ROMA_IRON ROMA_PENS ROMA_SHOES ROMA_TSHIRT': '/obj/MATERIALS/GENERAL/GEN_BASE'
-    }
-}}
-
-# Define common variables
-fileVersion = '001'
-characterName = 'ROMA'
-
-# Get selected FBX container and scene root
+# DEFINE COMMON VARIABLES
+# Get selection and scenes root
 FBXS = hou.selectedNodes()
 OBJ = hou.node('/obj/')
-
+# Hardcoded values
+fileVersion = '001'
+characterName = 'ROMA'
 
 def checkConditions():
     '''
@@ -34,7 +28,6 @@ def checkConditions():
     if not FBXS:  # If user select anything
         print '>> Nothing selected! Select FBX subnetwork!'
         return 0
-
 
 def setupCharacterMaterials(mat, characterName):
     '''
@@ -50,7 +43,6 @@ def setupCharacterMaterials(mat, characterName):
         mat.parm('shop_materialpath{}'.format(n)).set(CHARACTERS[characterName]['MAT'][groupList])
         n += 1
 
-
 def getLastFrame(node):
     '''
     Return last frame of translate X animation from input node
@@ -62,7 +54,6 @@ def getLastFrame(node):
             listKeys.append(key.frame())
         lastFrame = int(sorted(listKeys)[-1])
         return lastFrame
-
 
 def convert_FBX(FBX):
     '''
@@ -135,11 +126,12 @@ def convert_FBX(FBX):
         # If the converted node exists
         print '>> NETWORK <{}> EXISTS! SKIP CONVERSION.'.format(nameGEO)
 
-
 # Check if everything is fine and run script
-if checkConditions() != 0:
-    # Get FBX network
-    for FBX in FBXS:
-        # run conversion
-        convert_FBX(FBX)
-    print '>> CONVERSION DONE!'
+def run():
+
+    if checkConditions() != 0:
+        # Get selected FBX container and scene root
+        for FBX in FBXS:
+            # run conversion
+            convert_FBX(FBX)
+        print '>> CONVERSION DONE!'

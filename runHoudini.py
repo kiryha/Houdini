@@ -70,23 +70,3 @@ subprocess.Popen(houdini)
 
 # Prevent closing CMD window
 # raw_input()
-
-CHARACTERS = {'ROMA':{
-    'MAT':{
-        'num_materials':3,
-        'group1':'ROMA_EYE_L_OUT ROMA_EYE_R_OUT',
-        'shop_materialpath1':'/obj/MATERIALS/GENERAL/GEN_EYE',
-        'group2':'ROMA_EYE_L_BLACK ROMA_EYE_R_BLACK',
-        'shop_materialpath2':'/obj/MATERIALS/GENERAL/GEN_PUPIL',
-        'group3':'ROMA_ARMS ROMA_BEARD ROMA_HEAD ROMA_IRON ROMA_PENS ROMA_SHOES ROMA_TSHIRT',
-        'shop_materialpath3':'/obj/MATERIALS/GENERAL/GEN_BASE'
-         }
-    }}
-CHARACTERS = {'ROMA':{
-    'MAT':{
-        'ROMA_EYE_L_OUT ROMA_EYE_R_OUT': '/obj/MATERIALS/GENERAL/GEN_EYE',
-        'ROMA_EYE_L_BLACK ROMA_EYE_R_BLACK': '/obj/MATERIALS/GENERAL/GEN_PUPIL',
-        'ROMA_ARMS ROMA_BEARD ROMA_HEAD ROMA_IRON ROMA_PENS ROMA_SHOES ROMA_TSHIRT': '/obj/MATERIALS/GENERAL/GEN_BASE'
-         }
-    }}
-
