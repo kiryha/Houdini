@@ -6,6 +6,7 @@
 import hou
 
 from MOTHER.dna import dna
+reload(dna)
 
 # DEFINE COMMON VARIABLES
 # Get selection and scenes root

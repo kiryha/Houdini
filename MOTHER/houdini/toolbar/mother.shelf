@@ -7,7 +7,8 @@
 
   <toolshelf name="mother" label="MOTHER">
     <memberTool name="fbx_to_geo"/>
-    <memberTool name="import_animation"/>
+    <memberTool name="importANM"/>
+    <memberTool name="saveCharacterData"/>
   </toolshelf>
 
   <tool name="fbx_to_geo" label="FBX &gt; GEO" icon="PLASMA_App">
@@ -19,5 +20,27 @@ import convertFBX
 reload(convertFBX)
 convertFBX.run()
 ]]></script>
+  </tool>
+
+  <tool name="importANM" label="IMPORT ANM" icon="PLASMA_App">
+    <script scriptType="python"><![CDATA[import os, sys
+
+path = os.environ['JOB'].replace('PROD/3D', 'PREP/PIPELINE/MOTHER/tools')
+sys.path.append(path)
+
+import importANM
+reload(importANM)
+importANM.run()
+]]></script>
+  </tool>
+
+  <tool name="saveCharacterData" label="DUMP" icon="PLASMA_App">
+    <script scriptType="python"><![CDATA[import os, sys
+path = os.environ['JOB'].replace('PROD/3D', 'PREP/PIPELINE/MOTHER/tools')
+sys.path.append(path)
+
+import saveMaterials
+reload(saveMaterials)
+saveMaterials.run()]]></script>
   </tool>
 </shelfDocument>

@@ -4,6 +4,7 @@
 import hou
 
 from MOTHER.dna import dna
+reload(dna)
 
 # Hardcoded values
 fileVersion = '001'
