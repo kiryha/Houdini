@@ -8,7 +8,6 @@ import json
 from MOTHER.dna import dna
 reload(dna)
 
-# filePath = '{0}/database/CHARACTERS.json'.format('P:/PROJECTS/NSI/PREP/PIPELINE/MOTHER')
 materialPath = '/obj/MATERIALS/GENERAL/'
 characterName = 'ROMA'
 section = 'materials'
