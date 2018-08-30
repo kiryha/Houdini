@@ -1,5 +1,6 @@
 # 256 Pipeline tools
 # Convert animated mixamo FBX subnetwork to Geometry cache
+# FBX name convention: <fileName>_<version>.fbx (walkA_01.fbx)
 # Import FBX into Houdini, select FBX subnetworks, run script in Python Source Editor
 # Cache geometry in GEO_<FBX name> subnetworks
 

@@ -23,7 +23,7 @@ def createCharacterCache(characterName):
     '''
 
     # Build cache path
-    pathCache = '$JOB/geo/SHOTS/{0}/SHOT_{1}/{2}/GEO/{3}/E{0}_S{1}_{2}_{3}.bgeo.sc'.format(codeSequense, codeShot,
+    pathCache = '$JOB/geo/SHOTS/{0}/SHOT_{1}/{2}/GEO/{3}/E{0}_S{1}_{2}_{3}.$F.bgeo.sc'.format(codeSequense, codeShot,
                                                                                            characterName, fileVersion)
     # Check if CHARACTERS node exists in scene
     chars = hou.node('/obj/{}'.format('CHARACTERS'))

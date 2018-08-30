@@ -6,6 +6,7 @@
  a single file. -->
 
   <toolshelf name="mother" label="MOTHER">
+    <memberTool name="importFBX"/>
     <memberTool name="fbx_to_geo"/>
     <memberTool name="importANM"/>
     <memberTool name="saveCharacterData"/>
