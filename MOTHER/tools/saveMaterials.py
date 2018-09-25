@@ -1,5 +1,5 @@
 # 256 Pipeline tools
-# Save character data to a database
+# Save character materials assignment information to a database
 # Part A: dump materials. Select character material SOP (assign materials via group) and run script
 
 import hou
@@ -26,14 +26,14 @@ def checkConditions():
 
 
 def getMaterials(materialNode):
-    print '>> Building material dictionary:  MAT [ GROUPS ]:'
+    print '>> Building material dictionary:  MATERIAL [ GROUPS ]:'
     materialsNumber = materialNode.parm('num_materials').eval()
     n = 1
     for material in range(materialsNumber):
         group = materialNode.parm('group{}'.format(n)).eval()
         material = materialNode.parm('shop_materialpath{}'.format(n)).eval().replace(materialPath, '')
         materialsData[material] = group
-        print '>> {} [ {} ]'.format(material, group)
+        print '{0} [ {1} ]'.format(material, group)
         n += 1
 
     return materialsData

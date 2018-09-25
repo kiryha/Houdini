@@ -1,5 +1,6 @@
 # 256 Pipeline Tools
 # DNA of MOTHER: common core to be used in misc modules
+# TBD! Need to fix JSON file changes (CHARACTERS.json >> ASSETS.json)
 
 import os
 import json
@@ -7,7 +8,7 @@ import json
 # Get Mother root folder
 rootMother = os.path.dirname(os.path.dirname(__file__)).replace('\\', '/')
 # Database file
-filePath = '{0}/database/CHARACTERS.json'.format(rootMother)
+filePath = '{0}/database/ASSETS.json'.format(rootMother)
 
 def analyzePath_HIP(path):
     '''
@@ -29,13 +30,13 @@ def getCharacterData(charcterName):
     '''
 
     dataCharacters = json.load(open(filePath))
-    characterData = dataCharacters[charcterName]
+    characterData = dataCharacters['CHARACTERS'][charcterName]
     return characterData
 
 def setCharacterData(characterName, section, characterData):
     with open(filePath, 'r+') as fileData:
         data = json.load(fileData)
-        data[characterName][section] = characterData
+        data['CHARACTERS'][characterName][section] = characterData
         fileData.seek(0)  # reset file position to the beginning
         json.dump(data, fileData, indent=4)
         fileData.truncate()  # remove remaining part

@@ -1,7 +1,5 @@
-'''
-Import mixmao FBX animation
-from hardcoded path
-'''
+# 256 Pipeline tools
+# Import mixamo FBX animations from one folder into current Houdini scene
 
 import hou
 import os

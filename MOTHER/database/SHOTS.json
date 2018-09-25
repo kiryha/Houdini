@@ -1,0 +1,18 @@
+{
+  "010": {
+    "SHOT_010": {
+      "endFrame": "200",
+      "EXR": "001/E010_S010_001.%04d.exr",
+      "characters": "ROMA",
+      "environments": "CITY",
+      "props": ""
+    },
+    "SHOT_190": {
+      "endFrame": "125",
+      "EXR": "001/E010_S190_001.%04d.exr",
+      "characters": "ROMA",
+      "environments": "CITY",
+      "props": ""
+    }
+  }
+}
