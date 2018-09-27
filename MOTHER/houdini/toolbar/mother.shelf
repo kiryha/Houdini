@@ -10,6 +10,7 @@
     <memberTool name="fbx_to_geo"/>
     <memberTool name="importANM"/>
     <memberTool name="saveCharacterMaterialsData"/>
+    <memberTool name="createScene"/>
   </toolshelf>
 
   <tool name="fbx_to_geo" label="FBX &gt; GEO" icon="PLASMA_App">
