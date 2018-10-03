@@ -15,7 +15,7 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QLineEdit" name="name">
+    <widget class="QLineEdit" name="lin_name">
      <property name="text">
       <string>MY_GEO</string>
      </property>
@@ -25,7 +25,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QPushButton" name="create">
+    <widget class="QPushButton" name="btn_create">
      <property name="minimumSize">
       <size>
        <width>0</width>
