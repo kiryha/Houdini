@@ -10,7 +10,7 @@ path_ui = os.environ['JOB'].replace('PROD/3D', 'PREP/PIPELINE/MOTHER/ui')
 class CreateScene(QtWidgets.QWidget):
     def __init__(self):
         super(CreateScene,self).__init__()
-        ui_file = "{}/createScene_Main.ui".format(path_ui)
+        ui_file = "{}/ui/createScene_Main.ui".format(path_ui)
         self.ui = QtUiTools.QUiLoader().load(ui_file, parentWidget=self)
         self.setParent(hou.ui.mainQtWindow(), QtCore.Qt.Window)
         

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>344</width>
+    <width>311</width>
     <height>79</height>
    </rect>
   </property>
@@ -27,7 +27,7 @@
      <widget class="QLineEdit" name="lin_episode">
       <property name="maximumSize">
        <size>
-        <width>50</width>
+        <width>70</width>
         <height>16777215</height>
        </size>
       </property>
@@ -39,6 +39,12 @@
       </property>
      </widget>
      <widget class="QLabel" name="lab_shot">
+      <property name="minimumSize">
+       <size>
+        <width>20</width>
+        <height>0</height>
+       </size>
+      </property>
       <property name="maximumSize">
        <size>
         <width>20</width>
@@ -55,7 +61,7 @@
      <widget class="QLineEdit" name="lin_shot">
       <property name="maximumSize">
        <size>
-        <width>50</width>
+        <width>70</width>
         <height>16777215</height>
        </size>
       </property>

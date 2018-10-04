@@ -10,6 +10,23 @@ rootMother = os.path.dirname(os.path.dirname(__file__)).replace('\\', '/')
 # Database file
 filePath = '{0}/database/ASSETS.json'.format(rootMother)
 
+def analyzePath(filePath):
+    '''
+    Disassemble string path into components
+    File Naming convention:
+    <filePath> =
+    <filePath> = <fileLocation>/<fileNme>
+    <fileName> = <fileCode>_<fileVersion>.<fileExtenstion>
+    '''
+
+    fileName = filePath.split('/')[-1]
+    fileExtenstion = fileName.split('.')[-1]
+    fileVersion = fileName.split('.')[0].split('_')[-1]
+    fileCode = fileName.replace('_{0}.{1}'.format(fileVersion, fileExtenstion), '')
+    fileLocation = filePath.replace('{}'.format(fileName), '')
+
+    return fileLocation, fileName, fileCode, fileVersion, fileExtenstion
+
 def analyzePath_HIP(path):
     '''
     Disassemble Houdini HIP file path string to get shot data from it
