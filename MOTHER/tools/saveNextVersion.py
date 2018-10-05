@@ -8,7 +8,33 @@ import hou
 import os
 
 from MOTHER.dna import dna
-from MOTHER.ui.widgets import SaveNextVersion
+from PySide2 import QtCore, QtUiTools, QtWidgets
+
+class SNV(QtWidgets.QWidget):
+    def __init__(self, filePath):
+        # Setup UI
+        super(SNV, self).__init__()
+        ui_file = '{}/saveNextVersion_Warning.ui'.format(dna.folderUI)
+        self.ui = QtUiTools.QUiLoader().load(ui_file, parentWidget=self)
+        self.setParent(hou.ui.mainQtWindow(), QtCore.Qt.Window)
+        # Setup label
+        message = 'File exists!\n{}'.format(dna.analyzeFliePath(filePath)[1])
+        self.ui.lab_message.setText(message)
+        # Setup buttons
+        self.ui.btn_SNV.clicked.connect(lambda: self.SNV(filePath))
+        self.ui.btn_SNV.clicked.connect(self.close)
+        self.ui.btn_OVR.clicked.connect(lambda: self.OVR(filePath))
+        self.ui.btn_OVR.clicked.connect(self.close)
+        self.ui.btn_ESC.clicked.connect(self.close)
+
+    def SNV(self, filePath):
+        newPath = dna.buildPathLatestVersion(filePath)
+        hou.hipFile.save(newPath)
+        print '>> File saved with a LATEST version!'
+
+    def OVR(self, filePath):
+        hou.hipFile.save(filePath)
+        print '>> Next version OVERWRITED!'
 
 def saveNextVersion():
     # Get current name
@@ -20,9 +46,9 @@ def saveNextVersion():
     # Check if next version exists
     if not os.path.exists(newPath):
         hou.hipFile.save(newPath)
-        print '>> File saved with a next version!'
+        print '>> File saved with a NEXT version!'
     else:
-        win = SaveNextVersion.SNV(newPath)
+        win = SNV(newPath)
         win.show()
 
 def run():
