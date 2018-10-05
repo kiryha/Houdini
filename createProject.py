@@ -9,10 +9,10 @@ import shutil
 import webbrowser
 
 # UI import
-from MOTHER.ui import createProject_Main
-from MOTHER.ui import createProject_SG
-from MOTHER.ui import createProject_Warning
-from MOTHER.ui import createProject_Shots
+from MOTHER.ui.py import createProject_Main
+from MOTHER.ui.py import createProject_SG
+from MOTHER.ui.py import createProject_Warning
+from MOTHER.ui.py import createProject_Shots
 
 # Py Side import
 from PySide.QtGui import *
