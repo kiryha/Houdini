@@ -54,6 +54,8 @@ def getHDA():
     return pathHDA
 
 # SETUP PROJECT ENVIRONMENT
+# Root of the project
+os.environ['ROOT'] = rootProject
 # Root of houdini project
 os.environ['JOB'] = root3D
 # Houdini digital assets folder including sub folders

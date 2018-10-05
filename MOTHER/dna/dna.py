@@ -4,19 +4,36 @@
 
 import os
 import json
+import glob
 
-# Get Mother root folder
-rootMother = os.path.dirname(os.path.dirname(__file__)).replace('\\', '/')
-# Database file
-filePath = '{0}/database/ASSETS.json'.format(rootMother)
+# DEFINE COMMON VARIABLES AND PATHS
+# Pipeline items
+extensionHoudini = 'hipnc'
+pipelineName = 'MOTHER'
 
-def analyzePath(filePath):
+# Get project root folder, defined in runHoudini.py  <P:/PROJECTS/NSI/>
+rootProject = os.environ['ROOT']
+# Get pipeline root folder <P:/PROJECTS/NSI/PREP/PIPELINE>
+rootPipe = '{}/PREP/PIPELINE'.format(rootProject)
+# Get root for Houdini project ($JOB variable), defined in runHoudini.py <P:/PROJECTS/NSI/PROD/3D>
+root3D = os.environ['JOB']
+# Get path to *.UI files <P:/PROJECTS/NSI/PREP/PIPELINE/MOTHER/ui/ui>
+folderUI = '{0}/{1}/ui/ui'.format(rootPipe, pipelineName)
+# Database files
+databaseASSETS = '{0}/{1}/database/ASSETS.json'.format(rootPipe, pipelineName)
+databaseSHOTS = '{0}/{1}/database/SHOTS.json'.format(rootPipe, pipelineName)
+
+
+# FILE PATH (STRING) MANIPULATIONS
+# File Naming convention for filePath:
+#< filePath > = < fileLocation > / < fileNme >
+#< fileName > = < fileCode > _ < fileVersion >.< fileExtenstion >
+# filePathExample = 'P:/PROJECTS/NSI/PROD/3D/scenes/ANIMATION/ANM_E010_S010_001.hipnc'
+
+
+def analyzeFliePath(filePath):
     '''
     Disassemble string path into components
-    File Naming convention:
-    <filePath> =
-    <filePath> = <fileLocation>/<fileNme>
-    <fileName> = <fileCode>_<fileVersion>.<fileExtenstion>
     '''
 
     fileName = filePath.split('/')[-1]
@@ -27,17 +44,68 @@ def analyzePath(filePath):
 
     return fileLocation, fileName, fileCode, fileVersion, fileExtenstion
 
-def analyzePath_HIP(path):
+def analyzeFileCode(fileCode):
     '''
-    Disassemble Houdini HIP file path string to get shot data from it
+    Disassemble <fileCode> part of the <fileName> to get shot data from it
+    fileCodeExample = ANM_E010_S010
     '''
-    pathParts = path.split('/')
 
-    fileName = pathParts[-1]
-    codeShot = pathParts[-2].replace('SHOT_', '')
-    codeSequense = pathParts[-3]
+    shotCode = fileCode.split('_')[-1]
+    episodeCode = fileCode.split('_')[-2]
 
-    return codeSequense, codeShot
+    return episodeCode, shotCode
+
+def extractLatestVersion(listExisted):
+    '''
+    Get list of files paths (listExisted), return latest existing version + 1 (<###> string)
+    '''
+
+    listVersions = []
+    for filePath in listExisted:
+        listVersions.append(int(analyzeFliePath(filePath)[3]))
+    latestVersion = '{:03}'.format(max(listVersions) + 1)
+    return latestVersion
+
+def buildPathNextVersion(filePath):
+    '''
+    Get filePath, create new filePath with a next version in fileName
+    '''
+
+    fileLocation, fileName, fileCode, fileVersion, fileExtenstion = analyzeFliePath(filePath)
+    fileVersionNext = '{:03}'.format(int(fileVersion) + 1)
+    filePathNextVersion = '{0}{1}_{2}.{3}'.format(fileLocation, fileCode, fileVersionNext, fileExtenstion)
+
+    return filePathNextVersion
+
+def buildPathLatestVersion(filePath):
+    '''
+    Get filePath, create new filePath with a latest available version in fileName
+    '''
+
+    fileLocation, fileName, fileCode, fileVersion, fileExtenstion = analyzeFliePath(filePath)
+
+    listExisted = glob.glob('{0}{1}_*.{2}'.format(fileLocation, fileCode, fileExtenstion))
+    fileVersionLatest = extractLatestVersion(listExisted)
+    filePathLatestVersion = '{0}{1}_{2}.{3}'.format(fileLocation, fileCode, fileVersionLatest, fileExtenstion)
+
+    return filePathLatestVersion
+
+def buildFliePath(episode, shot, sceneType):
+    '''
+    Build a File Path
+    :param episode: String episode number <###>
+    :param shot: String shot number <###>
+    :param sceneType: String file type (animation, render, fx etc)
+    :return:
+    '''
+
+    filePath = None
+
+    if sceneType == 'RND':
+        filePath = '{0}/scenes/RENDER/{1}/SHOT_{2}/RND_E{1}_S{2}_001.{3}'.format(root3D, episode, shot, extensionHoudini)
+        #print filePath
+
+    return filePath
 
 def getCharacterData(charcterName):
     '''
@@ -46,18 +114,18 @@ def getCharacterData(charcterName):
     :return: Character data dictionary
     '''
 
-    dataCharacters = json.load(open(filePath))
+    dataCharacters = json.load(open(databaseASSETS))
     characterData = dataCharacters['CHARACTERS'][charcterName]
     return characterData
 
 def setCharacterData(characterName, section, characterData):
-    with open(filePath, 'r+') as fileData:
+    with open(databaseASSETS, 'r+') as fileData:
         data = json.load(fileData)
         data['CHARACTERS'][characterName][section] = characterData
         fileData.seek(0)  # reset file position to the beginning
         json.dump(data, fileData, indent=4)
         fileData.truncate()  # remove remaining part
-        print '>> Materials data saved to {}'.format(filePath)
+        print '>> Materials data saved to {}'.format(databaseASSETS)
 
 def setupCharacterMaterials(materialNode, characterData):
     '''

@@ -7,11 +7,12 @@ from MOTHER.dna import dna
 reload(dna)
 
 # Hardcoded values
-fileVersion = '001'
+cacheVersion = '001'
 characterName = 'ROMA'
 
-# Get shot and sequence number from scene name
-codeSequense, codeShot = dna.analyzePath_HIP(hou.hipFile.path())
+# Get shot and sequence number from the scene name
+fileCode = dna.analyzeFliePath(hou.hipFile.path())[2]
+episodeCode, shotCode = dna.analyzeFileCode(fileCode)
 
 # Get scene root
 OBJ = hou.node('/obj/')
@@ -23,8 +24,8 @@ def createCharacterCache(characterName):
     '''
 
     # Build cache path
-    pathCache = '$JOB/geo/SHOTS/{0}/SHOT_{1}/{2}/GEO/{3}/E{0}_S{1}_{2}_{3}.$F.bgeo.sc'.format(codeSequense, codeShot,
-                                                                                           characterName, fileVersion)
+    pathCache = '$JOB/geo/SHOTS/{0}/SHOT_{1}/{2}/GEO/{3}/E{0}_S{1}_{2}_{3}.$F.bgeo.sc'.format(episodeCode, shotCode,
+                                                                                           characterName, cacheVersion)
     # Check if CHARACTERS node exists in scene
     chars = hou.node('/obj/{}'.format('CHARACTERS'))
 

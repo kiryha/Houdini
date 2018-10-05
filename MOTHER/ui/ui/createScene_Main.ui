@@ -19,20 +19,18 @@
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
-     <widget class="QLabel" name="lab_episode">
-      <property name="text">
-       <string>EPISODE &gt; SHOT</string>
-      </property>
-     </widget>
      <widget class="QLineEdit" name="lin_episode">
       <property name="maximumSize">
        <size>
-        <width>70</width>
-        <height>16777215</height>
+        <width>1000</width>
+        <height>20</height>
        </size>
       </property>
       <property name="text">
        <string>010</string>
+      </property>
+      <property name="frame">
+       <bool>false</bool>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
@@ -52,7 +50,7 @@
        </size>
       </property>
       <property name="text">
-       <string>&gt;</string>
+       <string>:</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
@@ -61,12 +59,15 @@
      <widget class="QLineEdit" name="lin_shot">
       <property name="maximumSize">
        <size>
-        <width>70</width>
-        <height>16777215</height>
+        <width>1000</width>
+        <height>20</height>
        </size>
       </property>
       <property name="text">
        <string>010</string>
+      </property>
+      <property name="frame">
+       <bool>false</bool>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
@@ -75,7 +76,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QPushButton" name="pushButton">
+    <widget class="QPushButton" name="btn_createRenderScene">
      <property name="minimumSize">
       <size>
        <width>0</width>
