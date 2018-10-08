@@ -17,8 +17,9 @@ class SNV(QtWidgets.QWidget):
         self.sceneType = sceneType # RND, ANM etc. To return back to CS object
         ui_file = '{}/saveNextVersion_Warning.ui'.format(dna.folderUI)
         self.ui = QtUiTools.QUiLoader().load(ui_file, parentWidget=self)
-        self.setParent(hou.ui.mainQtWindow(), QtCore.Qt.Window)        # Setup label
-        message = 'File exists!\n{}'.format(dna.analyzeFliePath(filePath)[1])
+        self.setParent(hou.ui.mainQtWindow(), QtCore.Qt.Window)
+        # Setup label
+        message = 'File exists!\n{}'.format(dna.analyzeFliePath(filePath)['fileName'])
         self.ui.lab_message.setText(message)
 
         # Setup buttons

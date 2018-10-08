@@ -18,8 +18,9 @@ class SNV(QtWidgets.QWidget):
         self.ui = QtUiTools.QUiLoader().load(ui_file, parentWidget=self)
         self.setParent(hou.ui.mainQtWindow(), QtCore.Qt.Window)
         # Setup label
-        message = 'File exists!\n{}'.format(dna.analyzeFliePath(filePath)[1])
+        message = 'File exists!\n{}'.format(dna.analyzeFliePath(filePath)['fileName'])
         self.ui.lab_message.setText(message)
+
         # Setup buttons
         self.ui.btn_SNV.clicked.connect(lambda: self.SNV(filePath))
         self.ui.btn_SNV.clicked.connect(self.close)

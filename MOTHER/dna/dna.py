@@ -26,10 +26,9 @@ databaseSHOTS = '{0}/{1}/database/SHOTS.json'.format(rootPipe, pipelineName)
 
 # FILE PATH (STRING) MANIPULATIONS
 # File Naming convention for filePath:
-#< filePath > = < fileLocation > / < fileNme >
-#< fileName > = < fileCode > _ < fileVersion >.< fileExtenstion >
+# <filePath> = <fileLocation>/<fileNme>
+# <fileName> = <fileCode>_<fileVersion>.<fileExtension>
 # filePathExample = 'P:/PROJECTS/NSI/PROD/3D/scenes/ANIMATION/ANM_E010_S010_001.hipnc'
-
 
 def analyzeFliePath(filePath):
     '''
@@ -37,12 +36,19 @@ def analyzeFliePath(filePath):
     '''
 
     fileName = filePath.split('/')[-1]
-    fileExtenstion = fileName.split('.')[-1]
+    fileExtension = fileName.split('.')[-1]
     fileVersion = fileName.split('.')[0].split('_')[-1]
-    fileCode = fileName.replace('_{0}.{1}'.format(fileVersion, fileExtenstion), '')
+    fileCode = fileName.replace('_{0}.{1}'.format(fileVersion, fileExtension), '')
     fileLocation = filePath.replace('{}'.format(fileName), '')
 
-    return fileLocation, fileName, fileCode, fileVersion, fileExtenstion
+    # Return dictionary: fileLocation, fileName, fileCode, fileVersion, fileExtension
+    outputMap = {'fileLocation': fileLocation,
+                 'fileName': fileName,
+                 'fileCode': fileCode,
+                 'fileVersion': fileVersion,
+                 'fileExtension': fileExtension}
+
+    return outputMap
 
 def analyzeFileCode(fileCode):
     '''
@@ -53,7 +59,11 @@ def analyzeFileCode(fileCode):
     shotCode = fileCode.split('_')[-1]
     episodeCode = fileCode.split('_')[-2]
 
-    return episodeCode, shotCode
+    # Return dictionary: episodeCode, shotCode
+    outputMap = {'episodeCode': episodeCode,
+                 'shotCode': shotCode}
+
+    return outputMap
 
 def extractLatestVersion(listExisted):
     '''
@@ -62,7 +72,7 @@ def extractLatestVersion(listExisted):
 
     listVersions = []
     for filePath in listExisted:
-        listVersions.append(int(analyzeFliePath(filePath)[3]))
+        listVersions.append(int(analyzeFliePath(filePath)['fileVersion']))
     latestVersion = '{:03}'.format(max(listVersions) + 1)
     return latestVersion
 
@@ -71,9 +81,14 @@ def buildPathNextVersion(filePath):
     Get filePath, create new filePath with a next version in fileName
     '''
 
-    fileLocation, fileName, fileCode, fileVersion, fileExtenstion = analyzeFliePath(filePath)
+    # Disassemble file path
+    fileLocation= analyzeFliePath(filePath)['fileLocation']
+    fileCode = analyzeFliePath(filePath)['fileCode']
+    fileVersion = analyzeFliePath(filePath)['fileVersion']
+    fileExtension = analyzeFliePath(filePath)['fileExtension']
+
     fileVersionNext = '{:03}'.format(int(fileVersion) + 1)
-    filePathNextVersion = '{0}{1}_{2}.{3}'.format(fileLocation, fileCode, fileVersionNext, fileExtenstion)
+    filePathNextVersion = '{0}{1}_{2}.{3}'.format(fileLocation, fileCode, fileVersionNext, fileExtension)
 
     return filePathNextVersion
 
@@ -82,11 +97,14 @@ def buildPathLatestVersion(filePath):
     Get filePath, create new filePath with a latest available version in fileName
     '''
 
-    fileLocation, fileName, fileCode, fileVersion, fileExtenstion = analyzeFliePath(filePath)
+    # Disassemble file path
+    fileLocation= analyzeFliePath(filePath)['fileLocation']
+    fileCode = analyzeFliePath(filePath)['fileCode']
+    fileExtension = analyzeFliePath(filePath)['fileExtension']
 
-    listExisted = glob.glob('{0}{1}_*.{2}'.format(fileLocation, fileCode, fileExtenstion))
+    listExisted = glob.glob('{0}{1}_*.{2}'.format(fileLocation, fileCode, fileExtension))
     fileVersionLatest = extractLatestVersion(listExisted)
-    filePathLatestVersion = '{0}{1}_{2}.{3}'.format(fileLocation, fileCode, fileVersionLatest, fileExtenstion)
+    filePathLatestVersion = '{0}{1}_{2}.{3}'.format(fileLocation, fileCode, fileVersionLatest, fileExtension)
 
     return filePathLatestVersion
 
