@@ -15,23 +15,14 @@
   </toolshelf>
 
   <tool name="fbx_to_geo" label="FBX &gt; GEO" icon="PLASMA_App">
-    <script scriptType="python"><![CDATA[import os, sys
-path = os.environ['JOB'].replace('PROD/3D', 'PREP/PIPELINE/MOTHER/tools')
-sys.path.append(path)
-
-import convertFBX
+    <script scriptType="python"><![CDATA[import convertFBX
 reload(convertFBX)
 convertFBX.run()
 ]]></script>
   </tool>
 
   <tool name="importANM" label="IMPORT ANM" icon="PLASMA_App">
-    <script scriptType="python"><![CDATA[import os, sys
-
-path = os.environ['JOB'].replace('PROD/3D', 'PREP/PIPELINE/MOTHER/tools')
-sys.path.append(path)
-
-import importANM
+    <script scriptType="python"><![CDATA[import importANM
 reload(importANM)
 importANM.run()
 ]]></script>

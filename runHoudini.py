@@ -62,6 +62,8 @@ os.environ['JOB'] = root3D
 os.environ['HOUDINI_OTLSCAN_PATH'] = getHDA()
 # Houdini path
 os.environ['HOUDINI_PATH'] = '{}/MOTHER/houdini;&'.format(rootPipeline)
+# Path to custom python tools
+os.environ['PYTHONPATH'] = '{}/MOTHER/tools;&'.format(rootPipeline)
 # Icons
 # os.environ['HOUDINI_UI_ICON_PATH'] = '{}/MOTHER/icons'.format(rootPipeline)
 # Houdini current user pref folder in MyDocuments (win)

@@ -81,8 +81,8 @@ class CreateScene(QtWidgets.QWidget):
             # Save latest version
             newPath = dna.buildPathLatestVersion(pathScene)
             hou.hipFile.save(newPath)
-            hou.ui.displayMessage('New version saved:\n{}'.format(pathScene.split('/')[-1]))
-            #print '>> File saved with a latest version!'
+            hou.ui.displayMessage('New version saved:\n{}'.format(newPath.split('/')[-1]))
+            # print '>> File saved with a latest version!'
         elif catch == 'OVR':
             # Overwrite existing file
             hou.hipFile.save(pathScene)
@@ -115,4 +115,4 @@ class CreateScene(QtWidgets.QWidget):
 
 # Run the Create Scene Tool
 CS = CreateScene()
-CS.show()
+# CS.show()
