@@ -7,7 +7,7 @@
 import hou
 import os
 
-from MOTHER.dna import dna
+from EVE.dna import dna
 from PySide2 import QtCore, QtUiTools, QtWidgets
 
 class SNV(QtWidgets.QWidget):

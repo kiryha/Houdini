@@ -1,0 +1,38 @@
+{
+  "010": {
+    "SHOT_190": {
+      "description": "Shot kak shot",
+      "endFrame": "125",
+      "EXR": "001/E010_S190_001.%04d.exr",
+      "characters": {
+        "ROMA": ""
+      },
+      "environments": {
+        "CITY": ""
+      },
+      "props": {},
+      "FX": {
+        "": ""
+      }
+    }
+  },
+  "030": {
+    "SHOT_010": {
+      "description": "Last shot (packshot). FX of Roma broken.",
+      "endFrame": "125",
+      "EXR": "001/E010_S190_001.%04d.exr",
+      "characters": {
+        "ROMA": ""
+      },
+      "environments": {
+        "CITY": ""
+      },
+      "props": {},
+      "FX": {
+        "FEM": {
+          "description": "FEM sim of ROMA"
+        }
+      }
+    }
+  }
+}

@@ -4,7 +4,7 @@
 import hou
 import os
 from PySide2 import QtCore, QtUiTools, QtWidgets
-from MOTHER.dna import dna
+from EVE.dna import dna
 reload(dna)
 
 # Get scene root node

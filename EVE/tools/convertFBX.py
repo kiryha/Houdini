@@ -6,7 +6,7 @@
 
 import hou
 
-from MOTHER.dna import dna
+from EVE.dna import dna
 reload(dna)
 
 # DEFINE COMMON VARIABLES

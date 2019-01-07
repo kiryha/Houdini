@@ -5,7 +5,7 @@
 import hou
 import json
 
-from MOTHER.dna import dna
+from EVE.dna import dna
 reload(dna)
 
 materialPath = '/obj/MATERIALS/GENERAL/'
