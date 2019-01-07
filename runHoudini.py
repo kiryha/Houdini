@@ -16,9 +16,9 @@ pathHDA = ''
 # Houdini install dir
 PC = os.environ['COMPUTERNAME']
 if PC == 'ANGEL':
-    houdini = 'C:/Program Files/Side Effects Software/Houdini 16.0.504.20/bin/houdinifx.exe'
+    houdini = 'C:/Program Files/Side Effects Software/Houdini 16.5.268/bin/houdinifx.exe'
 else:
-    houdini = 'C:/Program Files/Side Effects Software/Houdini 16.5.536/bin/houdinifx.exe'
+    houdini = 'C:/Program Files/Side Effects Software/Houdini 16.5.536/bin/houdinifx.exe' # 16.5.536 17.0.352
 
 
 def getHDA():
@@ -61,11 +61,11 @@ os.environ['JOB'] = root3D
 # Houdini digital assets folder including sub folders
 os.environ['HOUDINI_OTLSCAN_PATH'] = getHDA()
 # Houdini path
-os.environ['HOUDINI_PATH'] = '{}/MOTHER/houdini;&'.format(rootPipeline)
+os.environ['HOUDINI_PATH'] = '{}/EVE/houdini;&'.format(rootPipeline)
 # Path to custom python tools
-os.environ['PYTHONPATH'] = '{}/MOTHER/tools;&'.format(rootPipeline)
+os.environ['PYTHONPATH'] = '{}/EVE/tools;&'.format(rootPipeline)
 # Icons
-# os.environ['HOUDINI_UI_ICON_PATH'] = '{}/MOTHER/icons'.format(rootPipeline)
+# os.environ['HOUDINI_UI_ICON_PATH'] = '{}/EVE/icons'.format(rootPipeline)
 # Houdini current user pref folder in MyDocuments (win)
 # os.environ['home'] = '{}/Documents/houdiniUserPrefs'.format(os.path.expanduser("~"))
 

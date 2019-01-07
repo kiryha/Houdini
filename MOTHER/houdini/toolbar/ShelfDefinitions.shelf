@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<shelfDocument>
-  <shelfSet name="shelf_set_1" label="Create and Refine">
-    <memberToolshelf name="mother"/>
-    <memberToolshelf name="create"/>
-  </shelfSet>
-
-
-</shelfDocument>

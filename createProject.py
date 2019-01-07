@@ -9,10 +9,10 @@ import shutil
 import webbrowser
 
 # UI import
-from MOTHER.ui.py import createProject_Main
-from MOTHER.ui.py import createProject_SG
-from MOTHER.ui.py import createProject_Warning
-from MOTHER.ui.py import createProject_Shots
+from EVE.ui.py import createProject_Main
+from EVE.ui.py import createProject_SG
+from EVE.ui.py import createProject_Warning
+from EVE.ui.py import createProject_Shots
 
 # Py Side import
 from PySide.QtGui import *
@@ -77,7 +77,8 @@ folders = [
                 ['ANIMATION', []],
                 ['MATERIALS', ASSETS] # Or TYPES ?
             ]],
-            ['geo',TYPES],
+            ['fx',TYPES],
+            ['caches',TYPES],
             ['hda',ASSETS],
             ['render', SHOTS],
             ['scenes', [
@@ -87,8 +88,7 @@ folders = [
                 ['LOOKDEV', TYPES],
                 ['RENDER', SHOTS]
             ]],
-            ['sim', TYPES],
-            ['tex', TYPES],
+            ['textures', TYPES],
         ]],
     ]]
     ]
