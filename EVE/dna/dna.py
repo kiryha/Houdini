@@ -83,7 +83,7 @@ def extractLatestVersion(listExisted):
     listVersions = []
     for filePath in listExisted:
         listVersions.append(int(analyzeFliePath(filePath)['fileVersion']))
-    latestVersion = '{:03}'.format(max(listVersions) + 1)
+    latestVersion = '{:03}'.format(max(listVersions)) #  + 1
     return latestVersion
 
 def buildPathNextVersion(filePath):
@@ -93,7 +93,7 @@ def buildPathNextVersion(filePath):
     '''
 
     # Disassemble file path
-    fileLocation= analyzeFliePath(filePath)['fileLocation']
+    fileLocation = analyzeFliePath(filePath)['fileLocation']
     fileCode = analyzeFliePath(filePath)['fileCode']
     fileVersion = analyzeFliePath(filePath)['fileVersion']
     fileExtension = analyzeFliePath(filePath)['fileExtension']

@@ -25,8 +25,6 @@ class SNV(QtWidgets.QWidget):
         # Setup label
         message = 'File exists!\n{}'.format(dna.analyzeFliePath(filePath)['fileName'])
         self.ui.lab_message.setText(message)
-        # Rename button
-        self.ui.btn_SNV.setText('Save Next Version')
 
         # Setup buttons
         self.ui.btn_SNV.clicked.connect(lambda: self.SNV(filePath))
