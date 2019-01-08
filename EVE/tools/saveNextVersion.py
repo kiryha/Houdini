@@ -29,7 +29,7 @@ class SNV(QtWidgets.QWidget):
         self.ui.btn_ESC.clicked.connect(self.close)
 
     def SNV(self, filePath):
-        newPath = dna.buildPathLatestVersion(filePath)
+        newPath = dna.buildPathNextVersion(filePath)
         hou.hipFile.save(newPath)
         print '>> File saved with a LATEST version!'
 
@@ -49,6 +49,8 @@ def saveNextVersion():
         hou.hipFile.save(newPath)
         print '>> File saved with a NEXT version!'
     else:
+        # If next version exists, get latest existing version
+        newPath = dna.buildPathLatestVersion(newPath)
         win = SNV(newPath)
         win.show()
 

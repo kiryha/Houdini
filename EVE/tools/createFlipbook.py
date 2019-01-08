@@ -49,7 +49,6 @@ class SNV(QtWidgets.QWidget):
         # Overwrite LATEST EXISTING version of flipbook
         runFB(filePath)
 
-
 def getLatestVersion(filePath):
     '''
     Get FOLDER filePath, return string: latest available version ("002")
@@ -77,7 +76,6 @@ def getLatestVersion(filePath):
 
     return latestVersion
 
-
 def runFB(flipbookPath):
     '''
     Run flipbook rendering
@@ -88,7 +86,6 @@ def runFB(flipbookPath):
     scene.flipbook(scene.curViewport(), settings)
     # Report
     print 'Saved: {}'.format(flipbookPath)
-
 
 def buildFBName(version):
     '''
@@ -106,14 +103,13 @@ def buildFBName(version):
 
     try:
         sceneType, episode, shot, sceneVersion = sceneName.split('_')
+        flipbookName = '{0}_{1}_{2}.$F.{3}'.format(episode, shot, version, dna.extensionRender)
+        flipbookPath = '{0}/{1}/SHOT_{2}/{3}/{4}'.format(dna.rootRender3D, episode[-3:], shot[-3:], version, flipbookName)
+
+        return flipbookPath
+
     except:
         print 'Unsupported file name!'
-
-    flipbookName = '{0}_{1}_{2}.$F.exr'.format(episode, shot, version)
-    flipbookPath = '{0}/{1}/SHOT_{2}/{3}/{4}'.format(dna.rootRender3D, episode[-3:], shot[-3:], version, flipbookName)
-
-    return flipbookPath
-
 
 def createFlipbook():
     # Setup flipbook settings

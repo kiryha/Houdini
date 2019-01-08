@@ -9,6 +9,7 @@ import glob
 # DEFINE COMMON VARIABLES AND PATHS
 # Pipeline items
 extensionHoudini = 'hipnc'
+extensionRender = 'exr'
 pipelineName = 'EVE'
 cacheFolder = 'geo'
 

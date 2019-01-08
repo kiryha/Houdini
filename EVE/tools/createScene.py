@@ -56,12 +56,15 @@ class CreateScene(QtWidgets.QWidget):
         # Get episode and shot from UI
         episode = self.ui.lin_episode.text()
         shot = self.ui.lin_shot.text()
-        pathScene = dna.buildFliePath(episode, shot, sceneType)
+
 
         # If createRenderScene() runs first time
         if catch == None:
 
-            # Start new session without saving current
+            # Build path to 001 version
+            pathScene = dna.buildFliePath(episode, shot, sceneType)
+
+            # Start new Houdini session without saving current
             hou.hipFile.clear(suppress_save_prompt=True)
 
             # Check if file exists
@@ -71,6 +74,8 @@ class CreateScene(QtWidgets.QWidget):
                 hou.ui.displayMessage('File created:\n{}'.format(pathScene.split('/')[-1]))
                 # print '>> First version of file saved!'
             else:
+                # If 001 version exists, get latest existing version
+                pathScene = dna.buildPathLatestVersion(pathScene)
                 # Run Save Next Version dialog if EXISTS
                 winSNV = SNV(pathScene, sceneType)
                 winSNV.show()
@@ -79,12 +84,13 @@ class CreateScene(QtWidgets.QWidget):
         # If createRenderScene() runs from SNV class: return user choice, OVR or SNV
         elif catch == 'SNV':
             # Save latest version
-            newPath = dna.buildPathLatestVersion(pathScene)
+            newPath = dna.buildPathNextVersion(dna.buildPathLatestVersion(dna.buildFliePath(episode, shot, sceneType)))
             hou.hipFile.save(newPath)
             hou.ui.displayMessage('New version saved:\n{}'.format(newPath.split('/')[-1]))
             # print '>> File saved with a latest version!'
         elif catch == 'OVR':
             # Overwrite existing file
+            pathScene = dna.buildPathLatestVersion(dna.buildFliePath(episode, shot, sceneType))
             hou.hipFile.save(pathScene)
             hou.ui.displayMessage('File overwited:\n{}'.format(pathScene.split('/')[-1]))
             #print '>> First version of file overwrited!'

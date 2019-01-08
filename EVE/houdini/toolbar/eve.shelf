@@ -31,7 +31,7 @@ importANM.run()
 
   <tool name="snv" label="SNV" icon="PLASMA_App">
     <script scriptType="python"><![CDATA[import saveNextVersion
-#reload(saveNextVersion)
+reload(saveNextVersion)
 saveNextVersion.run()]]></script>
   </tool>
 
@@ -53,6 +53,7 @@ saveMaterials.run()]]></script>
 
   <tool name="createScene" label="Create Scene" icon="PLASMA_App">
     <script scriptType="python"><![CDATA[import createScene
+reload(createScene)
 createScene.CS.show()
     
 #if kwargs["ctrlclick"] != True:
