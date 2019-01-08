@@ -12,6 +12,7 @@
     <memberTool name="importANM"/>
     <memberTool name="saveCharacterMaterialsData"/>
     <memberTool name="createScene"/>
+    <memberTool name="create_FB"/>
   </toolshelf>
 
   <tool name="fbx_to_geo" label="FBX &gt; GEO" icon="PLASMA_App">
@@ -26,5 +27,42 @@ convertFBX.run()
 reload(importANM)
 importANM.run()
 ]]></script>
+  </tool>
+
+  <tool name="snv" label="SNV" icon="PLASMA_App">
+    <script scriptType="python"><![CDATA[import saveNextVersion
+#reload(saveNextVersion)
+saveNextVersion.run()]]></script>
+  </tool>
+
+  <tool name="importFBX" label="import FBX" icon="PLASMA_App">
+    <script scriptType="python"><![CDATA[#import os, sys
+#path = os.environ['JOB'].replace('PROD/3D', 'PREP/PIPELINE/MOTHER/tools')
+#sys.path.append(path)
+
+import importFBX
+reload(importFBX)
+importFBX.run()]]></script>
+  </tool>
+
+  <tool name="saveCharacterMaterialsData" label="Save MATS" icon="PLASMA_App">
+    <script scriptType="python"><![CDATA[import saveMaterials
+reload(saveMaterials)
+saveMaterials.run()]]></script>
+  </tool>
+
+  <tool name="createScene" label="Create Scene" icon="PLASMA_App">
+    <script scriptType="python"><![CDATA[import createScene
+createScene.CS.show()
+    
+#if kwargs["ctrlclick"] != True:
+#createScene.run()
+]]></script>
+  </tool>
+
+  <tool name="create_FB" label="FB" icon="PLASMA_App">
+    <script scriptType="python"><![CDATA[import createFlipbook
+reload(createFlipbook)
+createFlipbook.run()]]></script>
   </tool>
 </shelfDocument>

@@ -12,6 +12,10 @@ extensionHoudini = 'hipnc'
 pipelineName = 'EVE'
 cacheFolder = 'geo'
 
+# Common variables
+frameStart = 1
+resolution = (1280, 540)
+
 # Get project root folder, defined in runHoudini.py  <P:/PROJECTS/NSI/>
 rootProject = os.environ['ROOT']
 # Get pipeline root folder <P:/PROJECTS/NSI/PREP/PIPELINE>
@@ -23,6 +27,8 @@ folderUI = '{0}/{1}/ui/ui'.format(rootPipe, pipelineName)
 # Database files
 databaseASSETS = '{0}/{1}/database/ASSETS.json'.format(rootPipe, pipelineName)
 databaseSHOTS = '{0}/{1}/database/SHOTS.json'.format(rootPipe, pipelineName)
+# Render 3D and FlipBook
+rootRender3D = '{}/render'.format(root3D)
 
 
 # FILE PATH (STRING) MANIPULATIONS
@@ -30,6 +36,7 @@ databaseSHOTS = '{0}/{1}/database/SHOTS.json'.format(rootPipe, pipelineName)
 # <filePath> = <fileLocation>/<fileNme>
 # <fileName> = <fileCode>_<fileVersion>.<fileExtension>
 # filePathExample = 'P:/PROJECTS/NSI/PROD/3D/scenes/ANIMATION/ANM_E010_S010_001.hipnc'
+# folderPathExample = 'P:/PROJECTS/NSI/PROD/3D/render/010/SHOT_010/001/'
 
 def analyzeFliePath(filePath):
     '''
@@ -79,7 +86,8 @@ def extractLatestVersion(listExisted):
 
 def buildPathNextVersion(filePath):
     '''
-    Get filePath, create new filePath with a next version in fileName
+    Build next version of input path
+    Get filePath, create new full filePath with a next version in fileName (P:/.../ANM_E010_S010_002.hipnc)
     '''
 
     # Disassemble file path

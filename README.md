@@ -1,8 +1,8 @@
 # Houdini Pipeline Toolkit
 
 ### Introduction
-This repository is a Houdini Pipeline Toolkit, currently at the early stages of developing. 
-The goal is to create **out of the box VFX pipeline** for **Houdini** and **Nuke** applications under control of project management system (Ftrack or Shotgun)
+This repository is a Houdini Pipeline Toolkit named "EVE", currently at the early stages of developing. 
+The goal is to create **out of the box VFX pipeline** for **Houdini** and **Nuke** applications under control of Shotgun project management system
 for a single artist or animation studio. It is full CG oriented pipeline which can handle small tasks with just a few shots as well as huge projects like animation feature or TV series.
 
 The pipeline would be heavily rely on [Animation DNA](https://github.com/kiryha/AnimationDNA/wiki) structure and ideas.
