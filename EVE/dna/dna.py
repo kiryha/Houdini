@@ -16,6 +16,7 @@ cacheFolder = 'geo'
 frameStart = 1
 resolution = (1280, 540)
 
+# PATHS
 # Get project root folder, defined in runHoudini.py  <P:/PROJECTS/NSI/>
 rootProject = os.environ['ROOT']
 # Get pipeline root folder <P:/PROJECTS/NSI/PREP/PIPELINE>

@@ -133,6 +133,7 @@ def createFlipbook():
         latestVersion = getLatestVersion(fileLocation)
         # Build latest existing path
         flipbookPath = buildFBName(latestVersion)
+        # Ask user to save next version or overwrite latest
         win = SNV(flipbookPath)
         win.show()
 

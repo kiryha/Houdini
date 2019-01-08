@@ -1,5 +1,6 @@
 # 256 Pipeline tools
 # Import mixamo FBX animations from one folder into current Houdini scene
+# Skip already existing FBX
 
 import hou
 import os

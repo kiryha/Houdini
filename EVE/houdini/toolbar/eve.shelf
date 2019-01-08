@@ -7,12 +7,12 @@
 
   <toolshelf name="eve" label="EVE">
     <memberTool name="snv"/>
+    <memberTool name="create_FB"/>
     <memberTool name="importFBX"/>
     <memberTool name="fbx_to_geo"/>
     <memberTool name="importANM"/>
     <memberTool name="saveCharacterMaterialsData"/>
     <memberTool name="createScene"/>
-    <memberTool name="create_FB"/>
   </toolshelf>
 
   <tool name="fbx_to_geo" label="FBX &gt; GEO" icon="PLASMA_App">
@@ -22,7 +22,7 @@ convertFBX.run()
 ]]></script>
   </tool>
 
-  <tool name="importANM" label="IMPORT ANM" icon="PLASMA_App">
+  <tool name="importANM" label="import ANM" icon="PLASMA_App">
     <script scriptType="python"><![CDATA[import importANM
 reload(importANM)
 importANM.run()
