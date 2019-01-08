@@ -1,8 +1,9 @@
 # 256 Pipeline Tools
 # Save Next Version. Incremental save current houdini scene (<fileCode>_001.hip >> <fileCode>_002.hip).
-# If a file with next version exists, warning window rise with options:
-# - Overwrite  a file with next version
+# If a file with next version exists, script finds the latest existing version and rise warning window with options:
 # - Save file with the latest available version
+# - Overwrite a file with latest existing version
+
 
 import hou
 import os

@@ -101,6 +101,7 @@ def buildFBName(version):
 
     try:
         sceneType, episode, shot, sceneVersion = sceneName.split('_')
+        flipbookPath = dna.buildFliePath()
         flipbookName = '{0}_{1}_{2}.$F.{3}'.format(episode, shot, version, dna.extensionRender)
         flipbookPath = '{0}/{1}/SHOT_{2}/{3}/{4}'.format(dna.rootRender3D, episode[-3:], shot[-3:], version, flipbookName)
 

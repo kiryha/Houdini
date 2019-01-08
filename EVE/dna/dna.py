@@ -132,8 +132,8 @@ def buildFliePath(episode, shot, sceneType):
 
     if sceneType == 'RND':
         filePath = '{0}/scenes/RENDER/{1}/SHOT_{2}/RND_E{1}_S{2}_001.{3}'.format(root3D, episode, shot, extensionHoudini)
-        #print filePath
 
+    # print filePath
     return filePath
 
 def getCharacterData(charcterName):
