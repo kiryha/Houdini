@@ -42,7 +42,7 @@ class CreateScene(QtWidgets.QWidget):
         self.ui = QtUiTools.QUiLoader().load(ui_file, parentWidget=self)
         self.setParent(hou.ui.mainQtWindow(), QtCore.Qt.Window)
         
-        self.ui.btn_createRenderScene.clicked.connect(lambda: self.createScene(sceneType='RND'))
+        self.ui.btn_createRenderScene.clicked.connect(lambda: self.createScene(sceneType=dna.sceneTypes['render']))
 
     def createScene(self, sceneType, catch = None):
         '''
@@ -62,7 +62,7 @@ class CreateScene(QtWidgets.QWidget):
         if catch == None:
 
             # Build path to 001 version
-            pathScene = dna.buildFliePath(episode, shot, sceneType)
+            pathScene = dna.buildFliePath(episode, shot, '001', sceneType)
 
             # Start new Houdini session without saving current
             hou.hipFile.clear(suppress_save_prompt=True)
@@ -84,16 +84,14 @@ class CreateScene(QtWidgets.QWidget):
         # If createRenderScene() runs from SNV class: return user choice, OVR or SNV
         elif catch == 'SNV':
             # Save latest version
-            newPath = dna.buildPathNextVersion(dna.buildPathLatestVersion(dna.buildFliePath(episode, shot, sceneType)))
+            newPath = dna.buildPathNextVersion(dna.buildPathLatestVersion(dna.buildFliePath(episode, shot, '001', sceneType)))
             hou.hipFile.save(newPath)
             hou.ui.displayMessage('New version saved:\n{}'.format(newPath.split('/')[-1]))
-            # print '>> File saved with a latest version!'
         elif catch == 'OVR':
             # Overwrite existing file
-            pathScene = dna.buildPathLatestVersion(dna.buildFliePath(episode, shot, sceneType))
+            pathScene = dna.buildPathLatestVersion(dna.buildFliePath(episode, shot, '001', sceneType))
             hou.hipFile.save(pathScene)
             hou.ui.displayMessage('File overwited:\n{}'.format(pathScene.split('/')[-1]))
-            #print '>> First version of file overwrited!'
         else:
             return
 
@@ -108,7 +106,7 @@ class CreateScene(QtWidgets.QWidget):
         '''
 
         # Create Render scene
-        if sceneType == 'RND':
+        if sceneType == dna.sceneTypes['render']:
             # IMPORT MATERIALS
             # Create Geometry node in scene root
             sceneRoot.createNode('ml_general', 'MATERIALS')

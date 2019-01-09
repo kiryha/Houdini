@@ -95,20 +95,17 @@ def buildFBName(version):
     param version: string flipbook file version (001)
     '''
 
-    # Get current scene name
-    scenePath = hou.hipFile.path()
-    sceneName = scenePath.split('/')[-1].split('.')[0]
-
     try:
+        # Get current scene name
+        scenePath = hou.hipFile.path()
+        sceneName = scenePath.split('/')[-1].split('.')[0]
         sceneType, episode, shot, sceneVersion = sceneName.split('_')
-        flipbookPath = dna.buildFliePath()
-        flipbookName = '{0}_{1}_{2}.$F.{3}'.format(episode, shot, version, dna.extensionRender)
-        flipbookPath = '{0}/{1}/SHOT_{2}/{3}/{4}'.format(dna.rootRender3D, episode[-3:], shot[-3:], version, flipbookName)
+        flipbookPath = dna.buildFliePath(episode[-3:], shot[-3:], version, dna.sceneTypes['flipbook'])
 
         return flipbookPath
 
     except:
-        print 'Unsupported file name!'
+        hou.ui.displayMessage('Unsupported Current Scene Name!')
 
 def createFlipbook():
     # Setup flipbook settings

@@ -11,8 +11,8 @@ import glob
 extensionHoudini = 'hipnc'
 extensionRender = 'exr'
 pipelineName = 'EVE'
-cacheFolder = 'geo'
-
+# cacheFolder = 'geo'
+sceneTypes = {'animation':'ANM', 'render':'RND', 'flipbook':'FB'}
 # Common variables
 frameStart = 1
 resolution = (1280, 540)
@@ -119,19 +119,26 @@ def buildPathLatestVersion(filePath):
 
     return filePathLatestVersion
 
-def buildFliePath(episode, shot, sceneType):
+def buildFliePath(episode, shot, version, sceneType):
     '''
-    Build a File Path
+    Build a File Path for different file types:
+        - Render scene
+        - Flipbook
     :param episode: String episode number <###>
     :param shot: String shot number <###>
-    :param sceneType: String file type (animation, render, fx etc)
+    :param version: String file version <###>
+    :param sceneType: String file type (animation, render, flipbook, fx etc)
     :return:
     '''
 
     filePath = None
 
-    if sceneType == 'RND':
-        filePath = '{0}/scenes/RENDER/{1}/SHOT_{2}/RND_E{1}_S{2}_001.{3}'.format(root3D, episode, shot, extensionHoudini)
+    if sceneType == sceneTypes['render']:
+        filePath = '{0}/scenes/RENDER/{1}/SHOT_{2}/RND_E{1}_S{2}_{3}.{4}'.format(root3D, episode, shot, version, extensionHoudini)
+
+    elif sceneType == sceneTypes['flipbook']:
+        fileName = 'E{0}_S{1}_{2}.$F.{3}'.format(episode, shot, version, extensionRender)
+        filePath = '{0}/{1}/SHOT_{2}/{3}/{4}'.format(rootRender3D, episode[-3:], shot[-3:], version, fileName)
 
     # print filePath
     return filePath
