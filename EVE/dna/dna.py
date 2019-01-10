@@ -15,7 +15,8 @@ extensionCacheAnim = 'bgeo.sc'
 
 pipelineName = 'EVE'
 # cacheFolder = 'geo'
-fileTypes = {'animation':'ANM', 'render':'RND', 'flipbook':'FB', 'cacheAnim':'CAN'}
+fileTypes = {'animation': 'ANM', 'render': 'RND', 'flipbook': 'FB', 'cacheAnim': 'CAN'}
+variations = ['A', 'B', 'C', 'D', 'E', 'F', 'G','H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
 # Common variables
 frameStart = 1
 resolution = (1280, 540)
@@ -23,17 +24,20 @@ resolution = (1280, 540)
 # PATHS
 # Get project root folder, defined in runHoudini.py  <P:/PROJECTS/NSI/>
 rootProject = os.environ['ROOT']
-# Get pipeline root folder <P:/PROJECTS/NSI/PREP/PIPELINE>
-rootPipe = '{}/PREP/PIPELINE'.format(rootProject)
 # Get root for Houdini project ($JOB variable), defined in runHoudini.py <P:/PROJECTS/NSI/PROD/3D>
 root3D = os.environ['JOB']
+# Get pipeline root folder <P:/PROJECTS/NSI/PREP/PIPELINE>
+rootPipe = '{}/PREP/PIPELINE'.format(rootProject)
 # Get path to *.UI files <P:/PROJECTS/NSI/PREP/PIPELINE/EVE/ui/ui>
 folderUI = '{0}/{1}/ui/ui'.format(rootPipe, pipelineName)
+
 # Database files
 databaseASSETS = '{0}/{1}/database/ASSETS.json'.format(rootPipe, pipelineName)
 databaseSHOTS = '{0}/{1}/database/SHOTS.json'.format(rootPipe, pipelineName)
-# Render 3D and FlipBook
-rootRender3D = '{}/render'.format(root3D)
+
+# Houdini scene content
+charactersContainer = 'CHARACTERS'
+environmentContainer = 'ENVIRONMENT'
 
 
 # FILE PATH (STRING) MANIPULATIONS
@@ -204,7 +208,7 @@ def buildFliePath(version, fileType, scenePath=None, characterName=None,  episod
                                                  filePathMap['shotCode'],
                                                  version,
                                                  extensionFlipbook)
-        filePath = '{0}/{1}/SHOT_{2}/{3}/{4}'.format(rootRender3D,
+        filePath = '{0}/render/{1}/SHOT_{2}/{3}/{4}'.format(root3D,
                                                      filePathMap['episodeCode'],
                                                      filePathMap['shotCode'],
                                                      version,

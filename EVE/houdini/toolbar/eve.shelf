@@ -7,12 +7,12 @@
 
   <toolshelf name="eve" label="EVE">
     <memberTool name="snv"/>
-    <memberTool name="create_FB"/>
+    <memberTool name="create Flipbook"/>
+    <memberTool name="createScene"/>
+    <memberTool name="export animation data"/>
+    <memberTool name="importANM"/>
     <memberTool name="importFBX"/>
     <memberTool name="fbx_to_geo"/>
-    <memberTool name="importANM"/>
-    <memberTool name="saveCharacterMaterialsData"/>
-    <memberTool name="createScene"/>
   </toolshelf>
 
   <tool name="fbx_to_geo" label="FBX &gt; GEO" icon="PLASMA_App">
@@ -45,12 +45,6 @@ reload(importFBX)
 importFBX.run()]]></script>
   </tool>
 
-  <tool name="saveCharacterMaterialsData" label="Save MATS" icon="PLASMA_App">
-    <script scriptType="python"><![CDATA[import saveMaterials
-reload(saveMaterials)
-saveMaterials.run()]]></script>
-  </tool>
-
   <tool name="createScene" label="Create Scene" icon="PLASMA_App">
     <script scriptType="python"><![CDATA[import createScene
 reload(createScene)
@@ -61,9 +55,15 @@ createScene.CS.show()
 ]]></script>
   </tool>
 
-  <tool name="create_FB" label="FB" icon="PLASMA_App">
+  <tool name="create Flipbook" label="FB" icon="PLASMA_App">
     <script scriptType="python"><![CDATA[import createFlipbook
 reload(createFlipbook)
 createFlipbook.run()]]></script>
+  </tool>
+
+  <tool name="export animation data" label="export ANM" icon="PLASMA_App">
+    <script scriptType="python"><![CDATA[import exportANM
+reload(exportANM)
+exportANM.run()]]></script>
   </tool>
 </shelfDocument>
