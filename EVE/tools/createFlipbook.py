@@ -37,7 +37,7 @@ class SNV(QtWidgets.QWidget):
         # Save NEXT version of flipbook
         fileLocation = dna.analyzeFliePath(filePath)['fileLocation']
         fileName = dna.analyzeFliePath(filePath)['fileName']
-        latestVersion = getLatestVersion(fileLocation)  # '002'
+        latestVersion = dna.extractLatestVersionFolder(fileLocation)  # '002'
         nextVersion = '{:03d}'.format(int(latestVersion) + 1)
         filePath = dna.buildFliePath(nextVersion, dna.fileTypes['flipbook'], scenePath=hou.hipFile.path())
         os.makedirs(dna.analyzeFliePath(filePath)['fileLocation'])
@@ -46,6 +46,33 @@ class SNV(QtWidgets.QWidget):
     def OVR(self, filePath):
         # Overwrite LATEST EXISTING version of flipbook
         runFB(filePath)
+
+def extractLatestVersionFolder(filePath):
+    '''
+    Get FOLDER filePath, return string: latest available version ("002")
+    Assume that last folder in filePath is a version of flipbook
+    '''
+    # Strip last slash from path
+    if filePath.endswith('/'):
+        filePath = filePath[:-1]
+
+    # Get list of folders
+    version = filePath.split('/')[-1]
+    pathVersions = filePath.replace(version, '')
+    listVersions = os.listdir(pathVersions)
+    listVersionsInt = []
+
+    # Build list of Integer folder names
+    for i in listVersions:
+        if len(i) == 3:
+            listVersionsInt.append(int(i))
+
+    # Find highest folder number
+    maxInt = max(listVersionsInt)
+    # Build a string ('002') from highest number
+    latestVersion = '{:03d}'.format(maxInt)
+
+    return latestVersion
 
 def runFB(flipbookPath):
     '''
