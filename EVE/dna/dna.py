@@ -10,9 +10,12 @@ import glob
 # Pipeline items
 extensionHoudini = 'hipnc'
 extensionRender = 'exr'
+extensionFlipbook = 'jpg'
+extensionCacheAnim = 'bgeo.sc'
+
 pipelineName = 'EVE'
 # cacheFolder = 'geo'
-sceneTypes = {'animation':'ANM', 'render':'RND', 'flipbook':'FB'}
+fileTypes = {'animation':'ANM', 'render':'RND', 'flipbook':'FB', 'cacheAnim':'CAN'}
 # Common variables
 frameStart = 1
 resolution = (1280, 540)
@@ -42,40 +45,64 @@ rootRender3D = '{}/render'.format(root3D)
 
 def analyzeFliePath(filePath):
     '''
-    Disassemble string path into components
+    Disassemble full path (string) into components
+    Example filePath: 'P:/PROJECTS/NSI/PROD/3D/scenes/ANIMATION/ANM_E010_S010_001.hipnc'
+
+    fileLocation = P:/PROJECTS/NSI/PROD/3D/scenes/ANIMATION/
+    fileName = ANM_E010_S010_001.hipnc
+    fileType = ANM
+    episodeCode = 010
+    shotCode = 010
+    fileVersion = 001
+    fileCode = ANM_E010_S010
+    fileExtension = hipncw
     '''
 
     fileName = filePath.split('/')[-1]
-    fileExtension = fileName.split('.')[-1]
-    fileVersion = fileName.split('.')[0].split('_')[-1]
-    fileCode = fileName.replace('_{0}.{1}'.format(fileVersion, fileExtension), '')
     fileLocation = filePath.replace('{}'.format(fileName), '')
+    outputMapName = analyzeFileName(fileName)
 
-    # Return dictionary: fileLocation, fileName, fileCode, fileVersion, fileExtension
-    outputMap = {'fileLocation': fileLocation,
-                 'fileName': fileName,
-                 'fileCode': fileCode,
+    # File elements dictionary
+    outputMapPath = {'fileLocation': fileLocation,
+                     'fileName': fileName,
+                     'fileType': outputMapName['fileType'],
+                     'episodeCode': outputMapName['episodeCode'],
+                     'shotCode': outputMapName['shotCode'],
+                     'fileVersion': outputMapName['fileVersion'],
+                     'fileCode': outputMapName['fileCode'],
+                     'fileExtension': outputMapName['fileExtension']}
+
+    return outputMapPath
+
+def analyzeFileName(fileName):
+    '''
+    Disassemble <fileName> string
+    Example <fileName> = ANM_E010_S010_001.hipnc
+    '''
+
+    fileExtension = fileName.split('.')[-1]
+    fileCodeVersion = fileName.split('.')[0]
+
+    parts = fileCodeVersion.split('_')
+
+
+    fileVersion = parts[-1]
+    shotCode = parts[-2][-3:]
+    episodeCode = parts[-3][-3:]
+    fileType = parts[0]
+    fileCode = fileCodeVersion.replace('_{0}'.format(fileVersion), '')
+
+    # Return dictionary: episodeCode, shotCode
+    outputMap = {'fileType': fileType,
+                 'episodeCode': episodeCode,
+                 'shotCode': shotCode,
                  'fileVersion': fileVersion,
+                 'fileCode': fileCode,
                  'fileExtension': fileExtension}
 
     return outputMap
 
-def analyzeFileCode(fileCode):
-    '''
-    Disassemble <fileCode> part of the <fileName> to get shot data from it
-    fileCodeExample = ANM_E010_S010
-    '''
-
-    shotCode = fileCode.split('_')[-1]
-    episodeCode = fileCode.split('_')[-2]
-
-    # Return dictionary: episodeCode, shotCode
-    outputMap = {'episodeCode': episodeCode,
-                 'shotCode': shotCode}
-
-    return outputMap
-
-def extractLatestVersion(listExisted):
+def extractLatestVersionFile(listExisted):
     '''
     Get list of files paths (listExisted), return latest existing version + 1 (<###> string)
     '''
@@ -83,7 +110,35 @@ def extractLatestVersion(listExisted):
     listVersions = []
     for filePath in listExisted:
         listVersions.append(int(analyzeFliePath(filePath)['fileVersion']))
-    latestVersion = '{:03}'.format(max(listVersions)) #  + 1
+    latestVersion = '{:03}'.format(max(listVersions))
+    return latestVersion
+
+def extractLatestVersionFolder(filePath):
+    '''
+    Get FOLDER filePath, return string: latest (by number) available version ("002")
+    Assume that last folder in filePath is a version (P:/<...>/.../<...>/<version>)
+    '''
+
+    # Strip last slash from path
+    if filePath.endswith('/'):
+        filePath = filePath[:-1]
+
+    # Get list of folders
+    version = filePath.split('/')[-1]
+    pathVersions = filePath.replace(version, '')
+    listVersions = os.listdir(pathVersions)
+    listVersionsInt = []
+
+    # Build list of Integer folder names
+    for i in listVersions:
+        if len(i) == 3:
+            listVersionsInt.append(int(i))
+
+    # Find highest folder number
+    maxInt = max(listVersionsInt)
+    # Build a string ('002') from highest number
+    latestVersion = '{:03d}'.format(maxInt)
+
     return latestVersion
 
 def buildPathNextVersion(filePath):
@@ -114,31 +169,55 @@ def buildPathLatestVersion(filePath):
     fileExtension = analyzeFliePath(filePath)['fileExtension']
 
     listExisted = glob.glob('{0}{1}_*.{2}'.format(fileLocation, fileCode, fileExtension))
-    fileVersionLatest = extractLatestVersion(listExisted)
+    fileVersionLatest = extractLatestVersionFile(listExisted)
     filePathLatestVersion = '{0}{1}_{2}.{3}'.format(fileLocation, fileCode, fileVersionLatest, fileExtension)
 
     return filePathLatestVersion
 
-def buildFliePath(episode, shot, version, sceneType):
+def buildFliePath(version, fileType, scenePath=None, characterName=None,  episodeCode=None, shotCode=None):
     '''
-    Build a File Path for different file types:
-        - Render scene
-        - Flipbook
-    :param episode: String episode number <###>
-    :param shot: String shot number <###>
-    :param version: String file version <###>
-    :param sceneType: String file type (animation, render, flipbook, fx etc)
-    :return:
+    Generate and return a full path to a file string <filePath>
+
+    :param version: version of the file
+    :param fileType: type of file to generate, eg. animation Houdini scene, geometry cache, etc
+    :param scenePath: Houdini scene name (if <filePath> is generated based on the name of current scene)
+    :param characterName: name of character asset
+    :param episodeCode: Episode number (010)
+    :param shotCode: Shot number (010)
+    :return filePath: generated full path (string)
     '''
 
-    filePath = None
+    if scenePath != None:
+        filePathMap = analyzeFliePath(scenePath)
 
-    if sceneType == sceneTypes['render']:
-        filePath = '{0}/scenes/RENDER/{1}/SHOT_{2}/RND_E{1}_S{2}_{3}.{4}'.format(root3D, episode, shot, version, extensionHoudini)
+    # Render scene path
+    if fileType == fileTypes['render']:
+        filePath = '{0}/scenes/RENDER/{1}/SHOT_{2}/RND_E{1}_S{2}_{3}.{4}'.format(root3D,
+                                                                                 episodeCode,
+                                                                                 shotCode,
+                                                                                 version,
+                                                                                 extensionHoudini)
 
-    elif sceneType == sceneTypes['flipbook']:
-        fileName = 'E{0}_S{1}_{2}.$F.{3}'.format(episode, shot, version, extensionRender)
-        filePath = '{0}/{1}/SHOT_{2}/{3}/{4}'.format(rootRender3D, episode[-3:], shot[-3:], version, fileName)
+    # Flipbook sequence path
+    elif fileType == fileTypes['flipbook']:
+        fileName = 'E{0}_S{1}_{2}.$F.{3}'.format(filePathMap['episodeCode'],
+                                                 filePathMap['shotCode'],
+                                                 version,
+                                                 extensionFlipbook)
+        filePath = '{0}/{1}/SHOT_{2}/{3}/{4}'.format(rootRender3D,
+                                                     filePathMap['episodeCode'],
+                                                     filePathMap['shotCode'],
+                                                     version,
+                                                     fileName)
+
+    # Character animation cache path
+    elif fileType == fileTypes['cacheAnim']:
+        filePath = '$JOB/geo/SHOTS/{0}/SHOT_{1}/{2}/GEO/{3}/E{0}_S{1}_{2}_{3}.$F.{4}'.format(
+                    filePathMap['episodeCode'],
+                    filePathMap['shotCode'],
+                    characterName,
+                    version,
+                    extensionCacheAnim)
 
     # print filePath
     return filePath

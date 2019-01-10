@@ -106,7 +106,7 @@ class CreateScene(QtWidgets.QWidget):
         '''
 
         # Create Render scene
-        if sceneType == dna.sceneTypes['render']:
+        if sceneType == dna.fileTypes['render']:
             # IMPORT MATERIALS
             # Create Geometry node in scene root
             sceneRoot.createNode('ml_general', 'MATERIALS')

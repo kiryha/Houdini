@@ -39,40 +39,13 @@ class SNV(QtWidgets.QWidget):
         fileName = dna.analyzeFliePath(filePath)['fileName']
         latestVersion = getLatestVersion(fileLocation)  # '002'
         nextVersion = '{:03d}'.format(int(latestVersion) + 1)
-        filePath = buildFBName(nextVersion)
+        filePath = dna.buildFliePath(nextVersion, dna.fileTypes['flipbook'], scenePath=hou.hipFile.path())
         os.makedirs(dna.analyzeFliePath(filePath)['fileLocation'])
         runFB(filePath)
 
     def OVR(self, filePath):
         # Overwrite LATEST EXISTING version of flipbook
         runFB(filePath)
-
-def getLatestVersion(filePath):
-    '''
-    Get FOLDER filePath, return string: latest available version ("002")
-    Assume that last folder in filePath is a version of flipbook
-    '''
-    # Strip last slash from path
-    if filePath.endswith('/'):
-        filePath = filePath[:-1]
-
-    # Get list of folders
-    version = filePath.split('/')[-1]
-    pathVersions = filePath.replace(version, '')
-    listVersions = os.listdir(pathVersions)
-    listVersionsInt = []
-
-    # Build list of Integer folder names
-    for i in listVersions:
-        if len(i) == 3:
-            listVersionsInt.append(int(i))
-
-    # Find highest folder number
-    maxInt = max(listVersionsInt)
-    # Build a string ('002') from highest number
-    latestVersion = '{:03d}'.format(maxInt)
-
-    return latestVersion
 
 def runFB(flipbookPath):
     '''
@@ -85,7 +58,7 @@ def runFB(flipbookPath):
     # Report
     print 'Saved: {}'.format(flipbookPath)
 
-def buildFBName(version):
+def buildFBName_(version):
     '''
     Build file name for the flipbook based on scene name
     Expected naming convention for animation and render scenes:
@@ -98,9 +71,8 @@ def buildFBName(version):
     try:
         # Get current scene name
         scenePath = hou.hipFile.path()
-        sceneName = scenePath.split('/')[-1].split('.')[0]
-        sceneType, episode, shot, sceneVersion = sceneName.split('_')
-        flipbookPath = dna.buildFliePath(episode[-3:], shot[-3:], version, dna.sceneTypes['flipbook'])
+        filePathMap = dna.analyzeFliePath(scenePath)
+        flipbookPath = dna.buildFliePath(filePathMap['episodeCode'], filePathMap['shotCode'], version, dna.fileTypes['flipbook'])
 
         return flipbookPath
 
@@ -113,7 +85,7 @@ def createFlipbook():
     settings.frameRange((dna.frameStart, hou.playbar.frameRange()[1]))
 
     # Build 001 version of flipbook file path
-    flipbookPath = buildFBName('001')
+    flipbookPath = dna.buildFliePath('001', dna.fileTypes['flipbook'], scenePath=hou.hipFile.path())
     fileLocation = dna.analyzeFliePath(flipbookPath)['fileLocation']
 
     if not os.path.exists(fileLocation):
@@ -122,9 +94,9 @@ def createFlipbook():
         runFB(flipbookPath)
     else:
         # If 001 file exists get latest version
-        latestVersion = getLatestVersion(fileLocation)
+        latestVersion = dna.extractLatestVersionFolder(fileLocation)
         # Build latest existing path
-        flipbookPath = buildFBName(latestVersion)
+        flipbookPath = dna.buildFliePath(latestVersion, dna.fileTypes['flipbook'], scenePath=hou.hipFile.path())
         # Ask user to save next version or overwrite latest
         win = SNV(flipbookPath)
         win.show()
