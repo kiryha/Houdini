@@ -9,7 +9,7 @@ from EVE.dna import dna
 reload(dna)
 
 characterName = 'ROMA'
-CHARACTERS = hou.node('/obj/{0}'.format(dna.charactersContainer))
+CHARACTERS = hou.node('/obj/{0}'.format(dna.nameChars))
 
 def getRenderNode(container):
     '''

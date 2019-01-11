@@ -47,33 +47,6 @@ class SNV(QtWidgets.QWidget):
         # Overwrite LATEST EXISTING version of flipbook
         runFB(filePath)
 
-def extractLatestVersionFolder(filePath):
-    '''
-    Get FOLDER filePath, return string: latest available version ("002")
-    Assume that last folder in filePath is a version of flipbook
-    '''
-    # Strip last slash from path
-    if filePath.endswith('/'):
-        filePath = filePath[:-1]
-
-    # Get list of folders
-    version = filePath.split('/')[-1]
-    pathVersions = filePath.replace(version, '')
-    listVersions = os.listdir(pathVersions)
-    listVersionsInt = []
-
-    # Build list of Integer folder names
-    for i in listVersions:
-        if len(i) == 3:
-            listVersionsInt.append(int(i))
-
-    # Find highest folder number
-    maxInt = max(listVersionsInt)
-    # Build a string ('002') from highest number
-    latestVersion = '{:03d}'.format(maxInt)
-
-    return latestVersion
-
 def runFB(flipbookPath):
     '''
     Run flipbook rendering
@@ -84,27 +57,6 @@ def runFB(flipbookPath):
     scene.flipbook(scene.curViewport(), settings)
     # Report
     print 'Saved: {}'.format(flipbookPath)
-
-def buildFBName_(version):
-    '''
-    Build file name for the flipbook based on scene name
-    Expected naming convention for animation and render scenes:
-    ANM_E010_S010_001.hip
-    RND_E010_S010_001.hip
-
-    param version: string flipbook file version (001)
-    '''
-
-    try:
-        # Get current scene name
-        scenePath = hou.hipFile.path()
-        filePathMap = dna.analyzeFliePath(scenePath)
-        flipbookPath = dna.buildFliePath(filePathMap['episodeCode'], filePathMap['shotCode'], version, dna.fileTypes['flipbook'])
-
-        return flipbookPath
-
-    except:
-        hou.ui.displayMessage('Unsupported Current Scene Name!')
 
 def createFlipbook():
     # Setup flipbook settings

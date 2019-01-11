@@ -10,6 +10,16 @@ reload(dna)
 # Get scene root node
 sceneRoot = hou.node('/obj/')
 
+# SHOT DATA (Shotgun)
+# List of character names
+shotCharacters = ['ROMA']
+# Environment and env animation asset names
+shotEnvironment = 'city'
+shotEnvironmentAnim = 'city_anm'
+
+# ASSET DATA (Shotgun)
+dataEnv = {'name':'CITY', 'hda_name':'city'}
+
 class SNV(QtWidgets.QWidget):
     def __init__(self, filePath, sceneType):
         # Setup UI
@@ -42,9 +52,10 @@ class CreateScene(QtWidgets.QWidget):
         self.ui = QtUiTools.QUiLoader().load(ui_file, parentWidget=self)
         self.setParent(hou.ui.mainQtWindow(), QtCore.Qt.Window)
         
-        self.ui.btn_createRenderScene.clicked.connect(lambda: self.createScene(sceneType=dna.sceneTypes['render']))
+        self.ui.btn_createRenderScene.clicked.connect(lambda: self.createScene(fileType=dna.fileTypes['render']))
+        self.ui.btn_createRenderScene.clicked.connect(self.close)
 
-    def createScene(self, sceneType, catch = None):
+    def createScene(self, fileType, catch = None):
         '''
         Save new scene, build scene content.
         :param sceneType: type of created scene, Render, Animation etc
@@ -62,7 +73,7 @@ class CreateScene(QtWidgets.QWidget):
         if catch == None:
 
             # Build path to 001 version
-            pathScene = dna.buildFliePath(episode, shot, '001', sceneType)
+            pathScene = dna.buildFliePath('001', fileType, episodeCode=episode, shotCode=shot)
 
             # Start new Houdini session without saving current
             hou.hipFile.clear(suppress_save_prompt=True)
@@ -77,28 +88,90 @@ class CreateScene(QtWidgets.QWidget):
                 # If 001 version exists, get latest existing version
                 pathScene = dna.buildPathLatestVersion(pathScene)
                 # Run Save Next Version dialog if EXISTS
-                winSNV = SNV(pathScene, sceneType)
+                winSNV = SNV(pathScene, fileType)
                 winSNV.show()
                 return
 
         # If createRenderScene() runs from SNV class: return user choice, OVR or SNV
         elif catch == 'SNV':
             # Save latest version
-            newPath = dna.buildPathNextVersion(dna.buildPathLatestVersion(dna.buildFliePath(episode, shot, '001', sceneType)))
+            newPath = dna.buildPathNextVersion(dna.buildPathLatestVersion(dna.buildFliePath('001', fileType, episodeCode=episode, shotCode=shot)))
             hou.hipFile.save(newPath)
             hou.ui.displayMessage('New version saved:\n{}'.format(newPath.split('/')[-1]))
         elif catch == 'OVR':
             # Overwrite existing file
-            pathScene = dna.buildPathLatestVersion(dna.buildFliePath(episode, shot, '001', sceneType))
+            pathScene = dna.buildPathLatestVersion(dna.buildFliePath('001', fileType, episodeCode=episode, shotCode=shot))
             hou.hipFile.save(pathScene)
             hou.ui.displayMessage('File overwited:\n{}'.format(pathScene.split('/')[-1]))
         else:
             return
 
         # Build scene content
-        self.buildSceneContent(sceneType)
+        self.buildSceneContent(fileType)
 
-    def buildSceneContent(self, sceneType):
+    def createContainer(self, parent, name):
+        '''
+        Create scene container for CHARS, ENV etc
+        :param name:
+        :return:
+        '''
+
+        CONTAINER = parent.createNode('geo',name)
+        for node in CONTAINER.children():
+            node.destroy()
+
+        return CONTAINER
+
+    def convertPathCache(self, pathCache):
+        '''
+        Convert geometry cache string path (used in FileCacheSOP) to path suitable for dna.extractLatestVersionFolder()
+        Expand $JOB variable to a full path, remove file name
+        :param pathCache:
+        :return :
+        '''
+
+        fileName = pathCache.split('/')[-1]
+        pathCacheFolder = pathCache.replace('$JOB', dna.root3D).replace(fileName, '')
+
+        return pathCacheFolder
+
+    def buildCharacterLoader(self, CHARACTERS, characterName):
+        '''
+        Create network to load character data (geo cache, hairs, etc)
+
+        :param CHARACTERS: Characters container - geometry node object
+        :param characterName: string character name
+        :return:
+        '''
+
+        # Build a path to the 001 version of cache
+        # $JOB/geo/SHOTS/010/SHOT_010/ROMA/GEO/001/E010_S010_ROMA_001.$F.bgeo.sc
+        pathCache = dna.buildFliePath('001',
+                                      dna.fileTypes['cacheAnim'],
+                                      scenePath=hou.hipFile.path(),
+                                      characterName=characterName)
+
+        # Check latest existing version, build new path if exists
+        pathCacheFolder = self.convertPathCache(pathCache)
+        latestCacheVersion = dna.extractLatestVersionFolder(pathCacheFolder)
+        if latestCacheVersion != '001':
+            pathCache = dna.buildFliePath(latestCacheVersion,
+                                          dna.fileTypes['cacheAnim'],
+                                          scenePath=hou.hipFile.path(),
+                                          characterName=characterName)
+
+
+        cache = CHARACTERS.createNode('filecache', 'CACHE_{}'.format(characterName))
+        cache.parm('loadfromdisk').set(1)
+        cache.parm('file').set(pathCache)
+        null = CHARACTERS.createNode('null', 'OUT_{}'.format(characterName))
+        null.setInput(0, cache)
+        null.setDisplayFlag(1)
+        null.setRenderFlag(1)
+
+        CHARACTERS.layoutChildren()
+
+    def buildSceneContent(self, fileType):
         '''
         Create scene content: import characters, environments, materials etc.
         :param sceneType:
@@ -106,16 +179,26 @@ class CreateScene(QtWidgets.QWidget):
         '''
 
         # Create Render scene
-        if sceneType == dna.fileTypes['render']:
+        if fileType == dna.fileTypes['render']:
             # IMPORT MATERIALS
             # Create Geometry node in scene root
-            sceneRoot.createNode('ml_general', 'MATERIALS')
-            # IMPORT ENVIRONMENT
-            env = sceneRoot.createNode('geo', 'ENVIRONMENT', run_init_scripts=False)
-            env.moveToGoodPosition()
-            # IMPORT CHARACTERS
-            chars = sceneRoot.createNode('geo', 'CHARACTERS', run_init_scripts=False)
-            chars.moveToGoodPosition()
+            sceneRoot.createNode('ml_general', dna.nameMats)
+
+            # BUILD ENVIRONMENT
+            ENVIRONMENT = self.createContainer(sceneRoot, dna.nameEnv)
+            ENVIRONMENT.parm('viewportlod').set(2)
+            ENVIRONMENT.createNode(dataEnv['hda_name'], dataEnv['name'])
+
+            # BUILD CHARACTERS
+            # Create characters container
+            CHARACTERS = self.createContainer(sceneRoot, dna.nameChars)
+
+            # Create character loaders
+            for characterName in shotCharacters:
+                self.buildCharacterLoader(CHARACTERS, characterName)
+
+
+        sceneRoot.layoutChildren()
 
 # Run the Create Scene Tool
 CS = CreateScene()

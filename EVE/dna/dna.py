@@ -1,6 +1,16 @@
-# 256 Pipeline Tools
-# DNA of EVE: common core to be used in misc modules
+'''
+256 Pipeline Tools
+DNA of EVE: common core to be used in misc modules
+
 # TBD! Need to fix JSON file changes (CHARACTERS.json >> ASSETS.json)
+
+General notes.
+Versions and publishing. Before we implement Shotgun and develop a publishing mechanizm with it
+we will consider LATEST version of file published (which needs to be used).
+
+'''
+
+
 
 import os
 import json
@@ -36,8 +46,10 @@ databaseASSETS = '{0}/{1}/database/ASSETS.json'.format(rootPipe, pipelineName)
 databaseSHOTS = '{0}/{1}/database/SHOTS.json'.format(rootPipe, pipelineName)
 
 # Houdini scene content
-charactersContainer = 'CHARACTERS'
-environmentContainer = 'ENVIRONMENT'
+nameChars = 'CHARACTERS'
+nameEnv = 'ENVIRONMENT'
+nameEnvAnim = 'ENVIRONMENT_ANM'
+nameMats = 'MATERIALS'
 
 
 # FILE PATH (STRING) MANIPULATIONS
@@ -191,6 +203,7 @@ def buildFliePath(version, fileType, scenePath=None, characterName=None,  episod
     :return filePath: generated full path (string)
     '''
 
+
     if scenePath != None:
         filePathMap = analyzeFliePath(scenePath)
 
@@ -223,7 +236,7 @@ def buildFliePath(version, fileType, scenePath=None, characterName=None,  episod
                     version,
                     extensionCacheAnim)
 
-    # print filePath
+    # print 'dna.buildFilePath() [filePath] = {}'.format(filePath)
     return filePath
 
 def getCharacterData(charcterName):
