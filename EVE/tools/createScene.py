@@ -10,15 +10,29 @@ reload(dna)
 # Get scene root node
 sceneRoot = hou.node('/obj/')
 
-# SHOT DATA (Shotgun)
+# Asset and shot data. Meant to be stored in database (Shotgun)
+# SHOT DATA
 # List of character names
 shotCharacters = ['ROMA']
 # Environment and env animation asset names
 shotEnvironment = 'city'
-shotEnvironmentAnim = 'city_anm'
+dataShot = {'name': 'SHOT_010',
+            'scene': {},
+            'characters': {},
+            'environment': {},
+            'props': {}}
 
-# ASSET DATA (Shotgun)
-dataEnv = {'name':'CITY', 'hda_name':'city'}
+# ASSET DATA
+# "CITY" environment asset data
+# If there are animated objects in Environment asset we supply them as separate HDA (due to )
+# name = display name of asset in Houdini UI, had_name = name of HDA, proxy_hda = Low res ENV asset version
+dataAsset = {'name': 'CITY',
+           'hda_name': 'city',
+           'animation_hda': {'name': 'CITY_ANM', 'hda_name': 'city_anm'},
+           'proxy_hda': {'name': 'CITY_PRX', 'hda_name': 'city_prx'},
+           'crowds_hda': {'name': 'CROWDS', 'hda_name': 'city_crowds'},
+           'light_hda': {'name': 'CITY_LIT', 'hda_name': 'city_lights'}}
+
 
 class SNV(QtWidgets.QWidget):
     def __init__(self, filePath, sceneType):
@@ -117,8 +131,11 @@ class CreateScene(QtWidgets.QWidget):
         '''
 
         CONTAINER = parent.createNode('geo',name)
+        # Delete all nodes in container
         for node in CONTAINER.children():
             node.destroy()
+
+        CONTAINER.parm('viewportlod').set(2) # Display as bounding box
 
         return CONTAINER
 
@@ -180,25 +197,50 @@ class CreateScene(QtWidgets.QWidget):
 
         # Create Render scene
         if fileType == dna.fileTypes['render']:
-            # IMPORT MATERIALS
-            # Create Geometry node in scene root
-            sceneRoot.createNode('ml_general', dna.nameMats)
 
             # BUILD ENVIRONMENT
+            ENV_PRX = self.createContainer(sceneRoot, dna.nameEnvProxy)
+            ENV_PRX.createNode(dataAsset['proxy_hda']['hda_name'], dataAsset['proxy_hda']['name'])
+            ENV_PRX.setPosition([0, 0])
+
             ENVIRONMENT = self.createContainer(sceneRoot, dna.nameEnv)
-            ENVIRONMENT.parm('viewportlod').set(2)
-            ENVIRONMENT.createNode(dataEnv['hda_name'], dataEnv['name'])
+            ENVIRONMENT.createNode(dataAsset['hda_name'], dataAsset['name'])
+            ENVIRONMENT.setPosition([0, -dna.nodeDistance_y])
+
+            ENV_ANM = self.createContainer(sceneRoot, dna.nameEnvAnim)
+            ENV_ANM.createNode(dataAsset['animation_hda']['hda_name'], dataAsset['animation_hda']['name'])
+            ENV_ANM.setPosition([0, -2 * dna.nodeDistance_y])
+
+            CROWDS = self.createContainer(sceneRoot, dna.nameCrowds)
+            #CROWDS.createNode(dataAsset['crowds_hda']['hda_name'], dataAsset['crowds_hda']['name'])
+            CROWDS.setPosition([0, -3 * dna.nodeDistance_y])
+
 
             # BUILD CHARACTERS
             # Create characters container
             CHARACTERS = self.createContainer(sceneRoot, dna.nameChars)
+            CHARACTERS.setPosition([0, -4 * dna.nodeDistance_y])
 
             # Create character loaders
             for characterName in shotCharacters:
                 self.buildCharacterLoader(CHARACTERS, characterName)
 
+            # IMPORT MATERIALS
+            # Create Geometry node in scene root
+            ML = sceneRoot.createNode('ml_general', dna.nameMats)
+            ML.setPosition([dna.nodeDistance_x, 0])
 
-        sceneRoot.layoutChildren()
+            # IMPORT ENV LIGHTS
+            LIT = sceneRoot.createNode(dataAsset['light_hda']['hda_name'], dataAsset['light_hda']['name'])
+            LIT.setPosition([dna.nodeDistance_x, -dna.nodeDistance_y])
+
+            # OUTPUT
+
+
+        # Save scene
+        hou.hipFile.save()
+
+
 
 # Run the Create Scene Tool
 CS = CreateScene()

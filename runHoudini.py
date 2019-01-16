@@ -37,11 +37,13 @@ def getHDA():
 
     # Get list of sub folders
     listPaths_HDA = os.walk('{0}/hda'.format(root3D)) # HDA
-    listPaths_MTL = os.walk('{0}/lib/MATERIALS'.format(root3D))  # LIBRARY
+    listPaths_MTL = os.walk('{0}/lib/MATERIALS'.format(root3D))  # Material library
+    listPaths_LIT = os.walk('{0}/lib/LIGHTS'.format(root3D))  # Light library
 
     # Combine paths to a string
     combinePaths(listPaths_HDA)
     combinePaths(listPaths_MTL)
+    combinePaths(listPaths_LIT)
 
     # Add Houdini standard OTLs
     global pathHDA

@@ -11,6 +11,10 @@ reload(dna)
 characterName = 'ROMA'
 CHARACTERS = hou.node('/obj/{0}'.format(dna.nameChars))
 
+# Get scene root node
+sceneRoot = hou.node('/obj/')
+
+
 def getRenderNode(container):
     '''
     Get and return node with render flag inside <container> node
@@ -49,5 +53,17 @@ def createCacheNetwork():
     null.setRenderFlag(1)
     CHARACTERS.layoutChildren()
 
-def run():
+def ecxportAnimation():
+
     createCacheNetwork()
+
+
+    # Export camera
+    #sel = hou.selectedNodes() # select camera
+
+    #sceneRoot = hou.node('/obj')
+    #sceneRoot.saveChildrenToFile(sel, [], 'C:/temp/nodes.cpio')
+    #sceneRoot.loadChildrenFromFile('C:/temp/nodes.cpio')
+
+def run():
+    ecxportAnimation()

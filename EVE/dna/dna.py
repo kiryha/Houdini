@@ -26,7 +26,7 @@ extensionCacheAnim = 'bgeo.sc'
 pipelineName = 'EVE'
 # cacheFolder = 'geo'
 fileTypes = {'animation': 'ANM', 'render': 'RND', 'flipbook': 'FB', 'cacheAnim': 'CAN'}
-variations = ['A', 'B', 'C', 'D', 'E', 'F', 'G','H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+variations = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
 # Common variables
 frameStart = 1
 resolution = (1280, 540)
@@ -46,10 +46,16 @@ databaseASSETS = '{0}/{1}/database/ASSETS.json'.format(rootPipe, pipelineName)
 databaseSHOTS = '{0}/{1}/database/SHOTS.json'.format(rootPipe, pipelineName)
 
 # Houdini scene content
+# Distance between nodes in scene view
+nodeDistance_x = 4.0
+nodeDistance_y = 0.8
+# Geometry container names
 nameChars = 'CHARACTERS'
 nameEnv = 'ENVIRONMENT'
 nameEnvAnim = 'ENVIRONMENT_ANM'
+nameEnvProxy = 'ENVIRONMENT_PRX'
 nameMats = 'MATERIALS'
+nameCrowds = 'CROWDS'
 
 
 # FILE PATH (STRING) MANIPULATIONS
