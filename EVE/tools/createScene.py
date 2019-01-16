@@ -10,29 +10,41 @@ reload(dna)
 # Get scene root node
 sceneRoot = hou.node('/obj/')
 
-# Asset and shot data. Meant to be stored in database (Shotgun)
-# SHOT DATA
-# List of character names
-shotCharacters = ['ROMA']
-# Environment and env animation asset names
-shotEnvironment = 'city'
-dataShot = {'name': 'SHOT_010',
-            'scene': {},
-            'characters': {},
-            'environment': {},
-            'props': {}}
 
-# ASSET DATA
-# "CITY" environment asset data
-# If there are animated objects in Environment asset we supply them as separate HDA (due to )
+'''
+# HDA manips
+import hou
+
+city = hou.node('/obj/ENVIRONMENT/CITY')
+#city.allowEditingOfContents()
+#print city.type().definition().libraryFilePath()
+#hou.hda.installFile('P:/PROJECTS/NSI/PROD/3D/hda/ENVIRONMENTS/CITY/CITY_009.hdanc')
+#city.changeNodeType('city')
+'''
+
+# Asset and shot data. Meant to be stored in database (Shotgun). Will be moved to genes.py
+# Shotgun schema: project > sequence > shot
+# We use term <episode> instead of <sequence>. episode = sequence
+
+
+
+
+
 # name = display name of asset in Houdini UI, had_name = name of HDA, proxy_hda = Low res ENV asset version
-dataAsset = {'name': 'CITY',
+data_city = {'name': 'CITY',
            'hda_name': 'city',
            'animation_hda': {'name': 'CITY_ANM', 'hda_name': 'city_anm'},
            'proxy_hda': {'name': 'CITY_PRX', 'hda_name': 'city_prx'},
            'crowds_hda': {'name': 'CROWDS', 'hda_name': 'city_crowds'},
            'light_hda': {'name': 'CITY_LIT', 'hda_name': 'city_lights'}}
 
+data_roma = {'name': 'ROMA'}
+
+data_shot = {'name': 'SHOT_010',
+            'scene': {'name': '010'},
+            'characters': [data_roma],
+            'environment': data_city,
+            'props': []}
 
 class SNV(QtWidgets.QWidget):
     def __init__(self, filePath, sceneType):
@@ -79,15 +91,15 @@ class CreateScene(QtWidgets.QWidget):
         '''
 
         # Get episode and shot from UI
-        episode = self.ui.lin_episode.text()
-        shot = self.ui.lin_shot.text()
+        episodeNumber = self.ui.lin_episode.text()
+        shotNumber = self.ui.lin_shot.text()
 
 
         # If createRenderScene() runs first time
         if catch == None:
 
             # Build path to 001 version
-            pathScene = dna.buildFliePath('001', fileType, episodeCode=episode, shotCode=shot)
+            pathScene = dna.buildFliePath('001', fileType, episodeNumber=episodeNumber, shotNumber=shotNumber)
 
             # Start new Houdini session without saving current
             hou.hipFile.clear(suppress_save_prompt=True)
@@ -109,26 +121,28 @@ class CreateScene(QtWidgets.QWidget):
         # If createRenderScene() runs from SNV class: return user choice, OVR or SNV
         elif catch == 'SNV':
             # Save latest version
-            newPath = dna.buildPathNextVersion(dna.buildPathLatestVersion(dna.buildFliePath('001', fileType, episodeCode=episode, shotCode=shot)))
+            newPath = dna.buildPathNextVersion(dna.buildPathLatestVersion(dna.buildFliePath('001', fileType, episodeNumber=episodeNumber, shotNumber=shotNumber)))
             hou.hipFile.save(newPath)
             hou.ui.displayMessage('New version saved:\n{}'.format(newPath.split('/')[-1]))
         elif catch == 'OVR':
             # Overwrite existing file
-            pathScene = dna.buildPathLatestVersion(dna.buildFliePath('001', fileType, episodeCode=episode, shotCode=shot))
+            pathScene = dna.buildPathLatestVersion(dna.buildFliePath('001', fileType, episodeNumber=episodeNumber, shotNumber=shotNumber))
             hou.hipFile.save(pathScene)
             hou.ui.displayMessage('File overwited:\n{}'.format(pathScene.split('/')[-1]))
         else:
             return
 
         # Build scene content
-        self.buildSceneContent(fileType)
+        self.buildSceneContent(fileType, episodeNumber=episodeNumber, shotNumber=shotNumber)
 
-    def createContainer(self, parent, name, bbox=0, mb=None):
+    def createContainer(self, parent, name, bbox=0, mb=None, disp=1):
         '''
         Create scene container for CHARS, ENV etc
+        :param parent: container node parent object (where to cretae it)
         :param name: container name
         :param bbox: display container content as bounding box (bbox = 2, full = 0)
         :param mb: turn on motion blur for container content geometry
+        :param disp: Display container node flag (ON = 1, OFF = 0)
         :return:
         '''
 
@@ -139,6 +153,9 @@ class CreateScene(QtWidgets.QWidget):
 
         # Display as bounding box
         CONTAINER.parm('viewportlod').set(bbox)
+
+        # Set display flag
+        CONTAINER.setDisplayFlag(disp)
 
         # Turn ON motion blur
         if mb is not None:
@@ -195,32 +212,37 @@ class CreateScene(QtWidgets.QWidget):
 
         CHARACTERS.layoutChildren()
 
-    def buildSceneContent(self, fileType):
+    def buildSceneContent(self, fileType, episodeNumber, shotNumber):
         '''
         Create scene content: import characters, environments, materials etc.
-        :param sceneType:
+        :param fileType:
+        :param episodeNumber:
+        :param shotNumber:
         :return:
         '''
 
         # Create Render scene
         if fileType == dna.fileTypes['render']:
 
+            # Get data for the current shot (episodeNumber > shotNumber)
+
+
             # BUILD ENVIRONMENT
             # Proxy
             ENV_PRX = self.createContainer(sceneRoot, dna.nameEnvProxy)
-            ENV_PRX.createNode(dataAsset['proxy_hda']['hda_name'], dataAsset['proxy_hda']['name'])
+            ENV_PRX.createNode(data_city['proxy_hda']['hda_name'], data_city['proxy_hda']['name'])
             ENV_PRX.setPosition([0, 0])
             # Base
-            ENVIRONMENT = self.createContainer(sceneRoot, dna.nameEnv, bbox=2)
-            ENVIRONMENT.createNode(dataAsset['hda_name'], dataAsset['name'])
+            ENVIRONMENT = self.createContainer(sceneRoot, dna.nameEnv, bbox=2, disp=0)
+            ENVIRONMENT.createNode(data_city['hda_name'], data_city['name'])
             ENVIRONMENT.setPosition([0, -dna.nodeDistance_y])
             # Animation
             ENV_ANM = self.createContainer(sceneRoot, dna.nameEnvAnim, bbox=2, mb=1)
-            ENV_ANM.createNode(dataAsset['animation_hda']['hda_name'], dataAsset['animation_hda']['name'])
+            ENV_ANM.createNode(data_city['animation_hda']['hda_name'], data_city['animation_hda']['name'])
             ENV_ANM.setPosition([0, -2 * dna.nodeDistance_y])
 
             CROWDS = self.createContainer(sceneRoot, dna.nameCrowds, bbox=2, mb=1)
-            #CROWDS.createNode(dataAsset['crowds_hda']['hda_name'], dataAsset['crowds_hda']['name'])
+            #CROWDS.createNode(data_city['crowds_hda']['hda_name'], data_city['crowds_hda']['name'])
             CROWDS.setPosition([0, -3 * dna.nodeDistance_y])
 
 
@@ -230,8 +252,8 @@ class CreateScene(QtWidgets.QWidget):
             CHARACTERS.setPosition([0, -4 * dna.nodeDistance_y])
 
             # Create character loaders
-            for characterName in shotCharacters:
-                self.buildCharacterLoader(CHARACTERS, characterName)
+            for character in data_shot['characters']:
+                self.buildCharacterLoader(CHARACTERS, character['name'])
 
             # IMPORT MATERIALS
             # Create Geometry node in scene root
@@ -239,17 +261,17 @@ class CreateScene(QtWidgets.QWidget):
             ML.setPosition([dna.nodeDistance_x, 0])
 
             # IMPORT ENV LIGHTS
-            LIT = sceneRoot.createNode(dataAsset['light_hda']['hda_name'], dataAsset['light_hda']['name'])
+            LIT = sceneRoot.createNode(data_city['light_hda']['hda_name'], data_city['light_hda']['name'])
             LIT.setPosition([dna.nodeDistance_x, -dna.nodeDistance_y])
 
             # OUTPUT
 
-
         # Save scene
         hou.hipFile.save()
 
-
-
-# Run the Create Scene Tool
+# Create CS object
 CS = CreateScene()
-# CS.show()
+
+def run():
+    # Run the Create Scene Tool
+    CS.show()

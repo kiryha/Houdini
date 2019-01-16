@@ -64,6 +64,9 @@ nameCrowds = 'CROWDS'
 # <fileName> = <fileCode>_<fileVersion>.<fileExtension>
 # filePathExample = 'P:/PROJECTS/NSI/PROD/3D/scenes/ANIMATION/ANM_E010_S010_001.hipnc'
 # folderPathExample = 'P:/PROJECTS/NSI/PROD/3D/render/010/SHOT_010/001/'
+# episodeCode = episodeNumber = '010'
+# shotNumber = '010'
+# shotCode = 'SHOT_010'
 
 def analyzeFliePath(filePath):
     '''
@@ -196,7 +199,7 @@ def buildPathLatestVersion(filePath):
 
     return filePathLatestVersion
 
-def buildFliePath(version, fileType, scenePath=None, characterName=None,  episodeCode=None, shotCode=None):
+def buildFliePath(version, fileType, scenePath=None, characterName=None, episodeNumber=None, shotNumber=None):
     '''
     Generate and return a full path to a file string <filePath>
 
@@ -204,8 +207,8 @@ def buildFliePath(version, fileType, scenePath=None, characterName=None,  episod
     :param fileType: type of file to generate, eg. animation Houdini scene, geometry cache, etc
     :param scenePath: Houdini scene name (if <filePath> is generated based on the name of current scene)
     :param characterName: name of character asset
-    :param episodeCode: Episode number (010)
-    :param shotCode: Shot number (010)
+    :param episodeNumber: Episode number (episode number = episode code) (010)
+    :param shotNumber: Shot number (010)
     :return filePath: generated full path (string)
     '''
 
@@ -216,8 +219,8 @@ def buildFliePath(version, fileType, scenePath=None, characterName=None,  episod
     # Render scene path
     if fileType == fileTypes['render']:
         filePath = '{0}/scenes/RENDER/{1}/SHOT_{2}/RND_E{1}_S{2}_{3}.{4}'.format(root3D,
-                                                                                 episodeCode,
-                                                                                 shotCode,
+                                                                                 episodeNumber,
+                                                                                 shotNumber,
                                                                                  version,
                                                                                  extensionHoudini)
 

@@ -48,7 +48,7 @@ importFBX.run()]]></script>
   <tool name="createScene" label="Create Scene" icon="PLASMA_App">
     <script scriptType="python"><![CDATA[import createScene
 reload(createScene)
-createScene.CS.show()
+createScene.run()
     
 #if kwargs["ctrlclick"] != True:
 #createScene.run()
