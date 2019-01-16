@@ -123,10 +123,12 @@ class CreateScene(QtWidgets.QWidget):
         # Build scene content
         self.buildSceneContent(fileType)
 
-    def createContainer(self, parent, name):
+    def createContainer(self, parent, name, bbox=0, mb=None):
         '''
         Create scene container for CHARS, ENV etc
-        :param name:
+        :param name: container name
+        :param bbox: display container content as bounding box (bbox = 2, full = 0)
+        :param mb: turn on motion blur for container content geometry
         :return:
         '''
 
@@ -135,7 +137,12 @@ class CreateScene(QtWidgets.QWidget):
         for node in CONTAINER.children():
             node.destroy()
 
-        CONTAINER.parm('viewportlod').set(2) # Display as bounding box
+        # Display as bounding box
+        CONTAINER.parm('viewportlod').set(bbox)
+
+        # Turn ON motion blur
+        if mb is not None:
+            CONTAINER.parm('geo_velocityblur').set(1)
 
         return CONTAINER
 
@@ -199,26 +206,27 @@ class CreateScene(QtWidgets.QWidget):
         if fileType == dna.fileTypes['render']:
 
             # BUILD ENVIRONMENT
+            # Proxy
             ENV_PRX = self.createContainer(sceneRoot, dna.nameEnvProxy)
             ENV_PRX.createNode(dataAsset['proxy_hda']['hda_name'], dataAsset['proxy_hda']['name'])
             ENV_PRX.setPosition([0, 0])
-
-            ENVIRONMENT = self.createContainer(sceneRoot, dna.nameEnv)
+            # Base
+            ENVIRONMENT = self.createContainer(sceneRoot, dna.nameEnv, bbox=2)
             ENVIRONMENT.createNode(dataAsset['hda_name'], dataAsset['name'])
             ENVIRONMENT.setPosition([0, -dna.nodeDistance_y])
-
-            ENV_ANM = self.createContainer(sceneRoot, dna.nameEnvAnim)
+            # Animation
+            ENV_ANM = self.createContainer(sceneRoot, dna.nameEnvAnim, bbox=2, mb=1)
             ENV_ANM.createNode(dataAsset['animation_hda']['hda_name'], dataAsset['animation_hda']['name'])
             ENV_ANM.setPosition([0, -2 * dna.nodeDistance_y])
 
-            CROWDS = self.createContainer(sceneRoot, dna.nameCrowds)
+            CROWDS = self.createContainer(sceneRoot, dna.nameCrowds, bbox=2, mb=1)
             #CROWDS.createNode(dataAsset['crowds_hda']['hda_name'], dataAsset['crowds_hda']['name'])
             CROWDS.setPosition([0, -3 * dna.nodeDistance_y])
 
 
             # BUILD CHARACTERS
             # Create characters container
-            CHARACTERS = self.createContainer(sceneRoot, dna.nameChars)
+            CHARACTERS = self.createContainer(sceneRoot, dna.nameChars, mb=1)
             CHARACTERS.setPosition([0, -4 * dna.nodeDistance_y])
 
             # Create character loaders

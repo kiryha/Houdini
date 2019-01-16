@@ -32,10 +32,6 @@ def createCacheNetwork():
 
     :return:
     '''
-    renderNode = getRenderNode(CHARACTERS)
-
-    # Create Cache node
-    cache = CHARACTERS.createNode('filecache', 'CACHE_{}'.format(characterName))
 
     # Build path to a file cache
     pathCache = dna.buildFliePath('001',
@@ -43,12 +39,26 @@ def createCacheNetwork():
                                    scenePath=hou.hipFile.path(),
                                    characterName=characterName)
 
-    # Setup FileCacheSOP and other nodes
+    renderNode = getRenderNode(CHARACTERS)
+
+    # Create trail for Motion Blur
+    trail = CHARACTERS.createNode('trail', 'MB_{}'.format(characterName))
+    trail.parm('result').set(3)
+
+    # Create Cache node
+    cache = CHARACTERS.createNode('filecache', 'CACHE_{}'.format(characterName))
     cache.parm('file').set(pathCache)
     cache.parm('loadfromdisk').set(1)
+
+    # Create OUT null
     null = CHARACTERS.createNode('null', 'OUT_{}'.format(characterName))
-    cache.setInput(0, renderNode)
+
+    # Link nodes
+    trail.setInput(0, renderNode)
+    cache.setInput(0, trail)
     null.setInput(0, cache)
+
+    # Layout and set render flag
     null.setDisplayFlag(1)
     null.setRenderFlag(1)
     CHARACTERS.layoutChildren()
