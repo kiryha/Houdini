@@ -7,9 +7,9 @@ from PySide2 import QtCore, QtUiTools, QtWidgets
 from EVE.dna import dna
 reload(dna)
 
+
 # Get scene root node
 sceneRoot = hou.node('/obj/')
-
 
 '''
 # HDA manips
@@ -25,8 +25,6 @@ city = hou.node('/obj/ENVIRONMENT/CITY')
 # Asset and shot data. Meant to be stored in database (Shotgun). Will be moved to genes.py
 # Shotgun schema: project > sequence > shot
 # We use term <episode> instead of <sequence>. episode = sequence
-
-
 
 
 
@@ -225,7 +223,10 @@ class CreateScene(QtWidgets.QWidget):
         if fileType == dna.fileTypes['render']:
 
             # Get data for the current shot (episodeNumber > shotNumber)
+            # Get assets linked to shot
+            # Sort and return assets by categories (characters, env, props)
 
+            shotData = dna.getStotData(episodeNumber, shotNumber)
 
             # BUILD ENVIRONMENT
             # Proxy
@@ -264,7 +265,9 @@ class CreateScene(QtWidgets.QWidget):
             LIT = sceneRoot.createNode(data_city['light_hda']['hda_name'], data_city['light_hda']['name'])
             LIT.setPosition([dna.nodeDistance_x, -dna.nodeDistance_y])
 
-            # OUTPUT
+            # SETUP OUTPUT
+
+            # SETUP SCENE (end frame ...)
 
         # Save scene
         hou.hipFile.save()

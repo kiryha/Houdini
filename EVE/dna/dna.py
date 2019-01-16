@@ -10,11 +10,13 @@ we will consider LATEST version of file published (which needs to be used).
 
 '''
 
-
-
 import os
 import json
 import glob
+
+# IMPORT GENES (PROJECT DATABASE)
+import genes
+reload(genes)
 
 # DEFINE COMMON VARIABLES AND PATHS
 # Pipeline items
@@ -64,9 +66,6 @@ nameCrowds = 'CROWDS'
 # <fileName> = <fileCode>_<fileVersion>.<fileExtension>
 # filePathExample = 'P:/PROJECTS/NSI/PROD/3D/scenes/ANIMATION/ANM_E010_S010_001.hipnc'
 # folderPathExample = 'P:/PROJECTS/NSI/PROD/3D/render/010/SHOT_010/001/'
-# episodeCode = episodeNumber = '010'
-# shotNumber = '010'
-# shotCode = 'SHOT_010'
 
 def analyzeFliePath(filePath):
     '''
@@ -282,3 +281,30 @@ def setupCharacterMaterials(materialNode, characterData):
         materialNode.parm('group{}'.format(n)).set(characterData['materials'][material]) # Set groups
         materialNode.parm('shop_materialpath{}'.format(n)).set(materialPath) # Set materials
         n += 1
+
+# DATABASE COMMUNICATIONS
+# episodeCode = episodeNumber = '010'
+# shotNumber = '010'
+# shotCode = 'SHOT_010'
+
+def getStotData(episodeNumber, shotNumber):
+    '''
+    Get shot dictionary by eppisode and shot numbers (010 > 010)
+
+    :param episodeNumber: string '010'
+    :param shotNumber: string '010'
+    :return: shot dictionary
+    {'code': 'SHOT_010', 'sg_cut_out': 200, 'sg_sequence': {'name': '010'}, 'assets': [{'name': 'CITY'}, {'name': 'ROMA'}]}
+    '''
+
+    shotCode = 'SHOT_{0}'.format(shotNumber)
+
+    for shot in genes.SHOTS:
+        # Find shot of requested sequence
+        if shot['sg_sequence']['name'] == episodeNumber:
+            # Find shot
+            if shot['code'] == shotCode:
+                return shot
+
+def getAssetData():
+    pass
