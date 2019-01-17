@@ -222,24 +222,34 @@ class CreateScene(QtWidgets.QWidget):
         # Create Render scene
         if fileType == dna.fileTypes['render']:
 
-            # Get data for the current shot (episodeNumber > shotNumber)
-            # Get assets linked to shot
-            # Sort and return assets by categories (characters, env, props)
-
+            # Get shot genes:
+            #   - Get data for the current shot (episodeNumber > shotNumber)
+            #   - Get assets linked to shot
+            #   - Sort and return assets by categories (characters, env, props)
             shotData = dna.getStotData(episodeNumber, shotNumber)
+            assetsData = dna.getAssetsData(shotData['assets'])
+            environmentData = dna.getSortedData(assetsData,  'Environment')
+            charactersData = dna.getSortedData(assetsData, 'Character')
+
+            # print shotData
+            # shotData = {'sg_sequence': {'name': '010'}, 'code': 'SHOT_010', 'sg_cut_out': 200, 'assets': [{'name': 'CITY'}, {'name': 'ROMA'}]}
+            # print environmentData
+            # environmentData = {'code': 'CITY', 'light_hda': {'hda_name': 'city_lights', 'name': 'CITY_LIT'}, 'hda_name': 'city', 'animation_hda': {'hda_name': 'city_anm', 'name': 'CITY_ANM'}, 'crowds_hda': {'hda_name': 'city_crowds', 'name': 'CROWDS'}, 'proxy_hda': {'hda_name': 'city_prx', 'name': 'CITY_PRX'}, 'sg_asset_type': 'Environment'}
+            # print charactersData
+            # charactersData = [{'code': 'ROMA', 'sg_asset_type': 'Character'}]
 
             # BUILD ENVIRONMENT
             # Proxy
             ENV_PRX = self.createContainer(sceneRoot, dna.nameEnvProxy)
-            ENV_PRX.createNode(data_city['proxy_hda']['hda_name'], data_city['proxy_hda']['name'])
+            ENV_PRX.createNode(environmentData['proxy_hda']['hda_name'], environmentData['proxy_hda']['name'])
             ENV_PRX.setPosition([0, 0])
             # Base
             ENVIRONMENT = self.createContainer(sceneRoot, dna.nameEnv, bbox=2, disp=0)
-            ENVIRONMENT.createNode(data_city['hda_name'], data_city['name'])
+            ENVIRONMENT.createNode(environmentData['hda_name'], environmentData['code'])
             ENVIRONMENT.setPosition([0, -dna.nodeDistance_y])
             # Animation
             ENV_ANM = self.createContainer(sceneRoot, dna.nameEnvAnim, bbox=2, mb=1)
-            ENV_ANM.createNode(data_city['animation_hda']['hda_name'], data_city['animation_hda']['name'])
+            ENV_ANM.createNode(environmentData['animation_hda']['hda_name'], environmentData['animation_hda']['name'])
             ENV_ANM.setPosition([0, -2 * dna.nodeDistance_y])
 
             CROWDS = self.createContainer(sceneRoot, dna.nameCrowds, bbox=2, mb=1)
@@ -253,8 +263,8 @@ class CreateScene(QtWidgets.QWidget):
             CHARACTERS.setPosition([0, -4 * dna.nodeDistance_y])
 
             # Create character loaders
-            for character in data_shot['characters']:
-                self.buildCharacterLoader(CHARACTERS, character['name'])
+            for character in charactersData:
+                self.buildCharacterLoader(CHARACTERS, character['code'])
 
             # IMPORT MATERIALS
             # Create Geometry node in scene root
@@ -262,7 +272,7 @@ class CreateScene(QtWidgets.QWidget):
             ML.setPosition([dna.nodeDistance_x, 0])
 
             # IMPORT ENV LIGHTS
-            LIT = sceneRoot.createNode(data_city['light_hda']['hda_name'], data_city['light_hda']['name'])
+            LIT = sceneRoot.createNode(environmentData['light_hda']['hda_name'], environmentData['light_hda']['name'])
             LIT.setPosition([dna.nodeDistance_x, -dna.nodeDistance_y])
 
             # SETUP OUTPUT

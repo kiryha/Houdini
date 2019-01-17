@@ -293,7 +293,7 @@ def getStotData(episodeNumber, shotNumber):
 
     :param episodeNumber: string '010'
     :param shotNumber: string '010'
-    :return: shot dictionary
+    :return shot: shot dictionary
     {'code': 'SHOT_010', 'sg_cut_out': 200, 'sg_sequence': {'name': '010'}, 'assets': [{'name': 'CITY'}, {'name': 'ROMA'}]}
     '''
 
@@ -306,5 +306,33 @@ def getStotData(episodeNumber, shotNumber):
             if shot['code'] == shotCode:
                 return shot
 
-def getAssetData():
-    pass
+def getSortedData(assetsData, sortType):
+
+    # assetsData = list of assets dictionaries linked to shot
+    # sortType = 'Environment', 'Character', 'Prop'
+
+    if sortType == 'Environment':
+        for assetData in assetsData:
+            if assetData['sg_asset_type'] == sortType:
+                return assetData
+
+    if sortType == 'Character':
+        listCharacters = []
+        for assetData in assetsData:
+            if assetData['sg_asset_type'] == sortType:
+                listCharacters.append(assetData)
+        return listCharacters
+
+def getAssetsData(assetData_short):
+
+    # assetsData = [{'name': 'CITY'}, {'name': 'ROMA'}]
+
+    assetsData_full = []
+
+    for asset in assetData_short:
+        for assetData_full in genes.ASSETS:
+            if assetData_full['code'] == asset['name']:
+                assetsData_full.append(assetData_full)
+
+    return assetsData_full
+
