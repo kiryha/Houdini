@@ -8,41 +8,8 @@ from EVE.dna import dna
 reload(dna)
 
 
-# Get scene root node
+# Get Houdini scene root node
 sceneRoot = hou.node('/obj/')
-
-'''
-# HDA manips
-import hou
-
-city = hou.node('/obj/ENVIRONMENT/CITY')
-#city.allowEditingOfContents()
-#print city.type().definition().libraryFilePath()
-#hou.hda.installFile('P:/PROJECTS/NSI/PROD/3D/hda/ENVIRONMENTS/CITY/CITY_009.hdanc')
-#city.changeNodeType('city')
-'''
-
-# Asset and shot data. Meant to be stored in database (Shotgun). Will be moved to genes.py
-# Shotgun schema: project > sequence > shot
-# We use term <episode> instead of <sequence>. episode = sequence
-
-
-
-# name = display name of asset in Houdini UI, had_name = name of HDA, proxy_hda = Low res ENV asset version
-data_city = {'name': 'CITY',
-           'hda_name': 'city',
-           'animation_hda': {'name': 'CITY_ANM', 'hda_name': 'city_anm'},
-           'proxy_hda': {'name': 'CITY_PRX', 'hda_name': 'city_prx'},
-           'crowds_hda': {'name': 'CROWDS', 'hda_name': 'city_crowds'},
-           'light_hda': {'name': 'CITY_LIT', 'hda_name': 'city_lights'}}
-
-data_roma = {'name': 'ROMA'}
-
-data_shot = {'name': 'SHOT_010',
-            'scene': {'name': '010'},
-            'characters': [data_roma],
-            'environment': data_city,
-            'props': []}
 
 class SNV(QtWidgets.QWidget):
     def __init__(self, filePath, sceneType):
@@ -253,7 +220,7 @@ class CreateScene(QtWidgets.QWidget):
             ENV_ANM.setPosition([0, -2 * dna.nodeDistance_y])
 
             CROWDS = self.createContainer(sceneRoot, dna.nameCrowds, bbox=2, mb=1)
-            #CROWDS.createNode(data_city['crowds_hda']['hda_name'], data_city['crowds_hda']['name'])
+            # CROWDS.createNode(data_city['crowds_hda']['hda_name'], data_city['crowds_hda']['name'])
             CROWDS.setPosition([0, -3 * dna.nodeDistance_y])
 
 

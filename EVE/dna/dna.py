@@ -289,7 +289,7 @@ def setupCharacterMaterials(materialNode, characterData):
 
 def getStotData(episodeNumber, shotNumber):
     '''
-    Get shot dictionary by eppisode and shot numbers (010 > 010)
+    Get shot dictionary by episode and shot numbers (010 > 010)
 
     :param episodeNumber: string '010'
     :param shotNumber: string '010'
@@ -306,7 +306,32 @@ def getStotData(episodeNumber, shotNumber):
             if shot['code'] == shotCode:
                 return shot
 
+def getAssetsData(assetData_short):
+    '''
+    Get full dictionaries of assets linked to shot
+
+    :param assetData_short: asset data dictionaries from the shot entity
+    :return assetsData_full: list of full dictionaries of assets linked to shot
+    '''
+
+    # assetsData = [{'name': 'CITY'}, {'name': 'ROMA'}]
+
+    assetsData_full = []
+
+    for asset in assetData_short:
+        for assetData_full in genes.ASSETS:
+            if assetData_full['code'] == asset['name']:
+                assetsData_full.append(assetData_full)
+
+    return assetsData_full
+
 def getSortedData(assetsData, sortType):
+    '''
+
+    :param assetsData:
+    :param sortType:
+    :return:
+    '''
 
     # assetsData = list of assets dictionaries linked to shot
     # sortType = 'Environment', 'Character', 'Prop'
@@ -322,17 +347,3 @@ def getSortedData(assetsData, sortType):
             if assetData['sg_asset_type'] == sortType:
                 listCharacters.append(assetData)
         return listCharacters
-
-def getAssetsData(assetData_short):
-
-    # assetsData = [{'name': 'CITY'}, {'name': 'ROMA'}]
-
-    assetsData_full = []
-
-    for asset in assetData_short:
-        for assetData_full in genes.ASSETS:
-            if assetData_full['code'] == asset['name']:
-                assetsData_full.append(assetData_full)
-
-    return assetsData_full
-
