@@ -14,10 +14,6 @@ import os
 import json
 import glob
 
-# IMPORT GENES (PROJECT DATABASE)
-import genes
-reload(genes)
-
 # DEFINE COMMON VARIABLES AND PATHS
 # Pipeline items
 extensionHoudini = 'hipnc'
@@ -28,10 +24,13 @@ extensionCacheAnim = 'bgeo.sc'
 pipelineName = 'EVE'
 # cacheFolder = 'geo'
 fileTypes = {'animation': 'ANM', 'render': 'RND', 'flipbook': 'FB', 'cacheAnim': 'CAN'}
-variations = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
 # Common variables
 frameStart = 1
 resolution = (1280, 540)
+
+# TEMP HARDCODE !!!
+os.environ['ROOT'] = 'P:/PROJECTS/NSI'
+os.environ['JOB'] = 'P:/PROJECTS/NSI/PROD/3D'
 
 # PATHS
 # Get project root folder, defined in runHoudini.py  <P:/PROJECTS/NSI/>
@@ -46,6 +45,8 @@ folderUI = '{0}/{1}/ui/ui'.format(rootPipe, pipelineName)
 # Database files
 databaseASSETS = '{0}/{1}/database/ASSETS.json'.format(rootPipe, pipelineName)
 databaseSHOTS = '{0}/{1}/database/SHOTS.json'.format(rootPipe, pipelineName)
+genesFile = '{0}/EVE/genes/genes.json'.format(rootPipe)
+genes = json.load(open(genesFile))
 
 # Houdini scene content
 # Distance between nodes in scene view
@@ -58,7 +59,6 @@ nameEnvAnim = 'ENVIRONMENT_ANM'
 nameEnvProxy = 'ENVIRONMENT_PRX'
 nameMats = 'MATERIALS'
 nameCrowds = 'CROWDS'
-
 
 # FILE PATH (STRING) MANIPULATIONS
 # File Naming convention for filePath:
@@ -299,16 +299,18 @@ def getStotData(episodeNumber, shotNumber):
 
     shotCode = 'SHOT_{0}'.format(shotNumber)
 
-    for shot in genes.SHOTS:
-        # Find shot of requested sequence
+    for shot in genes['SHOTS']:
+        # Get shot > sequence data
         if shot['sg_sequence']['name'] == episodeNumber:
-            # Find shot
+            # Get shot data
             if shot['code'] == shotCode:
                 return shot
+            else:
+                print 'dna.getStotData(): There is no data for shot E{0}_S{1}'.format(episodeNumber, shotNumber)
 
-def getAssetsData(assetData_short):
+def getAssetsDataByShot(assetData_short):
     '''
-    Get full dictionaries of assets linked to shot
+    Get full dictionaries of assets LINKED TO SHOT
 
     :param assetData_short: asset data dictionaries from the shot entity
     :return assetsData_full: list of full dictionaries of assets linked to shot
@@ -319,31 +321,37 @@ def getAssetsData(assetData_short):
     assetsData_full = []
 
     for asset in assetData_short:
-        for assetData_full in genes.ASSETS:
+        for assetData_full in genes['ASSETS']:
             if assetData_full['code'] == asset['name']:
                 assetsData_full.append(assetData_full)
 
     return assetsData_full
 
-def getSortedData(assetsData, sortType):
+def getAssetDataByType(assetsData, assetType):
     '''
+    Get data of particular type (char, env, prop) for the shot from input asset data dictionary (all shot assets).
 
-    :param assetsData:
-    :param sortType:
+    :param assetsData: list of all assets dictionaries linked to shot
+    :param assetType: 'Environment', 'Character', 'Prop'
     :return:
     '''
 
     # assetsData = list of assets dictionaries linked to shot
-    # sortType = 'Environment', 'Character', 'Prop'
+    # assetType = 'Environment', 'Character', 'Prop'
 
-    if sortType == 'Environment':
+    if assetType == 'Environment':
         for assetData in assetsData:
-            if assetData['sg_asset_type'] == sortType:
+            if assetData['sg_asset_type'] == assetType:
                 return assetData
 
-    if sortType == 'Character':
+    if assetType == 'Character':
         listCharacters = []
         for assetData in assetsData:
-            if assetData['sg_asset_type'] == sortType:
+            if assetData['sg_asset_type'] == assetType:
                 listCharacters.append(assetData)
         return listCharacters
+
+# shotData = getStotData('010', '010')
+# assetsData = getAssetsDataByShot(shotData['assets'])
+# envData = getAssetDataByType(assetsData,  'Environment')
+# charData = getAssetDataByType(assetsData,  'Character')

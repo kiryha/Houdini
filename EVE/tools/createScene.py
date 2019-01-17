@@ -194,9 +194,9 @@ class CreateScene(QtWidgets.QWidget):
             #   - Get assets linked to shot
             #   - Sort and return assets by categories (characters, env, props)
             shotData = dna.getStotData(episodeNumber, shotNumber)
-            assetsData = dna.getAssetsData(shotData['assets'])
-            environmentData = dna.getSortedData(assetsData,  'Environment')
-            charactersData = dna.getSortedData(assetsData, 'Character')
+            assetsData = dna.getAssetsDataByShot(shotData['assets'])
+            environmentData = dna.getAssetDataByType(assetsData, 'Environment')
+            charactersData = dna.getAssetDataByType(assetsData, 'Character')
 
             # print shotData
             # shotData = {'sg_sequence': {'name': '010'}, 'code': 'SHOT_010', 'sg_cut_out': 200, 'assets': [{'name': 'CITY'}, {'name': 'ROMA'}]}
