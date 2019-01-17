@@ -24,5 +24,8 @@ Windows, Python 2.7, PySide
 
 ### Current state
 Supported OS: Windows  
-Functionality:  
-- Create project folder structure with pipeline scripts and wrapper
+Working [tools](https://github.com/kiryha/Houdini/wiki/tools):  
+- **Create project**: Build a folder structure for the new project with pipeline data and tools
+- **Save next version**: Incremental save current scene
+- **Create scene**: Build a render scene with all necessary components (environment, caches, materials etc)
+- **Create flipbook**: Make a hardware render of shot camera and place it to a proper location with version control

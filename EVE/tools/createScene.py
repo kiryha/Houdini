@@ -141,12 +141,44 @@ class CreateScene(QtWidgets.QWidget):
 
         return pathCacheFolder
 
-    def buildCharacterLoader(self, CHARACTERS, characterName):
+    def buildCharacterLoaders(self, CHARACTERS, charactersData):
         '''
-        Create network to load character data (geo cache, hairs, etc)
+        Create network to load characters data (geo cache, hairs, etc)
 
+        TBD: merge loaders in several chars are in shot
         :param CHARACTERS: Characters container - geometry node object
-        :param characterName: string character name
+        :param charactersData: dictionaries with character data linked to a shot
+        :return:
+        '''
+
+
+
+        for characterData in charactersData:
+            # Create nodes network for each character
+            characterName = characterData['code']
+            cache = CHARACTERS.createNode('filecache', 'CACHE_{0}'.format(characterName))
+            cache.parm('loadfromdisk').set(1)
+            null = CHARACTERS.createNode('null', 'OUT_{0}'.format(characterName))
+            null.setInput(0, cache)
+
+            # Build and set path to the 001 cache version
+            pathCache = dna.buildFliePath('001',
+                                          dna.fileTypes['cacheAnim'],
+                                          scenePath=hou.hipFile.path(),
+                                          characterName=characterName)
+
+            cache.parm('file').set(pathCache)
+
+            # Set render flags
+            null.setDisplayFlag(1)
+            null.setRenderFlag(1)
+
+
+        CHARACTERS.layoutChildren()
+
+    def importAnimation(self, charactersData):
+        '''
+        Import character animation: set FileCache node path.
         :return:
         '''
 
@@ -165,17 +197,6 @@ class CreateScene(QtWidgets.QWidget):
                                           dna.fileTypes['cacheAnim'],
                                           scenePath=hou.hipFile.path(),
                                           characterName=characterName)
-
-
-        cache = CHARACTERS.createNode('filecache', 'CACHE_{}'.format(characterName))
-        cache.parm('loadfromdisk').set(1)
-        cache.parm('file').set(pathCache)
-        null = CHARACTERS.createNode('null', 'OUT_{}'.format(characterName))
-        null.setInput(0, cache)
-        null.setDisplayFlag(1)
-        null.setRenderFlag(1)
-
-        CHARACTERS.layoutChildren()
 
     def buildSceneContent(self, fileType, episodeNumber, shotNumber):
         '''
@@ -229,9 +250,8 @@ class CreateScene(QtWidgets.QWidget):
             CHARACTERS = self.createContainer(sceneRoot, dna.nameChars, mb=1)
             CHARACTERS.setPosition([0, -4 * dna.nodeDistance_y])
 
-            # Create character loaders
-            for character in charactersData:
-                self.buildCharacterLoader(CHARACTERS, character['code'])
+            # Create nodes to pull character caches
+            self.buildCharacterLoaders(CHARACTERS, charactersData)
 
             # IMPORT MATERIALS
             # Create Geometry node in scene root
@@ -245,6 +265,9 @@ class CreateScene(QtWidgets.QWidget):
             # SETUP OUTPUT
 
             # SETUP SCENE (end frame ...)
+
+            # IMPORT ANIMATION
+            # Import characters caches
 
         # Save scene
         hou.hipFile.save()

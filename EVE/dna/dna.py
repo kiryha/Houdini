@@ -200,11 +200,11 @@ def buildPathLatestVersion(filePath):
 
 def buildFliePath(version, fileType, scenePath=None, characterName=None, episodeNumber=None, shotNumber=None):
     '''
-    Generate and return a full path to a file string <filePath>
+    Generate and return a full path to a file <filePath> (string)
 
     :param version: version of the file
     :param fileType: type of file to generate, eg. animation Houdini scene, geometry cache, etc
-    :param scenePath: Houdini scene name (if <filePath> is generated based on the name of current scene)
+    :param scenePath: Full path to Houdini scene
     :param characterName: name of character asset
     :param episodeNumber: Episode number (episode number = episode code) (010)
     :param shotNumber: Shot number (010)
