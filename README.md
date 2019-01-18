@@ -1,4 +1,4 @@
-# Houdini Pipeline Toolkit
+# EVE: Houdini Pipeline Toolkit
 
 ### Introduction
 This repository is a Houdini Pipeline Toolkit named "EVE", currently at the early stages of developing. 

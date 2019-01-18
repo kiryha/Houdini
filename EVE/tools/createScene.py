@@ -8,8 +8,9 @@ from EVE.dna import dna
 reload(dna)
 
 
-# Get Houdini scene root node
+# Get Houdini root nodes
 sceneRoot = hou.node('/obj/')
+outRoot = hou.node('/out/')
 
 class SNV(QtWidgets.QWidget):
     def __init__(self, filePath, sceneType):
@@ -43,8 +44,9 @@ class CreateScene(QtWidgets.QWidget):
         self.ui = QtUiTools.QUiLoader().load(ui_file, parentWidget=self)
         self.setParent(hou.ui.mainQtWindow(), QtCore.Qt.Window)
         
-        self.ui.btn_createRenderScene.clicked.connect(lambda: self.createScene(fileType=dna.fileTypes['render']))
+        self.ui.btn_createRenderScene.clicked.connect(lambda: self.createScene(fileType=dna.fileTypes['renderScene']))
         self.ui.btn_createRenderScene.clicked.connect(self.close)
+
 
     def createScene(self, fileType, catch = None):
         '''
@@ -55,8 +57,8 @@ class CreateScene(QtWidgets.QWidget):
         :return:
         '''
 
-        # Get episode and shot from UI
-        episodeNumber = self.ui.lin_episode.text()
+        # Get sequence and shot from UI
+        sequenceNumber = self.ui.lin_episode.text()
         shotNumber = self.ui.lin_shot.text()
 
 
@@ -64,7 +66,7 @@ class CreateScene(QtWidgets.QWidget):
         if catch == None:
 
             # Build path to 001 version
-            pathScene = dna.buildFliePath('001', fileType, episodeNumber=episodeNumber, shotNumber=shotNumber)
+            pathScene = dna.buildFliePath('001', fileType, sequenceNumber=sequenceNumber, shotNumber=shotNumber)
 
             # Start new Houdini session without saving current
             hou.hipFile.clear(suppress_save_prompt=True)
@@ -86,19 +88,19 @@ class CreateScene(QtWidgets.QWidget):
         # If createRenderScene() runs from SNV class: return user choice, OVR or SNV
         elif catch == 'SNV':
             # Save latest version
-            newPath = dna.buildPathNextVersion(dna.buildPathLatestVersion(dna.buildFliePath('001', fileType, episodeNumber=episodeNumber, shotNumber=shotNumber)))
+            newPath = dna.buildPathNextVersion(dna.buildPathLatestVersion(dna.buildFliePath('001', fileType, sequenceNumber=sequenceNumber, shotNumber=shotNumber)))
             hou.hipFile.save(newPath)
             hou.ui.displayMessage('New version saved:\n{}'.format(newPath.split('/')[-1]))
         elif catch == 'OVR':
             # Overwrite existing file
-            pathScene = dna.buildPathLatestVersion(dna.buildFliePath('001', fileType, episodeNumber=episodeNumber, shotNumber=shotNumber))
+            pathScene = dna.buildPathLatestVersion(dna.buildFliePath('001', fileType, sequenceNumber=sequenceNumber, shotNumber=shotNumber))
             hou.hipFile.save(pathScene)
             hou.ui.displayMessage('File overwited:\n{}'.format(pathScene.split('/')[-1]))
         else:
             return
 
         # Build scene content
-        self.buildSceneContent(fileType, episodeNumber=episodeNumber, shotNumber=shotNumber)
+        self.buildSceneContent(fileType, sequenceNumber=sequenceNumber, shotNumber=shotNumber)
 
     def createContainer(self, parent, name, bbox=0, mb=None, disp=1):
         '''
@@ -151,8 +153,6 @@ class CreateScene(QtWidgets.QWidget):
         :return:
         '''
 
-
-
         for characterData in charactersData:
             # Create nodes network for each character
             characterName = characterData['code']
@@ -176,55 +176,58 @@ class CreateScene(QtWidgets.QWidget):
 
         CHARACTERS.layoutChildren()
 
-    def importAnimation(self, charactersData):
+    def importAnimation(self, scenePath, charactersData):
         '''
-        Import character animation: set FileCache node path.
+        Import character animation for the current render scene: set FileCache nodes paths.
+
+        pathCache = $JOB/geo/SHOTS/010/SHOT_010/ROMA/GEO/001/E010_S010_ROMA_001.$F.bgeo.sc
+        :param charactersData: list of characters dics for the current shot
+        :param scenePath: Full path to Houdini render scene
         :return:
         '''
 
-        # Build a path to the 001 version of cache
-        # $JOB/geo/SHOTS/010/SHOT_010/ROMA/GEO/001/E010_S010_ROMA_001.$F.bgeo.sc
-        pathCache = dna.buildFliePath('001',
-                                      dna.fileTypes['cacheAnim'],
-                                      scenePath=hou.hipFile.path(),
-                                      characterName=characterName)
+        for characterData in charactersData:
+            characterName = characterData['code']
 
-        # Check latest existing version, build new path if exists
-        pathCacheFolder = self.convertPathCache(pathCache)
-        latestCacheVersion = dna.extractLatestVersionFolder(pathCacheFolder)
-        if latestCacheVersion != '001':
-            pathCache = dna.buildFliePath(latestCacheVersion,
+            # BUILD CACHE PATH (LATEST VERSION)
+            # Build a path to the 001 version of cache
+
+            pathCache = dna.buildFliePath('001',
                                           dna.fileTypes['cacheAnim'],
-                                          scenePath=hou.hipFile.path(),
+                                          scenePath=scenePath,
                                           characterName=characterName)
 
-    def buildSceneContent(self, fileType, episodeNumber, shotNumber):
+            # Check latest existing version, build new path if exists
+            pathCacheFolder = self.convertPathCache(pathCache)
+            latestCacheVersion = dna.extractLatestVersionFolder(pathCacheFolder)
+            if latestCacheVersion != '001':
+                pathCache = dna.buildFliePath(latestCacheVersion,
+                                              dna.fileTypes['cacheAnim'],
+                                              scenePath=scenePath,
+                                              characterName=characterName)
+
+            # SET FILE CACHE NODE PARAM
+            # Get cache node
+            cache = hou.node('{0}/{1}/CACHE_{2}'.format(sceneRoot, dna.nameChars, characterName))
+            # Set path
+            cache.parm('file').set(pathCache)
+
+    def buildSceneContent(self, fileType, sequenceNumber, shotNumber):
         '''
         Create scene content: import characters, environments, materials etc.
         :param fileType:
-        :param episodeNumber:
+        :param sequenceNumber:
         :param shotNumber:
         :return:
         '''
 
         # Create Render scene
-        if fileType == dna.fileTypes['render']:
+        if fileType == dna.fileTypes['renderScene']:
+            # Get shot data
+            shotData, assetsData, environmentData, charactersData = dna.getShotGenes(sequenceNumber, shotNumber)
 
-            # Get shot genes:
-            #   - Get data for the current shot (episodeNumber > shotNumber)
-            #   - Get assets linked to shot
-            #   - Sort and return assets by categories (characters, env, props)
-            shotData = dna.getStotData(episodeNumber, shotNumber)
-            assetsData = dna.getAssetsDataByShot(shotData['assets'])
-            environmentData = dna.getAssetDataByType(assetsData, 'Environment')
-            charactersData = dna.getAssetDataByType(assetsData, 'Character')
-
-            # print shotData
-            # shotData = {'sg_sequence': {'name': '010'}, 'code': 'SHOT_010', 'sg_cut_out': 200, 'assets': [{'name': 'CITY'}, {'name': 'ROMA'}]}
-            # print environmentData
-            # environmentData = {'code': 'CITY', 'light_hda': {'hda_name': 'city_lights', 'name': 'CITY_LIT'}, 'hda_name': 'city', 'animation_hda': {'hda_name': 'city_anm', 'name': 'CITY_ANM'}, 'crowds_hda': {'hda_name': 'city_crowds', 'name': 'CROWDS'}, 'proxy_hda': {'hda_name': 'city_prx', 'name': 'CITY_PRX'}, 'sg_asset_type': 'Environment'}
-            # print charactersData
-            # charactersData = [{'code': 'ROMA', 'sg_asset_type': 'Character'}]
+            # Initialize scene
+            scenePath = hou.hipFile.path()
 
             # BUILD ENVIRONMENT
             # Proxy
@@ -241,9 +244,8 @@ class CreateScene(QtWidgets.QWidget):
             ENV_ANM.setPosition([0, -2 * dna.nodeDistance_y])
 
             CROWDS = self.createContainer(sceneRoot, dna.nameCrowds, bbox=2, mb=1)
-            # CROWDS.createNode(data_city['crowds_hda']['hda_name'], data_city['crowds_hda']['name'])
+            CROWDS.createNode(environmentData['crowds_hda']['hda_name'], environmentData['crowds_hda']['name'])
             CROWDS.setPosition([0, -3 * dna.nodeDistance_y])
-
 
             # BUILD CHARACTERS
             # Create characters container
@@ -263,11 +265,46 @@ class CreateScene(QtWidgets.QWidget):
             LIT.setPosition([dna.nodeDistance_x, -dna.nodeDistance_y])
 
             # SETUP OUTPUT
+            # Create mantra render node
+            mantra = outRoot.createNode('ifd', 'RENDER')
+
+            # Render file version setup
+            # renderFile = '$JOB/render/010/SHOT_040/001/E010_S040_001.$F.exr'
+            renderFile = dna.buildFliePath('001', dna.fileTypes['renderFile'], scenePath=scenePath)
+            fileLocation = dna.analyzeFliePath(renderFile)['fileLocation']
+            if not os.path.exists(fileLocation):
+                # Make 001 folder
+                os.makedirs(fileLocation)
+            else:
+                # If 001 file exists get latest version
+                latestVersion = dna.extractLatestVersionFolder(fileLocation)
+                nextVersion = '{:03d}'.format(int(latestVersion) + 1)
+                # Build latest existing path
+                renderFile = dna.buildFliePath(nextVersion, dna.fileTypes['renderFile'], scenePath=scenePath)
+                os.makedirs(dna.analyzeFliePath(renderFile)['fileLocation'])
+                # Localize path (add $JOB)
+                renderFile = renderFile.replace(dna.root3D, '$JOB')
+
+            # Setup Mantra parameters
+            mantra.parm('vm_picture').set(renderFile)
+            mantra.parm('camera').set('/obj/E{0}_S{1}'.format(sequenceNumber, shotNumber))
+            # Set common parameters from preset
+            for param, value in dna.renderSettings['common'].iteritems():
+                mantra.parm(param).set(value)
+            # Set DRAFT parameters
+            for param, value in dna.renderSettings['draft'].iteritems():
+                print mantra
+                print param, value
+                mantra.parm(param).set(value)
 
             # SETUP SCENE (end frame ...)
+            frameEnd = shotData['sg_cut_out']
+            hou.playbar.setFrameRange(dna.frameStart, frameEnd)
+            hou.playbar.setPlaybackRange(dna.frameStart, frameEnd)
 
             # IMPORT ANIMATION
             # Import characters caches
+            self.importAnimation(scenePath, charactersData)
 
         # Save scene
         hou.hipFile.save()
