@@ -15,7 +15,7 @@ root3D = '{0}/PROD/3D'.format(rootProject)
 pathHDA = ''
 # Houdini install dir
 build = '16.5.536' # 16.5.536 17.0.352
-houdini = 'C:/Program Files/Side Effects Software/Houdini {0}/bin/houdinifx.exe'.format(build) # 16.5.536 17.0.352
+houdini = 'C:/Program Files/Side Effects Software/Houdini {0}/bin/houdinifx.exe'.format(build)
 
 
 def getHDA():

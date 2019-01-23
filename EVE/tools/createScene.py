@@ -112,9 +112,16 @@ class CreateScene(QtWidgets.QWidget):
 
         # Create HDA node inside parent container
         hda = parent.createNode(hdaTypeName, hdaName)
-        # Set HDA file version (latest)
-        hda
 
+        # Set HDA file version (latest)
+        hdaDefinitions = hda.type().allInstalledDefinitions()
+        hdaPaths = [i.libraryFilePath() for i in hdaDefinitions]
+        latestVersion = dna.extractLatestVersionFile(hdaPaths)  # 010
+
+        for i in hdaPaths:
+            if latestVersion in i.split('/')[-1]:
+                latestIndex = hdaPaths.index(i)
+                hdaDefinitions[latestIndex].setIsPreferred(True)
 
     def createContainer(self, parent, name, bbox=0, mb=None, disp=1):
         '''
@@ -246,20 +253,19 @@ class CreateScene(QtWidgets.QWidget):
             # BUILD ENVIRONMENT
             # Proxy
             ENV_PRX = self.createContainer(sceneRoot, dna.nameEnvProxy)
-            ENV_PRX.createNode(environmentData['proxy_hda']['hda_name'], environmentData['proxy_hda']['name'])
+            self.createHDA(ENV_PRX, environmentData['proxy_hda']['hda_name'], environmentData['proxy_hda']['name'])
             ENV_PRX.setPosition([0, 0])
             # Base
             ENVIRONMENT = self.createContainer(sceneRoot, dna.nameEnv, bbox=2, disp=0)
-            #ENVIRONMENT.createNode(environmentData['hda_name'], environmentData['code'])
             self.createHDA(ENVIRONMENT, environmentData['hda_name'], environmentData['code'])
             ENVIRONMENT.setPosition([0, -dna.nodeDistance_y])
             # Animation
             ENV_ANM = self.createContainer(sceneRoot, dna.nameEnvAnim, bbox=2, mb=1)
-            ENV_ANM.createNode(environmentData['animation_hda']['hda_name'], environmentData['animation_hda']['name'])
+            self.createHDA(ENV_ANM, environmentData['animation_hda']['hda_name'], environmentData['animation_hda']['name'])
             ENV_ANM.setPosition([0, -2 * dna.nodeDistance_y])
 
             CROWDS = self.createContainer(sceneRoot, dna.nameCrowds, bbox=2, mb=1)
-            CROWDS.createNode(environmentData['crowds_hda']['hda_name'], environmentData['crowds_hda']['name'])
+            self.createHDA(CROWDS, environmentData['crowds_hda']['hda_name'], environmentData['crowds_hda']['name'])
             CROWDS.setPosition([0, -3 * dna.nodeDistance_y])
 
             # BUILD CHARACTERS

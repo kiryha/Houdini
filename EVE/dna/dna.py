@@ -129,7 +129,7 @@ def analyzeFileName(fileName):
     Disassemble <fileName> string
     Example naming conventions:
         <fileName> = ANM_E010_S010_001.hipnc
-        <fileName> = CITY_001.hipnc
+        <fileName> = CITY_001.hipnc,  CITY_ANM_001.hipnc
     '''
 
     fileExtension = fileName.split('.')[-1]
@@ -137,12 +137,23 @@ def analyzeFileName(fileName):
 
     parts = fileCodeVersion.split('_')
 
+    # Handle different naming conventions:
+    if len(parts) == 4:
+        # ANM_E010_S010_001.hipnc
+        fileVersion = parts[-1]
+        shotCode = parts[-2][-3:]
+        sequenceCode = parts[-3][-3:]
+        print shotCode
+        fileType = parts[0]
+        fileCode = fileCodeVersion.replace('_{0}'.format(fileVersion), '')
 
-    fileVersion = parts[-1]
-    shotCode = parts[-2][-3:]
-    sequenceCode = parts[-3][-3:]
-    fileType = parts[0]
-    fileCode = fileCodeVersion.replace('_{0}'.format(fileVersion), '')
+    else:
+        # CITY_001.hipnc
+        fileVersion = parts[-1]
+        shotCode = ''
+        sequenceCode = ''
+        fileType = ''
+        fileCode = parts[0]
 
     # Return dictionary: sequenceCode, shotCode
     outputMap = {'fileType': fileType,
@@ -431,3 +442,5 @@ def getShotGenes(sequenceNumber, shotNumber):
 # assetsData = getAssetsDataByShot(shotData['assets'])
 # envData = getAssetDataByType(assetsData,  'Environment')
 # charData = getAssetDataByType(assetsData,  'Character')
+
+# analyzeFileName(' ANM_E010_S010_001.hipnc')
