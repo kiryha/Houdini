@@ -8,5 +8,6 @@
   <shelfSet name="shelf_set_1" label="Create and Refine">
     <memberToolshelf name="eve"/>
     <memberToolshelf name="create"/>
+    <memberToolshelf name="model"/>
   </shelfSet>
 </shelfDocument>

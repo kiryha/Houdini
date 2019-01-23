@@ -102,6 +102,20 @@ class CreateScene(QtWidgets.QWidget):
         # Build scene content
         self.buildSceneContent(fileType, sequenceNumber=sequenceNumber, shotNumber=shotNumber)
 
+    def createHDA(self, parent, hdaTypeName, hdaName):
+        '''
+        Create Houdini digital asset node
+        :param hdaTypeName:
+        :param hdaName:
+        :return:
+        '''
+
+        # Create HDA node inside parent container
+        hda = parent.createNode(hdaTypeName, hdaName)
+        # Set HDA file version (latest)
+        hda
+
+
     def createContainer(self, parent, name, bbox=0, mb=None, disp=1):
         '''
         Create scene container for CHARS, ENV etc
@@ -236,7 +250,8 @@ class CreateScene(QtWidgets.QWidget):
             ENV_PRX.setPosition([0, 0])
             # Base
             ENVIRONMENT = self.createContainer(sceneRoot, dna.nameEnv, bbox=2, disp=0)
-            ENVIRONMENT.createNode(environmentData['hda_name'], environmentData['code'])
+            #ENVIRONMENT.createNode(environmentData['hda_name'], environmentData['code'])
+            self.createHDA(ENVIRONMENT, environmentData['hda_name'], environmentData['code'])
             ENVIRONMENT.setPosition([0, -dna.nodeDistance_y])
             # Animation
             ENV_ANM = self.createContainer(sceneRoot, dna.nameEnvAnim, bbox=2, mb=1)
@@ -293,8 +308,6 @@ class CreateScene(QtWidgets.QWidget):
                 mantra.parm(param).set(value)
             # Set DRAFT parameters
             for param, value in dna.renderSettings['draft'].iteritems():
-                print mantra
-                print param, value
                 mantra.parm(param).set(value)
 
             # SETUP SCENE (end frame ...)

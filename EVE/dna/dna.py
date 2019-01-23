@@ -32,10 +32,11 @@ fileTypes = {'animationScene': 'ANM',
 frameStart = 1
 resolution = (1280, 540)
 
-# TEMP HARDCODE !!!
+# TEMP HARDCODE TO RUN DNA IN PYCHARM!!!
+# ++++++++++++++++++++++++++++++++++++++++++++
 os.environ['ROOT'] = 'P:/PROJECTS/NSI'
 os.environ['JOB'] = 'P:/PROJECTS/NSI/PROD/3D'
-# +++++++++++++++++++++++++++++++++++++++++
+# ++++++++++++++++++++++++++++++++++++++++++++
 
 # PATHS
 # Get project root folder, defined in runHoudini.py  <P:/PROJECTS/NSI/>
@@ -126,7 +127,9 @@ def analyzeFliePath(filePath):
 def analyzeFileName(fileName):
     '''
     Disassemble <fileName> string
-    Example <fileName> = ANM_E010_S010_001.hipnc
+    Example naming conventions:
+        <fileName> = ANM_E010_S010_001.hipnc
+        <fileName> = CITY_001.hipnc
     '''
 
     fileExtension = fileName.split('.')[-1]
@@ -153,7 +156,7 @@ def analyzeFileName(fileName):
 
 def extractLatestVersionFile(listExisted):
     '''
-    Get list of files paths (listExisted), return latest existing version + 1 (<###> string)
+    Get list of files paths (listExisted), return latest existing version (<###> string)
     '''
 
     listVersions = []
