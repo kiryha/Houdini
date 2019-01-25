@@ -1,7 +1,9 @@
-# MOTHER
-# Houdini pipeline for VFX production
+'''
+256 Pipeline tools
+EVE - Houdini pipeline for VFX production
 
-# Create folder structure for the project and copy pipeline files into it
+Create folder structure for the project and copy pipeline files into it
+'''
 
 # Common modules import
 import os
@@ -10,111 +12,19 @@ import webbrowser
 
 # UI import
 from EVE.ui.py import createProject_Main
-from EVE.ui.py import createProject_SG
 from EVE.ui.py import createProject_Warning
-from EVE.ui.py import createProject_Shots
+
+# DNA import
+from EVE.dna import dna
 
 # Py Side import
 from PySide.QtGui import *
 
-# COMMON VARIABLES
-# Documentation paths
-DOCS = 'https://github.com/kiryha/Houdini/wiki'
-HELP = 'https://github.com/kiryha/Houdini/wiki/Tools#create-project'
-# Project paths
-rootPipeline_SRC = os.path.dirname(__file__)
+# COMMON SCRIPT VARIABLES
 # Folder names to skip when run copyTree
 filterFolders = ['.dev', '.git', '.idea', 'hips']
 # File names to skip when run copyTree
 filterFiles = ['createProject.py', 'createProject.bat', 'README.md']
-
-# PROJECT FOLDER STRUCTURE
-# LATER WOULD BE REPLACED WITH UI
-# Shots structure
-SHOTS = [
-    ['010',[
-        ['SHOT_010', []],
-        ['SHOT_020', []]
-    ]]
-        ]
-# Assets structure
-ASSETS = [
-    ['CHARACTERS', []],
-    ['ENVIRONMENTS', []],
-    ['PROPS', []],
-    ['STATIC', []]
-        ]
-# Types structure
-TYPES = [
-    ['ASSETS', ASSETS],
-    ['SHOTS', SHOTS]
-    ]
-# Formats structure
-FORMATS = [
-    ['ABC', []],
-    ['GEO', []],
-    ['FBX', []]
-    ]
-
-# Folders structure
-folders = [
-    ['EDIT', [
-        ['OUT', []],
-        ['PROJECT', []]
-    ]],
-    ['PREP', [
-        ['ART', []], 
-        ['SRC', []],
-        ['PIPELINE', []],
-        ]],
-    ['PROD', [
-        ['2D', [
-            ['COMP', SHOTS],
-            ['RENDER', SHOTS]
-        ]],
-        ['3D', [
-            ['lib', [
-                ['ANIMATION', []],
-                ['MATERIALS', ASSETS] # Or TYPES ?
-            ]],
-            ['fx',TYPES],
-            ['caches',TYPES],
-            ['hda',ASSETS],
-            ['render', SHOTS],
-            ['scenes', [
-                ['ASSETS', ASSETS],
-                ['ANIMATION', SHOTS],
-                ['LAYOUT', SHOTS],
-                ['LOOKDEV', TYPES],
-                ['RENDER', SHOTS]
-            ]],
-            ['textures', TYPES],
-        ]],
-    ]]
-    ]
-
-# WARNING WINDOW
-class ShotBuilder(QWidget, createProject_Shots.Ui_ShotBuilder):
-    '''
-    Warning window.
-    Show existing project path,
-    send back to a parent class (CreateProject.createProject function) user choice (OK or NO)
-    '''
-    def __init__(self):
-        super(ShotBuilder, self).__init__()
-
-        # SETUP UI
-        self.setupUi(self)
-        self.lin_shots.setText("'010': ['SHOT_010', 'SHOT_020']")
-
-        # SETUP FUNCTIONALITY
-        self.btn_save.clicked.connect(self.save)
-
-
-    def save(self):
-        print self.lin_shots.text()
-        CreateProject.SHOTS = self.lin_shots.text()
-
 
 # WARNING WINDOW
 class Warning(QWidget, createProject_Warning.Ui_warning):
@@ -145,18 +55,6 @@ class Warning(QWidget, createProject_Warning.Ui_warning):
         # CANCEL button
         CreateProject.createProject(self.parent, 'NO')
 
-# SHOTGUN PROJECT SETUP
-class ShotgunSetup(QMainWindow, createProject_SG.Ui_SetupShotgun):
-    '''
-    Setup project data in Shotgun.
-    Create assets and shots entities.
-    '''
-    def __init__(self):
-        super(ShotgunSetup, self).__init__()
-
-        # SETUP UI
-        self.setupUi(self)
-
 # MAIN MODULE
 class CreateProject(QMainWindow, createProject_Main.Ui_CreateProject):
     '''
@@ -165,8 +63,8 @@ class CreateProject(QMainWindow, createProject_Main.Ui_CreateProject):
     '''
 
     # GLOBAL VARIABLES
-    SHOTS = {} # '010': ['SHOT_010', 'SHOT_020']
-    ASSETS = {'CHARACTERS': [], 'ENVIRONMENTS': [], 'PROPS': [], 'STATIC':[]}
+    shots = {} # '010': ['SHOT_010', 'SHOT_020']
+    assets = {'CHARACTERS': [], 'ENVIRONMENTS': [], 'PROPS': [], 'STATIC':[]}
 
     def __init__(self):
         super(CreateProject, self).__init__()
@@ -183,12 +81,10 @@ class CreateProject(QMainWindow, createProject_Main.Ui_CreateProject):
         self.projectName = None # Project name
 
         # SETUP FUNCTIONALITY
-        self.act_docs.triggered.connect(lambda:  self.help(DOCS))
-        self.act_help.triggered.connect(lambda:  self.help(HELP))
+        self.act_docs.triggered.connect(lambda:  self.help(dna.DOCS))
+        self.act_help.triggered.connect(lambda:  self.help(dna.HELP))
         self.btn_create.clicked.connect(self.createProject)
         self.btn_setFolder.clicked.connect(self.selectProjectFolder)
-        self.btn_setupSG.clicked.connect(self.setupShotgun)
-        self.btn_setupShots.clicked.connect(self.setupShots)
 
         self.lin_name.textChanged.connect(self.updateProjectPath)
         self.buildProjectPath()
@@ -284,10 +180,10 @@ class CreateProject(QMainWindow, createProject_Main.Ui_CreateProject):
         '''
 
         # Create nested folder structure
-        self.createFolders(projectRoot, folders)
+        self.createFolders(projectRoot, dna.FOLDERS)
         # Copy PIPELINE
         rootPipeline_NEW = '{}/PREP/PIPELINE'.format(projectRoot)
-        self.copyTree(rootPipeline_SRC, rootPipeline_NEW)
+        self.copyTree(dna.rootPipeline, rootPipeline_NEW)
 
         print '>> Folder structure with pipeline files created in {0}/'.format(projectRoot)
 
@@ -300,8 +196,8 @@ class CreateProject(QMainWindow, createProject_Main.Ui_CreateProject):
         :param catchWarning: returned value from Warning class (OK or NO)
         '''
 
-        print '>> SHOTS: {}'.format(SHOTS)
-        print '>> ASSETS: {}'.format(ASSETS)
+        # print '>> SHOTS: {}'.format(dna.SHOTS)
+        # print '>> ASSETS: {}'.format(dna.ASSETS)
 
         projectRoot = self.lab_path.text()
         projectName = self.lin_name.text()
@@ -337,7 +233,6 @@ class CreateProject(QMainWindow, createProject_Main.Ui_CreateProject):
         # Report about creation
         print '>> Project creation complete!'
         print '>> Run Houdini with {0}/PREP/PIPELINE/runHoudini.bat and create some magic!'.format(projectRoot)
-
 
 # Run Create Project script
 app = QApplication([])

@@ -3,7 +3,7 @@ Export CHARACTER animation data from animation scene
 
 Currently only builds cache network for  ROMA character. Need to run file caching manually
 '''
-
+import os
 import hou
 from EVE.dna import dna
 reload(dna)
@@ -11,8 +11,10 @@ reload(dna)
 characterName = 'ROMA'
 CHARACTERS = hou.node('/obj/{0}'.format(dna.nameChars))
 
-# Get scene root node
+# INITIALIZE DATA
 sceneRoot = hou.node('/obj/')
+scenePath = hou.hipFile.path()
+scenePathData = dna.analyzeFliePath(scenePath)
 
 
 def getRenderNode(container):
@@ -36,7 +38,7 @@ def createCacheNetwork():
     # Build path to a file cache
     pathCache = dna.buildFliePath('001',
                                    dna.fileTypes['cacheAnim'],
-                                   scenePath=hou.hipFile.path(),
+                                   scenePath= scenePath,
                                    characterName=characterName)
 
     renderNode = getRenderNode(CHARACTERS)
@@ -65,15 +67,21 @@ def createCacheNetwork():
 
 def ecxportAnimation():
 
+    # Create nodes network for export character data
     createCacheNetwork()
 
-
     # Export camera
-    #sel = hou.selectedNodes() # select camera
+    listExport = [] # All camera nodes (if camera parented to nulls)
+    camera = sceneRoot.node(dna.nameCamera.format(scenePathData['sequenceCode'], scenePathData['shotCode']))
+    listExport.extend(camera.inputAncestors())
+    listExport.append(camera)
+    cameraPath = dna.buildFliePath('001', dna.fileTypes['camera'], scenePath=scenePath)
+    # Create camera folder
+    dna.createFolder(cameraPath)
+    # Export camera to a file
+    sceneRoot.saveItemsToFile(listExport, cameraPath)
 
-    #sceneRoot = hou.node('/obj')
-    #sceneRoot.saveChildrenToFile(sel, [], 'C:/temp/nodes.cpio')
-    #sceneRoot.loadChildrenFromFile('C:/temp/nodes.cpio')
+
 
 def run():
     ecxportAnimation()

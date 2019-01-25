@@ -47,7 +47,6 @@ class CreateScene(QtWidgets.QWidget):
         self.ui.btn_createRenderScene.clicked.connect(lambda: self.createScene(fileType=dna.fileTypes['renderScene']))
         self.ui.btn_createRenderScene.clicked.connect(self.close)
 
-
     def createScene(self, fileType, catch = None):
         '''
         Save new scene, build scene content.
@@ -197,7 +196,17 @@ class CreateScene(QtWidgets.QWidget):
 
         CHARACTERS.layoutChildren()
 
-    def importAnimation(self, scenePath, charactersData):
+    def importCameraAnimation(self, scenePath):
+        '''
+        Import camera to the render scene
+        :param scenePath:
+        :return:
+        '''
+
+        cameraPath = dna.buildFliePath('001', dna.fileTypes['camera'], scenePath=scenePath)
+        sceneRoot.loadItemsFromFile(cameraPath)
+
+    def importCharacterAnimation(self, scenePath, charactersData):
         '''
         Import character animation for the current render scene: set FileCache nodes paths.
 
@@ -292,6 +301,7 @@ class CreateScene(QtWidgets.QWidget):
             # Render file version setup
             # renderFile = '$JOB/render/010/SHOT_040/001/E010_S040_001.$F.exr'
             renderFile = dna.buildFliePath('001', dna.fileTypes['renderFile'], scenePath=scenePath)
+            # Create folder for render file
             fileLocation = dna.analyzeFliePath(renderFile)['fileLocation']
             if not os.path.exists(fileLocation):
                 # Make 001 folder
@@ -322,8 +332,12 @@ class CreateScene(QtWidgets.QWidget):
             hou.playbar.setPlaybackRange(dna.frameStart, frameEnd)
 
             # IMPORT ANIMATION
+            # Later would be provided as separate tool
+            # Import camera
+            self.importCameraAnimation(scenePath)
             # Import characters caches
-            self.importAnimation(scenePath, charactersData)
+            self.importCharacterAnimation(scenePath, charactersData)
+
 
         # Save scene
         hou.hipFile.save()

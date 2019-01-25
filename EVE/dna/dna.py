@@ -27,7 +27,8 @@ fileTypes = {'animationScene': 'ANM',
              'renderScene': 'RND',
              'renderFile': 'EXR',
              'flipbook': 'FBK',
-             'cacheAnim': 'CAN'}
+             'cacheAnim': 'CAN',
+             'camera': 'CAM'}
 # Common variables
 frameStart = 1
 resolution = (1280, 540)
@@ -39,22 +40,93 @@ os.environ['JOB'] = 'P:/PROJECTS/NSI/PROD/3D'
 # ++++++++++++++++++++++++++++++++++++++++++++
 
 # PATHS
+# Documentation paths
+DOCS = 'https://github.com/kiryha/Houdini/wiki'
+HELP = 'https://github.com/kiryha/Houdini/wiki/Tools#create-project'
 # Get project root folder, defined in runHoudini.py  <P:/PROJECTS/NSI/>
 rootProject = os.environ['ROOT']
 # Get root for Houdini project ($JOB variable), defined in runHoudini.py <P:/PROJECTS/NSI/PROD/3D>
 root3D = os.environ['JOB']
 # Get pipeline root folder <P:/PROJECTS/NSI/PREP/PIPELINE>
-rootPipe = '{}/PREP/PIPELINE'.format(rootProject)
+rootPipeline = '{}/PREP/PIPELINE'.format(rootProject)
 # Get path to *.UI files <P:/PROJECTS/NSI/PREP/PIPELINE/EVE/ui/ui>
-folderUI = '{0}/{1}/ui/ui'.format(rootPipe, pipelineName)
+folderUI = '{0}/{1}/ui/ui'.format(rootPipeline, pipelineName)
 
 # Database files
-databaseASSETS = '{0}/{1}/database/ASSETS.json'.format(rootPipe, pipelineName)
-databaseSHOTS = '{0}/{1}/database/SHOTS.json'.format(rootPipe, pipelineName)
-genesFile = '{0}/EVE/genes/genes.json'.format(rootPipe)
+databaseASSETS = '{0}/{1}/database/ASSETS.json'.format(rootPipeline, pipelineName)
+databaseSHOTS = '{0}/{1}/database/SHOTS.json'.format(rootPipeline, pipelineName)
+genesFile = '{0}/EVE/genes/genes.json'.format(rootPipeline)
 genes = json.load(open(genesFile))
 
-# Houdini scene content
+# PROJECT FOLDER STRUCTURE
+# Shots structure
+SHOTS = [
+    ['010',[
+        ['SHOT_010', []],
+        ['SHOT_020', []]
+    ]]
+        ]
+# Assets structure
+ASSETS = [
+    ['CHARACTERS', []],
+    ['ENVIRONMENTS', []],
+    ['PROPS', []],
+    ['STATIC', []]
+        ]
+# Types structure
+TYPES = [
+    ['ASSETS', ASSETS],
+    ['SHOTS', SHOTS]
+    ]
+# Formats structure
+FORMATS = [
+    ['ABC', []],
+    ['GEO', []],
+    ['FBX', []]
+    ]
+# Folders structure
+FOLDERS = [
+    ['EDIT', [
+        ['OUT', []],
+        ['PROJECT', []]
+    ]],
+    ['PREP', [
+        ['ART', []],
+        ['SRC', []],
+        ['PIPELINE', []],
+        ]],
+    ['PROD', [
+        ['2D', [
+            ['COMP', SHOTS],
+            ['RENDER', SHOTS]
+        ]],
+        ['3D', [
+            ['lib', [
+                ['ANIMATION', []],
+                ['MATERIALS', ASSETS] # Or TYPES ?
+            ]],
+            ['fx',TYPES],
+            ['caches',TYPES],
+            ['hda',ASSETS],
+            ['render', SHOTS],
+            ['scenes', [
+                ['ASSETS', ASSETS],
+                ['ANIMATION', SHOTS],
+                ['LAYOUT', SHOTS],
+                ['LOOKDEV', TYPES],
+                ['RENDER', SHOTS]
+            ]],
+            ['textures', TYPES],
+        ]],
+    ]]
+    ]
+
+# FILE NAMES
+# Flipbook sequence
+fileNameFlipbook = 'E{0}_S{1}_{2}.$F.{3}'
+fileNameCamera = 'CAM_E{0}_S{1}_{2}.{3}'
+
+# HOUDINI SCENE CONTENT
 # Distance between nodes in scene view
 nodeDistance_x = 4.0
 nodeDistance_y = 0.8
@@ -65,6 +137,8 @@ nameEnvAnim = 'ENVIRONMENT_ANM'
 nameEnvProxy = 'ENVIRONMENT_PRX'
 nameMats = 'MATERIALS'
 nameCrowds = 'CROWDS'
+# Shot camera name
+nameCamera = 'E{0}_S{1}'
 
 # SETTINGS
 renderSettings = {
@@ -143,7 +217,6 @@ def analyzeFileName(fileName):
         fileVersion = parts[-1]
         shotCode = parts[-2][-3:]
         sequenceCode = parts[-3][-3:]
-        print shotCode
         fileType = parts[0]
         fileCode = fileCodeVersion.replace('_{0}'.format(fileVersion), '')
 
@@ -213,10 +286,11 @@ def buildPathNextVersion(filePath):
     '''
 
     # Disassemble file path
-    fileLocation = analyzeFliePath(filePath)['fileLocation']
-    fileCode = analyzeFliePath(filePath)['fileCode']
-    fileVersion = analyzeFliePath(filePath)['fileVersion']
-    fileExtension = analyzeFliePath(filePath)['fileExtension']
+    filePathData = analyzeFliePath(filePath)
+    fileLocation = filePathData['fileLocation']
+    fileCode = filePathData['fileCode']
+    fileVersion = filePathData['fileVersion']
+    fileExtension = filePathData['fileExtension']
 
     fileVersionNext = '{:03}'.format(int(fileVersion) + 1)
     filePathNextVersion = '{0}{1}_{2}.{3}'.format(fileLocation, fileCode, fileVersionNext, fileExtension)
@@ -229,9 +303,10 @@ def buildPathLatestVersion(filePath):
     '''
 
     # Disassemble file path
-    fileLocation= analyzeFliePath(filePath)['fileLocation']
-    fileCode = analyzeFliePath(filePath)['fileCode']
-    fileExtension = analyzeFliePath(filePath)['fileExtension']
+    filePathData = analyzeFliePath(filePath)
+    fileLocation= filePathData['fileLocation']
+    fileCode = filePathData['fileCode']
+    fileExtension = filePathData['fileExtension']
 
     listExisted = glob.glob('{0}{1}_*.{2}'.format(fileLocation, fileCode, fileExtension))
     fileVersionLatest = extractLatestVersionFile(listExisted)
@@ -254,7 +329,7 @@ def buildFliePath(version, fileType, scenePath=None, characterName=None, sequenc
 
 
     if scenePath != None:
-        filePathMap = analyzeFliePath(scenePath)
+        filePathData = analyzeFliePath(scenePath)
 
     # Render scene path
     if fileType == fileTypes['renderScene']:
@@ -272,26 +347,35 @@ def buildFliePath(version, fileType, scenePath=None, characterName=None, sequenc
         else:
             extension = extensionRender
 
-        fileName = 'E{0}_S{1}_{2}.$F.{3}'.format(filePathMap['sequenceCode'],
-                                                 filePathMap['shotCode'],
-                                                 version,
-                                                 extension)
+        fileName = fileNameFlipbook.format(filePathData['sequenceCode'],
+                                           filePathData['shotCode'],
+                                           version,
+                                           extension)
         filePath = '{0}/render/{1}/SHOT_{2}/{3}/{4}'.format(root3D,
-                                                     filePathMap['sequenceCode'],
-                                                     filePathMap['shotCode'],
-                                                     version,
-                                                     fileName)
+                                                            filePathData['sequenceCode'],
+                                                            filePathData['shotCode'],
+                                                            version,
+                                                            fileName)
 
     # Character animation cache path
     elif fileType == fileTypes['cacheAnim']:
         filePath = '$JOB/geo/SHOTS/{0}/SHOT_{1}/{2}/GEO/{3}/E{0}_S{1}_{2}_{3}.$F.{4}'.format(
-                    filePathMap['sequenceCode'],
-                    filePathMap['shotCode'],
+                    filePathData['sequenceCode'],
+                    filePathData['shotCode'],
                     characterName,
                     version,
                     extensionCacheAnim)
 
+    elif fileType == fileTypes['camera']:
+        fileName = fileNameCamera.format(filePathData['sequenceCode'], filePathData['shotCode'], version, extensionHoudini)
+        filePath = '{0}/geo/SHOTS/{1}/SHOT_{2}/CAM/{3}'.format(
+                    root3D,
+                    filePathData['sequenceCode'],
+                    filePathData['shotCode'],
+                    fileName)
+
     # print 'dna.buildFilePath() [filePath] = {}'.format(filePath)
+
     return filePath
 
 def getCharacterData(charcterName):
@@ -348,15 +432,19 @@ def getShotData(sequenceNumber, shotNumber):
     '''
 
     shotCode = 'SHOT_{0}'.format(shotNumber)
+    SHOT = None
 
     for shot in genes['SHOTS']:
         # Get shot > sequence data
         if shot['sg_sequence']['name'] == sequenceNumber:
             # Get shot data
             if shot['code'] == shotCode:
-                return shot
-            else:
-                print 'dna.getStotData(): There is no data for shot E{0}_S{1}'.format(sequenceNumber, shotNumber)
+                SHOT = shot
+
+    if SHOT == None:
+        print 'dna.getStotData(): There is no data for shot E{0}_S{1}'.format(sequenceNumber, shotNumber)
+    else:
+        return SHOT
 
 def getAssetsDataByShot(assetData_short):
     '''
@@ -438,9 +526,22 @@ def getShotGenes(sequenceNumber, shotNumber):
 
     return shotData, assetsData, environmentData, charactersData
 
-# shotData = getShotData('010', '010')
+# shotData = getShotData('010', '230')
 # assetsData = getAssetsDataByShot(shotData['assets'])
 # envData = getAssetDataByType(assetsData,  'Environment')
 # charData = getAssetDataByType(assetsData,  'Character')
 
 # analyzeFileName(' ANM_E010_S010_001.hipnc')
+
+# UNSORTED
+def createFolder(filePath):
+    '''
+    Create folder for a file if not exists
+    filePath = P:/PROJECTS/NSI/PROD/3D/geo/SHOTS/010/SHOT_340/CAM/CAM_E010_S340.hipnc
+    :param filePath: full path to a file
+    :return:
+    '''
+
+    fileLocation = analyzeFliePath(filePath)['fileLocation']
+    if not os.path.exists(fileLocation):
+        os.makedirs(fileLocation)

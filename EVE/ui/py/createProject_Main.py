@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'P:\PROJECTS\NSI\PREP\PIPELINE\.dev\UI\createProject_Main_03.ui'
+# Form implementation generated from reading ui file 'P:\PROJECTS\NSI\PREP\PIPELINE\.dev\UI\createProject_Main_04.ui'
 #
-# Created: Fri Jul 13 16:19:20 2018
+# Created: Fri Jan 25 14:13:57 2019
 #      by: pyside-uic 0.2.15 running on PySide 1.2.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -12,7 +12,7 @@ from PySide import QtCore, QtGui
 class Ui_CreateProject(object):
     def setupUi(self, CreateProject):
         CreateProject.setObjectName("CreateProject")
-        CreateProject.resize(255, 351)
+        CreateProject.resize(256, 264)
         self.centralwidget = QtGui.QWidget(CreateProject)
         self.centralwidget.setObjectName("centralwidget")
         self.verticalLayout = QtGui.QVBoxLayout(self.centralwidget)
@@ -45,12 +45,6 @@ class Ui_CreateProject(object):
         self.lab_path.setObjectName("lab_path")
         self.verticalLayout_4.addWidget(self.lab_path)
         self.verticalLayout.addWidget(self.groupBox_3)
-        self.btn_setupShots = QtGui.QPushButton(self.centralwidget)
-        self.btn_setupShots.setObjectName("btn_setupShots")
-        self.verticalLayout.addWidget(self.btn_setupShots)
-        self.btn_setupAssets = QtGui.QPushButton(self.centralwidget)
-        self.btn_setupAssets.setObjectName("btn_setupAssets")
-        self.verticalLayout.addWidget(self.btn_setupAssets)
         self.groupBox_4 = QtGui.QGroupBox(self.centralwidget)
         self.groupBox_4.setObjectName("groupBox_4")
         self.verticalLayout_5 = QtGui.QVBoxLayout(self.groupBox_4)
@@ -60,9 +54,6 @@ class Ui_CreateProject(object):
         self.chb_skipSG.setChecked(True)
         self.chb_skipSG.setObjectName("chb_skipSG")
         self.verticalLayout_5.addWidget(self.chb_skipSG)
-        self.btn_setupSG = QtGui.QPushButton(self.groupBox_4)
-        self.btn_setupSG.setObjectName("btn_setupSG")
-        self.verticalLayout_5.addWidget(self.btn_setupSG)
         self.verticalLayout.addWidget(self.groupBox_4)
         self.btn_create = QtGui.QPushButton(self.centralwidget)
         self.btn_create.setMinimumSize(QtCore.QSize(0, 35))
@@ -70,7 +61,7 @@ class Ui_CreateProject(object):
         self.verticalLayout.addWidget(self.btn_create)
         CreateProject.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(CreateProject)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 255, 21))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 256, 21))
         self.menubar.setObjectName("menubar")
         self.menuHelp = QtGui.QMenu(self.menubar)
         self.menuHelp.setObjectName("menuHelp")
@@ -96,11 +87,8 @@ class Ui_CreateProject(object):
         self.groupBox.setTitle(QtGui.QApplication.translate("CreateProject", "Project Name", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox_3.setTitle(QtGui.QApplication.translate("CreateProject", "Project Root Folder", None, QtGui.QApplication.UnicodeUTF8))
         self.lab_path.setText(QtGui.QApplication.translate("CreateProject", "C:", None, QtGui.QApplication.UnicodeUTF8))
-        self.btn_setupShots.setText(QtGui.QApplication.translate("CreateProject", "SETUP SHOTS", None, QtGui.QApplication.UnicodeUTF8))
-        self.btn_setupAssets.setText(QtGui.QApplication.translate("CreateProject", "SETUP ASSETS", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox_4.setTitle(QtGui.QApplication.translate("CreateProject", "Shotgun Project Setup", None, QtGui.QApplication.UnicodeUTF8))
         self.chb_skipSG.setText(QtGui.QApplication.translate("CreateProject", "Skip Shotgun project creation", None, QtGui.QApplication.UnicodeUTF8))
-        self.btn_setupSG.setText(QtGui.QApplication.translate("CreateProject", "SETUP SHOTGUN PROJECT", None, QtGui.QApplication.UnicodeUTF8))
         self.btn_create.setText(QtGui.QApplication.translate("CreateProject", "CREATE PROJECT", None, QtGui.QApplication.UnicodeUTF8))
         self.menuHelp.setTitle(QtGui.QApplication.translate("CreateProject", "Help", None, QtGui.QApplication.UnicodeUTF8))
         self.act_docs.setText(QtGui.QApplication.translate("CreateProject", "Documentation", None, QtGui.QApplication.UnicodeUTF8))
