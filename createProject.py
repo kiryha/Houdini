@@ -95,20 +95,6 @@ class CreateProject(QMainWindow, createProject_Main.Ui_CreateProject):
         '''
         webbrowser.open(URL)
 
-    def setupShotgun(self):
-        '''
-        Run Shotgun Setup window
-        '''
-        self.sg = ShotgunSetup()
-        self.sg.show()
-
-    def setupShots(self):
-        '''
-        Run Shots Setup window
-        '''
-        self.sb = ShotBuilder()
-        self.sb.show()
-
     def selectProjectFolder(self):
         '''
         Let user to select project location
@@ -131,14 +117,6 @@ class CreateProject(QMainWindow, createProject_Main.Ui_CreateProject):
         projectName = self.lin_name.text().replace(' ', '_') # Get project name from UI
         self.lab_path.setText('{0}/{1}'.format(self.projectFolder, projectName)) # Build full project path and update UI
 
-    def createFolder(self, path):
-        '''
-        Create folder from input path
-        :param path: Path to create folder
-        '''
-        if not os.path.exists(path):
-            os.mkdir(path)
-
     def createFolders(self, pathRoot, list):
         '''
         Recursively build folder structure based on template (folders list)
@@ -150,7 +128,7 @@ class CreateProject(QMainWindow, createProject_Main.Ui_CreateProject):
             for folder in list:
                 folderName = folder[0]
                 path = '{}/{}'.format(pathRoot, folderName)
-                self.createFolder(path)
+                dna.createFolder(path)
                 self.createFolders(path, folder[1])
 
     def copyTree(self, SRC, NEW):
@@ -222,7 +200,7 @@ class CreateProject(QMainWindow, createProject_Main.Ui_CreateProject):
                 return
         else:
             # Create new project structure on HDD
-            self.createFolder(projectRoot)
+            dna.createFolder(projectRoot)
             self.createProject_HDD(projectRoot)
 
         # SHOTGUN

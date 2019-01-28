@@ -531,7 +531,7 @@ def getShotGenes(sequenceNumber, shotNumber):
 # envData = getAssetDataByType(assetsData,  'Environment')
 # charData = getAssetDataByType(assetsData,  'Character')
 
-# analyzeFileName(' ANM_E010_S010_001.hipnc')
+# analyzeFileName('ANM_E010_S010_001.hipnc')
 
 # UNSORTED
 def createFolder(filePath):
