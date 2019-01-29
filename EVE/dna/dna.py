@@ -126,12 +126,15 @@ FOLDERS = [
     ]
 
 # FILE NAMES PATTERNS
-fileNameSequence =    'E{0}_S{1}_{2}.$F.{3}'                           # Output sequence (flipbook, mantra, cache)
-fileNameAnimation =   fileTypes['animationScene'] + fileNameSequence   # Animation scene name
-fileNameRender =      fileTypes['renderScene'] + fileNameSequence      # Render scene name
-fileNameCamera =      fileTypes['camera'] + fileNameSequence           # Camera exported ANM >> RND
+fileNameSequence =    'E{0}_S{1}_{2}.$F.{3}'                                 # Output sequence (flipbook, mantra, cache)
+fileNameAnimation =   fileTypes['animationScene'] + '_E{0}_S{1}_{2}.{3}'     # Animation scene name
+fileNameRender =      fileTypes['renderScene'] + '_E{0}_S{1}_{2}.{3}'        # Render scene name
+fileNameCamera =      fileTypes['camera'] + '_E{0}_S{1}_{2}.{3}'             # Camera exported ANM >> RND
 
 # HOUDINI SCENE CONTENT
+# Currently string oriented.
+# Another option is to use custom UID (node.setUserData()) for each node and save it in database. Potentially TBD.
+
 # Distance between nodes in scene view
 nodeDistance_x = 4.0
 nodeDistance_y = 0.8
@@ -348,7 +351,10 @@ def buildPathLatestVersion(filePath):
 
 def buildFilePath(version, fileType, scenePath=None, characterName=None, sequenceNumber=None, shotNumber=None):
     '''
-    Generate and return a full path to a file <filePath> (string)
+    Generate and return a full path to a file <filePath> (string).
+    There are 2 options to build a path:
+        - based on Houdini scene name (in addition to file type and version)
+        - based on Scene and Shot code (in addition to file type and version)
 
     :param version: version of the file
     :param fileType: type of file to generate (string), 'ANM', 'RND' etc
@@ -389,7 +395,7 @@ def buildFilePath(version, fileType, scenePath=None, characterName=None, sequenc
                                                             version,
                                                             fileName)
 
-    # Character animation cache path
+    # Character animation CACHE path
     elif fileType == fileTypes['cacheAnim']:
         fileName = fileNameSequence.format(filePathData['sequenceCode'],
                                            filePathData['shotCode'],
@@ -402,7 +408,7 @@ def buildFilePath(version, fileType, scenePath=None, characterName=None, sequenc
                     version,
                     fileName)
 
-    # Camera file ANM scene >> RND scene
+    # CAMERA file ANM scene >> RND scene
     elif fileType == fileTypes['camera']:
         fileName = fileNameCamera.format(filePathData['sequenceCode'], filePathData['shotCode'], version, extensionHoudini)
         filePath = '{0}/geo/SHOTS/{1}/SHOT_{2}/CAM/{3}'.format(
