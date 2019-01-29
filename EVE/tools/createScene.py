@@ -65,7 +65,7 @@ class CreateScene(QtWidgets.QWidget):
         if catch == None:
 
             # Build path to 001 version
-            pathScene = dna.buildFliePath('001', fileType, sequenceNumber=sequenceNumber, shotNumber=shotNumber)
+            pathScene = dna.buildFilePath('001', fileType, sequenceNumber=sequenceNumber, shotNumber=shotNumber)
 
             # Start new Houdini session without saving current
             hou.hipFile.clear(suppress_save_prompt=True)
@@ -87,12 +87,12 @@ class CreateScene(QtWidgets.QWidget):
         # If createRenderScene() runs from SNV class: return user choice, OVR or SNV
         elif catch == 'SNV':
             # Save latest version
-            newPath = dna.buildPathNextVersion(dna.buildPathLatestVersion(dna.buildFliePath('001', fileType, sequenceNumber=sequenceNumber, shotNumber=shotNumber)))
+            newPath = dna.buildPathNextVersion(dna.buildPathLatestVersion(dna.buildFilePath('001', fileType, sequenceNumber=sequenceNumber, shotNumber=shotNumber)))
             hou.hipFile.save(newPath)
             hou.ui.displayMessage('New version saved:\n{}'.format(newPath.split('/')[-1]))
         elif catch == 'OVR':
             # Overwrite existing file
-            pathScene = dna.buildPathLatestVersion(dna.buildFliePath('001', fileType, sequenceNumber=sequenceNumber, shotNumber=shotNumber))
+            pathScene = dna.buildPathLatestVersion(dna.buildFilePath('001', fileType, sequenceNumber=sequenceNumber, shotNumber=shotNumber))
             hou.hipFile.save(pathScene)
             hou.ui.displayMessage('File overwited:\n{}'.format(pathScene.split('/')[-1]))
         else:
@@ -182,7 +182,7 @@ class CreateScene(QtWidgets.QWidget):
             null.setInput(0, cache)
 
             # Build and set path to the 001 cache version
-            pathCache = dna.buildFliePath('001',
+            pathCache = dna.buildFilePath('001',
                                           dna.fileTypes['cacheAnim'],
                                           scenePath=hou.hipFile.path(),
                                           characterName=characterName)
@@ -203,7 +203,7 @@ class CreateScene(QtWidgets.QWidget):
         :return:
         '''
 
-        cameraPath = dna.buildFliePath('001', dna.fileTypes['camera'], scenePath=scenePath)
+        cameraPath = dna.buildFilePath('001', dna.fileTypes['camera'], scenePath=scenePath)
         sceneRoot.loadItemsFromFile(cameraPath)
 
     def importCharacterAnimation(self, scenePath, charactersData):
@@ -222,7 +222,7 @@ class CreateScene(QtWidgets.QWidget):
             # BUILD CACHE PATH (LATEST VERSION)
             # Build a path to the 001 version of cache
 
-            pathCache = dna.buildFliePath('001',
+            pathCache = dna.buildFilePath('001',
                                           dna.fileTypes['cacheAnim'],
                                           scenePath=scenePath,
                                           characterName=characterName)
@@ -231,7 +231,7 @@ class CreateScene(QtWidgets.QWidget):
             pathCacheFolder = self.convertPathCache(pathCache)
             latestCacheVersion = dna.extractLatestVersionFolder(pathCacheFolder)
             if latestCacheVersion != '001':
-                pathCache = dna.buildFliePath(latestCacheVersion,
+                pathCache = dna.buildFilePath(latestCacheVersion,
                                               dna.fileTypes['cacheAnim'],
                                               scenePath=scenePath,
                                               characterName=characterName)
@@ -300,7 +300,7 @@ class CreateScene(QtWidgets.QWidget):
 
             # Render file version setup
             # renderFile = '$JOB/render/010/SHOT_040/001/E010_S040_001.$F.exr'
-            renderFile = dna.buildFliePath('001', dna.fileTypes['renderSequence'], scenePath=scenePath)
+            renderFile = dna.buildFilePath('001', dna.fileTypes['renderSequence'], scenePath=scenePath)
             # Create folder for render file
             fileLocation = dna.analyzeFliePath(renderFile)['fileLocation']
             if not os.path.exists(fileLocation):
@@ -311,7 +311,7 @@ class CreateScene(QtWidgets.QWidget):
                 latestVersion = dna.extractLatestVersionFolder(fileLocation)
                 nextVersion = '{:03d}'.format(int(latestVersion) + 1)
                 # Build latest existing path
-                renderFile = dna.buildFliePath(nextVersion, dna.fileTypes['renderSequence'], scenePath=scenePath)
+                renderFile = dna.buildFilePath(nextVersion, dna.fileTypes['renderSequence'], scenePath=scenePath)
                 os.makedirs(dna.analyzeFliePath(renderFile)['fileLocation'])
                 # Localize path (add $JOB)
                 renderFile = renderFile.replace(dna.root3D, '$JOB')

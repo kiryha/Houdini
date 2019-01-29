@@ -23,6 +23,10 @@ extensionCacheAnim = 'bgeo.sc'
 
 pipelineName = 'EVE'
 # cacheFolder = 'geo'
+# File types dictionary. Used for:
+#     - define file name prefixes in file name patterns
+#     - define file type in buildFilePath()
+
 fileTypes = {'animationScene': 'ANM',
              'renderScene': 'RND',
              'renderSequence': 'EXR',
@@ -122,10 +126,10 @@ FOLDERS = [
     ]
 
 # FILE NAMES PATTERNS
-fileNameSequence =    'E{0}_S{1}_{2}.$F.{3}'    # Output sequence (flipbook, mantra, cache etc)
-fileNameAnimation =   'ANM_E{0}_S{1}_{2}.{3}'   # Animation scene name
-fileNameRender =      'RND_E{0}_S{1}_{2}.{3}'   # Render scene name
-fileNameCamera =      'CAM_E{0}_S{1}_{2}.{3}'   # Camera exported ANM >> RND
+fileNameSequence =    'E{0}_S{1}_{2}.$F.{3}'                           # Output sequence (flipbook, mantra, cache)
+fileNameAnimation =   fileTypes['animationScene'] + fileNameSequence   # Animation scene name
+fileNameRender =      fileTypes['renderScene'] + fileNameSequence      # Render scene name
+fileNameCamera =      fileTypes['camera'] + fileNameSequence           # Camera exported ANM >> RND
 
 # HOUDINI SCENE CONTENT
 # Distance between nodes in scene view
@@ -342,12 +346,12 @@ def buildPathLatestVersion(filePath):
 
     return filePathLatestVersion
 
-def buildFliePath(version, fileType, scenePath=None, characterName=None, sequenceNumber=None, shotNumber=None):
+def buildFilePath(version, fileType, scenePath=None, characterName=None, sequenceNumber=None, shotNumber=None):
     '''
     Generate and return a full path to a file <filePath> (string)
 
     :param version: version of the file
-    :param fileType: type of file to generate, eg. animation Houdini scene, geometry cache, etc
+    :param fileType: type of file to generate (string), 'ANM', 'RND' etc
     :param scenePath: Full path to Houdini scene
     :param characterName: name of character asset
     :param sequenceNumber: Episode number (sequence number = sequence code) (010)
@@ -578,5 +582,5 @@ def createFolder(filePath):
 # charData = getAssetDataByType(assetsData,  'Character')
 
 # analyzeFileName('CITY_ANM_001.hipnc')
-# print buildFliePath('010', fileTypes['renderScene'],sequenceNumber='010', shotNumber='010' )
-print buildFliePath('001', fileTypes['cacheAnim'], scenePath='P:/PROJECTS/NSI/PROD/3D/scenes/RENDER/010/SHOT_010/RND_E010_S010_010.hipnc')
+# print buildFilePath('010', fileTypes['renderScene'],sequenceNumber='010', shotNumber='010' )
+# print buildFilePath('001', fileTypes['cacheAnim'], scenePath='P:/PROJECTS/NSI/PROD/3D/scenes/RENDER/010/SHOT_010/RND_E010_S010_010.hipnc')

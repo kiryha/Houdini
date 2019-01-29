@@ -36,10 +36,10 @@ def createCacheNetwork():
     '''
 
     # Build path to a file cache
-    pathCache = dna.buildFliePath('001',
-                                   dna.fileTypes['cacheAnim'],
-                                   scenePath= scenePath,
-                                   characterName=characterName)
+    pathCache = dna.buildFilePath('001',
+                                  dna.fileTypes['cacheAnim'],
+                                  scenePath= scenePath,
+                                  characterName=characterName)
 
     renderNode = getRenderNode(CHARACTERS)
 
@@ -75,7 +75,7 @@ def ecxportAnimation():
     camera = sceneRoot.node(dna.nameCamera.format(scenePathData['sequenceCode'], scenePathData['shotCode']))
     listExport.extend(camera.inputAncestors())
     listExport.append(camera)
-    cameraPath = dna.buildFliePath('001', dna.fileTypes['camera'], scenePath=scenePath)
+    cameraPath = dna.buildFilePath('001', dna.fileTypes['camera'], scenePath=scenePath)
     # Create camera folder
     dna.createFolder(cameraPath)
     # Export camera to a file
