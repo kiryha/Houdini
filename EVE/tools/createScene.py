@@ -300,7 +300,7 @@ class CreateScene(QtWidgets.QWidget):
 
             # Render file version setup
             # renderFile = '$JOB/render/010/SHOT_040/001/E010_S040_001.$F.exr'
-            renderFile = dna.buildFliePath('001', dna.fileTypes['renderFile'], scenePath=scenePath)
+            renderFile = dna.buildFliePath('001', dna.fileTypes['renderSequence'], scenePath=scenePath)
             # Create folder for render file
             fileLocation = dna.analyzeFliePath(renderFile)['fileLocation']
             if not os.path.exists(fileLocation):
@@ -311,7 +311,7 @@ class CreateScene(QtWidgets.QWidget):
                 latestVersion = dna.extractLatestVersionFolder(fileLocation)
                 nextVersion = '{:03d}'.format(int(latestVersion) + 1)
                 # Build latest existing path
-                renderFile = dna.buildFliePath(nextVersion, dna.fileTypes['renderFile'], scenePath=scenePath)
+                renderFile = dna.buildFliePath(nextVersion, dna.fileTypes['renderSequence'], scenePath=scenePath)
                 os.makedirs(dna.analyzeFliePath(renderFile)['fileLocation'])
                 # Localize path (add $JOB)
                 renderFile = renderFile.replace(dna.root3D, '$JOB')

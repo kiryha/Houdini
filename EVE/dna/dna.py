@@ -25,8 +25,8 @@ pipelineName = 'EVE'
 # cacheFolder = 'geo'
 fileTypes = {'animationScene': 'ANM',
              'renderScene': 'RND',
-             'renderFile': 'EXR',
-             'flipbook': 'FBK',
+             'renderSequence': 'EXR',
+             'flipbookSequence': 'FBK',
              'cacheAnim': 'CAN',
              'camera': 'CAM'}
 # Common variables
@@ -121,10 +121,11 @@ FOLDERS = [
     ]]
     ]
 
-# FILE NAMES
-# Flipbook sequence
-fileNameFlipbook = 'E{0}_S{1}_{2}.$F.{3}'
-fileNameCamera = 'CAM_E{0}_S{1}_{2}.{3}'
+# FILE NAMES PATTERNS
+fileNameSequence =    'E{0}_S{1}_{2}.$F.{3}'    # Output sequence (flipbook, mantra, cache etc)
+fileNameAnimation =   'ANM_E{0}_S{1}_{2}.{3}'   # Animation scene name
+fileNameRender =      'RND_E{0}_S{1}_{2}.{3}'   # Render scene name
+fileNameCamera =      'CAM_E{0}_S{1}_{2}.{3}'   # Camera exported ANM >> RND
 
 # HOUDINI SCENE CONTENT
 # Distance between nodes in scene view
@@ -202,8 +203,11 @@ def analyzeFileName(fileName):
     '''
     Disassemble <fileName> string
     Example naming conventions:
-        <fileName> = ANM_E010_S010_001.hipnc
-        <fileName> = CITY_001.hipnc,  CITY_ANM_001.hipnc
+        <fileName> = ANM_E010_S010_001.hipnc (ANM, RND scenes)
+        <fileName> = CITY_001.hipnc,  CITY_ANM_001.hipnc (HDA)
+        <fileName> = GEO_CITY_001.hipnc (asset scenes)
+        <fileName> = E010_S010_001.exr ( Render sequence (Flipbook or mantra))
+
     '''
 
     fileExtension = fileName.split('.')[-1]
@@ -211,8 +215,18 @@ def analyzeFileName(fileName):
 
     parts = fileCodeVersion.split('_')
 
-    # Handle different naming conventions:
-    if len(parts) == 4:
+    # HANDLE DIFFERENT NAMING CONVENTIONS:
+    # Render sequence (Flipbook or mantra)
+    if parts[0].startswith('E'):
+        # E010_S010_001.exr
+        fileVersion = parts[-1]
+        shotCode = parts[0][-3:]
+        sequenceCode = parts[0][-3:]
+        fileType = ''
+        fileCode = '{0}_{1}'.format(parts[0], parts[1])
+
+    # Pattern defined file names
+    elif parts[0] in fileTypes.values():
         # ANM_E010_S010_001.hipnc
         fileVersion = parts[-1]
         shotCode = parts[-2][-3:]
@@ -220,13 +234,21 @@ def analyzeFileName(fileName):
         fileType = parts[0]
         fileCode = fileCodeVersion.replace('_{0}'.format(fileVersion), '')
 
+    # Other names
     else:
-        # CITY_001.hipnc
+        # CITY_001.hipnc, CITY_ANM_001.hdnc
         fileVersion = parts[-1]
         shotCode = ''
         sequenceCode = ''
         fileType = ''
-        fileCode = parts[0]
+        fileCode = ''
+
+        # Join all parts but version to one string
+        for i in parts[:-1]:
+            if fileCode == '':
+                fileCode = i
+            else:
+                fileCode = fileCode + '_' + i
 
     # Return dictionary: sequenceCode, shotCode
     outputMap = {'fileType': fileType,
@@ -284,6 +306,7 @@ def buildPathNextVersion(filePath):
     Build next version of input path
     Get filePath, create new full filePath with a next version in fileName (P:/.../ANM_E010_S010_002.hipnc)
     '''
+    print 'dna.buildPathNextVersion [filePath] = {}'.format(filePath)
 
     # Disassemble file path
     filePathData = analyzeFliePath(filePath)
@@ -291,9 +314,12 @@ def buildPathNextVersion(filePath):
     fileCode = filePathData['fileCode']
     fileVersion = filePathData['fileVersion']
     fileExtension = filePathData['fileExtension']
+    print 'dna.buildPathNextVersion [filePathData] = {}'.format(filePathData)
 
     fileVersionNext = '{:03}'.format(int(fileVersion) + 1)
     filePathNextVersion = '{0}{1}_{2}.{3}'.format(fileLocation, fileCode, fileVersionNext, fileExtension)
+
+    print 'dna.buildPathNextVersion [filePathNextVersion] = {}'.format(filePathNextVersion)
 
     return filePathNextVersion
 
@@ -311,6 +337,8 @@ def buildPathLatestVersion(filePath):
     listExisted = glob.glob('{0}{1}_*.{2}'.format(fileLocation, fileCode, fileExtension))
     fileVersionLatest = extractLatestVersionFile(listExisted)
     filePathLatestVersion = '{0}{1}_{2}.{3}'.format(fileLocation, fileCode, fileVersionLatest, fileExtension)
+
+    # print 'dna.buildPathLatestVersion [filePathLatestVersion] = {}'.format(filePathLatestVersion)
 
     return filePathLatestVersion
 
@@ -331,23 +359,23 @@ def buildFliePath(version, fileType, scenePath=None, characterName=None, sequenc
     if scenePath != None:
         filePathData = analyzeFliePath(scenePath)
 
-    # Render scene path
+    # RENDER scene path
     if fileType == fileTypes['renderScene']:
-        filePath = '{0}/scenes/RENDER/{1}/SHOT_{2}/RND_E{1}_S{2}_{3}.{4}'.format(root3D,
-                                                                                 sequenceNumber,
-                                                                                 shotNumber,
-                                                                                 version,
-                                                                                 extensionHoudini)
+        fileName = fileNameRender.format(sequenceNumber,
+                                         shotNumber,
+                                         version,
+                                         extensionHoudini)
+        filePath = '{0}/scenes/RENDER/{1}/SHOT_{2}/{3}'.format(root3D,sequenceNumber, shotNumber, fileName)
 
-    # Flipbook sequence path
-    elif fileType == fileTypes['flipbook'] or fileType == fileTypes['renderFile']:
+    # FLIPBOOK sequence path
+    elif fileType == fileTypes['flipbookSequence'] or fileType == fileTypes['renderSequence']:
         # Set file extension for RENDER or FLIPBOOK
-        if fileType == fileTypes['flipbook']:
+        if fileType == fileTypes['flipbookSequence']:
             extension = extensionFlipbook
         else:
             extension = extensionRender
 
-        fileName = fileNameFlipbook.format(filePathData['sequenceCode'],
+        fileName = fileNameSequence.format(filePathData['sequenceCode'],
                                            filePathData['shotCode'],
                                            version,
                                            extension)
@@ -359,13 +387,18 @@ def buildFliePath(version, fileType, scenePath=None, characterName=None, sequenc
 
     # Character animation cache path
     elif fileType == fileTypes['cacheAnim']:
-        filePath = '$JOB/geo/SHOTS/{0}/SHOT_{1}/{2}/GEO/{3}/E{0}_S{1}_{2}_{3}.$F.{4}'.format(
+        fileName = fileNameSequence.format(filePathData['sequenceCode'],
+                                           filePathData['shotCode'],
+                                           version,
+                                           extensionCacheAnim)
+        filePath = '$JOB/geo/SHOTS/{0}/SHOT_{1}/{2}/GEO/{3}/{4}'.format(
                     filePathData['sequenceCode'],
                     filePathData['shotCode'],
                     characterName,
                     version,
-                    extensionCacheAnim)
+                    fileName)
 
+    # Camera file ANM scene >> RND scene
     elif fileType == fileTypes['camera']:
         fileName = fileNameCamera.format(filePathData['sequenceCode'], filePathData['shotCode'], version, extensionHoudini)
         filePath = '{0}/geo/SHOTS/{1}/SHOT_{2}/CAM/{3}'.format(
@@ -526,13 +559,6 @@ def getShotGenes(sequenceNumber, shotNumber):
 
     return shotData, assetsData, environmentData, charactersData
 
-# shotData = getShotData('010', '230')
-# assetsData = getAssetsDataByShot(shotData['assets'])
-# envData = getAssetDataByType(assetsData,  'Environment')
-# charData = getAssetDataByType(assetsData,  'Character')
-
-# analyzeFileName('ANM_E010_S010_001.hipnc')
-
 # UNSORTED
 def createFolder(filePath):
     '''
@@ -545,3 +571,12 @@ def createFolder(filePath):
     fileLocation = analyzeFliePath(filePath)['fileLocation']
     if not os.path.exists(fileLocation):
         os.makedirs(fileLocation)
+
+# shotData = getShotData('010', '230')
+# assetsData = getAssetsDataByShot(shotData['assets'])
+# envData = getAssetDataByType(assetsData,  'Environment')
+# charData = getAssetDataByType(assetsData,  'Character')
+
+# analyzeFileName('CITY_ANM_001.hipnc')
+# print buildFliePath('010', fileTypes['renderScene'],sequenceNumber='010', shotNumber='010' )
+print buildFliePath('001', fileTypes['cacheAnim'], scenePath='P:/PROJECTS/NSI/PROD/3D/scenes/RENDER/010/SHOT_010/RND_E010_S010_010.hipnc')
