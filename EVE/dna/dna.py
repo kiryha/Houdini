@@ -245,7 +245,7 @@ def analyzeFileName(fileName):
         fileType = parts[0]
         fileCode = fileCodeVersion.replace('_{0}'.format(fileVersion), '')
 
-    # Arbitrary names
+    # ARBITRARY names
     else:
         # CITY_001.hipnc, CITY_ANM_001.hdnc
         fileVersion = parts[-1]
@@ -557,7 +557,8 @@ def getShotGenes(sequenceNumber, shotNumber):
 # UNSORTED
 def createFolder(filePath):
     '''
-    Create folder for a file if not exists
+    Create folder for a FILE if not exists
+    !!! Does not support FLDER paths !!!
     filePath = P:/PROJECTS/NSI/PROD/3D/geo/SHOTS/010/SHOT_340/CAM/CAM_E010_S340.hipnc
     :param filePath: full path to a file
     :return:

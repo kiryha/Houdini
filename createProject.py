@@ -117,6 +117,14 @@ class CreateProject(QMainWindow, createProject_Main.Ui_CreateProject):
         projectName = self.lin_name.text().replace(' ', '_') # Get project name from UI
         self.lab_path.setText('{0}/{1}'.format(self.projectFolder, projectName)) # Build full project path and update UI
 
+    def createFolder(self, path):
+        '''
+        Create folder from input path
+        :param path: Path to create folder (C:/TEMP)
+        '''
+        if not os.path.exists(path):
+            os.makedirs(path)
+
     def createFolders(self, pathRoot, list):
         '''
         Recursively build folder structure based on template (folders list)
@@ -124,11 +132,12 @@ class CreateProject(QMainWindow, createProject_Main.Ui_CreateProject):
         :param list:
         :return:
         '''
+
         if list:
             for folder in list:
                 folderName = folder[0]
                 path = '{}/{}'.format(pathRoot, folderName)
-                dna.createFolder(path)
+                self.createFolder(path)
                 self.createFolders(path, folder[1])
 
     def copyTree(self, SRC, NEW):
@@ -200,7 +209,7 @@ class CreateProject(QMainWindow, createProject_Main.Ui_CreateProject):
                 return
         else:
             # Create new project structure on HDD
-            dna.createFolder(projectRoot)
+            self.createFolder(projectRoot)
             self.createProject_HDD(projectRoot)
 
         # SHOTGUN
@@ -217,4 +226,3 @@ app = QApplication([])
 CP = CreateProject()
 CP.show()
 app.exec_()
-
