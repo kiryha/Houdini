@@ -19,7 +19,14 @@
        "sg_sequence": {"name": "010"},
        "assets": [{"name": "CITY"}, {"name": "ROMA"}],
        "fxs": [],
-       "description":"Yard fly out from brain"}],
+       "description":"Yard fly out from brain"},
+
+    {"code": "SHOT_350",
+       "sg_cut_out": 125,
+       "sg_sequence": {"name": "010"},
+       "assets": [{"name": "CITY"}],
+       "fxs": [{"name": "METEOR"}],
+       "description":"Last shot. City destroy by meteor"}],
 
 "ASSETS": [
     {"code": "CITY",

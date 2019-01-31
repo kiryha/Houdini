@@ -72,7 +72,7 @@ def ecxportAnimation():
 
     # Export camera
     listExport = [] # All camera nodes (if camera parented to nulls)
-    camera = sceneRoot.node(dna.nameCamera.format(scenePathData['sequenceCode'], scenePathData['shotCode']))
+    camera = sceneRoot.node(dna.nameCamera.format(scenePathData['sequenceNumber'], scenePathData['shotNumber']))
     listExport.extend(camera.inputAncestors())
     listExport.append(camera)
     cameraPath = dna.buildFilePath('001', dna.fileTypes['camera'], scenePath=scenePath)

@@ -16,23 +16,23 @@ import glob
 
 # DEFINE COMMON VARIABLES AND PATHS
 # Pipeline items
+pipelineName = 'EVE'
 extensionHoudini = 'hipnc'
 extensionRender = 'exr'
 extensionFlipbook = 'jpg'
 extensionCacheAnim = 'bgeo.sc'
 
-pipelineName = 'EVE'
-# cacheFolder = 'geo'
-# File types dictionary. Used for:
-#     - define file name prefixes in file name patterns
-#     - define file type in buildFilePath()
 
+# FILE TYPES dictionary. Used for:
+#   - define file name prefixes in file name patterns
+#   - define file type in buildFilePath()
 fileTypes = {'animationScene': 'ANM',
              'renderScene': 'RND',
              'renderSequence': 'EXR',
              'flipbookSequence': 'FBK',
              'cacheAnim': 'CAN',
              'camera': 'CAM'}
+
 # Common variables
 frameStart = 1
 resolution = (1280, 540)
@@ -45,8 +45,7 @@ os.environ['JOB'] = 'P:/PROJECTS/NSI/PROD/3D'
 
 # PATHS
 # Documentation paths
-DOCS = 'https://github.com/kiryha/Houdini/wiki'
-HELP = 'https://github.com/kiryha/Houdini/wiki/Tools#create-project'
+DOCS = 'https://github.com/kiryha/Houdini/wiki/'
 # Get project root folder, defined in runHoudini.py  <P:/PROJECTS/NSI/>
 rootProject = os.environ['ROOT']
 # Get root for Houdini project ($JOB variable), defined in runHoudini.py <P:/PROJECTS/NSI/PROD/3D>
@@ -125,11 +124,16 @@ FOLDERS = [
     ]]
     ]
 
-# FILE NAMES PATTERNS
-fileNameSequence =    'E{0}_S{1}_{2}.$F.{3}'                                 # Output sequence (flipbook, mantra, cache)
-fileNameAnimation =   fileTypes['animationScene'] + '_E{0}_S{1}_{2}.{3}'     # Animation scene name
-fileNameRender =      fileTypes['renderScene'] + '_E{0}_S{1}_{2}.{3}'        # Render scene name
-fileNameCamera =      fileTypes['camera'] + '_E{0}_S{1}_{2}.{3}'             # Camera exported ANM >> RND
+# FILE NAMES AND PATHS PATTERNS
+fileNameSequence =  'E{0}_S{1}_{2}.$F.{3}'                                 # Output sequence (flipbook, mantra, cache)
+fileNameAnimation = fileTypes['animationScene'] + '_E{0}_S{1}_{2}.{3}'     # Animation scene name
+fileNameRender =    fileTypes['renderScene'] + '_E{0}_S{1}_{2}.{3}'        # Render scene name
+fileNameCamera =    fileTypes['camera'] + '_E{0}_S{1}_{2}.{3}'             # Camera exported ANM >> RND name
+
+filePathRender =          '{0}/scenes/RENDER/{1}/SHOT_{2}/{3}'             # Render scene path
+filePathSequenceRender =  '{0}/render/{1}/SHOT_{2}/{3}/{4}'                # Render sequence path
+filePathSequenceCache =   '$JOB/geo/SHOTS/{0}/SHOT_{1}/{2}/GEO/{3}/{4}'    # Characters geometry cache path
+filePathCamera =          '{0}/geo/SHOTS/{1}/SHOT_{2}/CAM/{3}'             # Camera ANM >> RND path
 
 # HOUDINI SCENE CONTENT
 # Currently string oriented.
@@ -183,8 +187,8 @@ def analyzeFliePath(filePath):
     fileLocation = P:/PROJECTS/NSI/PROD/3D/scenes/ANIMATION/
     fileName = ANM_E010_S010_001.hipnc
     fileType = ANM
-    sequenceCode = 010
-    shotCode = 010
+    sequenceNumber = 010
+    shotNumber = 010
     fileVersion = 001
     fileCode = ANM_E010_S010
     fileExtension = hipncw
@@ -198,8 +202,8 @@ def analyzeFliePath(filePath):
     outputMapPath = {'fileLocation': fileLocation,
                      'fileName': fileName,
                      'fileType': outputMapName['fileType'],
-                     'sequenceCode': outputMapName['sequenceCode'],
-                     'shotCode': outputMapName['shotCode'],
+                     'sequenceNumber': outputMapName['sequenceNumber'],
+                     'shotNumber': outputMapName['shotNumber'],
                      'fileVersion': outputMapName['fileVersion'],
                      'fileCode': outputMapName['fileCode'],
                      'fileExtension': outputMapName['fileExtension']}
@@ -223,30 +227,30 @@ def analyzeFileName(fileName):
     parts = fileCodeVersion.split('_')
 
     # HANDLE DIFFERENT NAMING CONVENTIONS:
-    # Render sequence (Flipbook or mantra)
+    # Output sequence (Flipbook or mantra or cache)
     if parts[0].startswith('E'):
         # E010_S010_001.exr
         fileVersion = parts[-1]
-        shotCode = parts[0][-3:]
-        sequenceCode = parts[0][-3:]
+        shotNumber = parts[0][-3:]
+        sequenceNumber = parts[0][-3:]
         fileType = ''
         fileCode = '{0}_{1}'.format(parts[0], parts[1])
 
-    # Pattern defined file names
+    # ANM, RND, CAM scene file names
     elif parts[0] in fileTypes.values():
         # ANM_E010_S010_001.hipnc
         fileVersion = parts[-1]
-        shotCode = parts[-2][-3:]
-        sequenceCode = parts[-3][-3:]
+        shotNumber = parts[-2][-3:]
+        sequenceNumber = parts[-3][-3:]
         fileType = parts[0]
         fileCode = fileCodeVersion.replace('_{0}'.format(fileVersion), '')
 
-    # Other names
+    # Arbitrary names
     else:
         # CITY_001.hipnc, CITY_ANM_001.hdnc
         fileVersion = parts[-1]
-        shotCode = ''
-        sequenceCode = ''
+        shotNumber = ''
+        sequenceNumber = ''
         fileType = ''
         fileCode = ''
 
@@ -257,10 +261,10 @@ def analyzeFileName(fileName):
             else:
                 fileCode = fileCode + '_' + i
 
-    # Return dictionary: sequenceCode, shotCode
+    # Return dictionary: sequenceNumber, shotNumber
     outputMap = {'fileType': fileType,
-                 'sequenceCode': sequenceCode,
-                 'shotCode': shotCode,
+                 'sequenceNumber': sequenceNumber,
+                 'shotNumber': shotNumber,
                  'fileVersion': fileVersion,
                  'fileCode': fileCode,
                  'fileExtension': fileExtension}
@@ -313,7 +317,8 @@ def buildPathNextVersion(filePath):
     Build next version of input path
     Get filePath, create new full filePath with a next version in fileName (P:/.../ANM_E010_S010_002.hipnc)
     '''
-    print 'dna.buildPathNextVersion [filePath] = {}'.format(filePath)
+
+    # print 'dna.buildPathNextVersion [filePath] = {}'.format(filePath)
 
     # Disassemble file path
     filePathData = analyzeFliePath(filePath)
@@ -321,12 +326,12 @@ def buildPathNextVersion(filePath):
     fileCode = filePathData['fileCode']
     fileVersion = filePathData['fileVersion']
     fileExtension = filePathData['fileExtension']
-    print 'dna.buildPathNextVersion [filePathData] = {}'.format(filePathData)
+    # print 'dna.buildPathNextVersion [filePathData] = {}'.format(filePathData)
 
     fileVersionNext = '{:03}'.format(int(fileVersion) + 1)
     filePathNextVersion = '{0}{1}_{2}.{3}'.format(fileLocation, fileCode, fileVersionNext, fileExtension)
 
-    print 'dna.buildPathNextVersion [filePathNextVersion] = {}'.format(filePathNextVersion)
+    # print 'dna.buildPathNextVersion [filePathNextVersion] = {}'.format(filePathNextVersion)
 
     return filePathNextVersion
 
@@ -368,16 +373,15 @@ def buildFilePath(version, fileType, scenePath=None, characterName=None, sequenc
 
     if scenePath != None:
         filePathData = analyzeFliePath(scenePath)
+        sequenceNumber = filePathData['sequenceNumber']
+        shotNumber = filePathData['shotNumber']
 
     # RENDER scene path
     if fileType == fileTypes['renderScene']:
-        fileName = fileNameRender.format(sequenceNumber,
-                                         shotNumber,
-                                         version,
-                                         extensionHoudini)
-        filePath = '{0}/scenes/RENDER/{1}/SHOT_{2}/{3}'.format(root3D,sequenceNumber, shotNumber, fileName)
+        fileName = fileNameRender.format(sequenceNumber, shotNumber, version, extensionHoudini)
+        filePath = filePathRender.format(root3D,sequenceNumber, shotNumber, fileName)
 
-    # FLIPBOOK sequence path
+    # FLIPBOOK or MANTRA render sequence path
     elif fileType == fileTypes['flipbookSequence'] or fileType == fileTypes['renderSequence']:
         # Set file extension for RENDER or FLIPBOOK
         if fileType == fileTypes['flipbookSequence']:
@@ -385,37 +389,18 @@ def buildFilePath(version, fileType, scenePath=None, characterName=None, sequenc
         else:
             extension = extensionRender
 
-        fileName = fileNameSequence.format(filePathData['sequenceCode'],
-                                           filePathData['shotCode'],
-                                           version,
-                                           extension)
-        filePath = '{0}/render/{1}/SHOT_{2}/{3}/{4}'.format(root3D,
-                                                            filePathData['sequenceCode'],
-                                                            filePathData['shotCode'],
-                                                            version,
-                                                            fileName)
+        fileName = fileNameSequence.format(sequenceNumber, shotNumber, version, extension)
+        filePath = filePathSequenceRender.format(root3D, sequenceNumber, shotNumber, version, fileName)
 
     # Character animation CACHE path
     elif fileType == fileTypes['cacheAnim']:
-        fileName = fileNameSequence.format(filePathData['sequenceCode'],
-                                           filePathData['shotCode'],
-                                           version,
-                                           extensionCacheAnim)
-        filePath = '$JOB/geo/SHOTS/{0}/SHOT_{1}/{2}/GEO/{3}/{4}'.format(
-                    filePathData['sequenceCode'],
-                    filePathData['shotCode'],
-                    characterName,
-                    version,
-                    fileName)
+        fileName = fileNameSequence.format(sequenceNumber, shotNumber, version, extensionCacheAnim)
+        filePath = filePathSequenceCache.format(sequenceNumber, shotNumber, characterName, version, fileName)
 
     # CAMERA file ANM scene >> RND scene
     elif fileType == fileTypes['camera']:
-        fileName = fileNameCamera.format(filePathData['sequenceCode'], filePathData['shotCode'], version, extensionHoudini)
-        filePath = '{0}/geo/SHOTS/{1}/SHOT_{2}/CAM/{3}'.format(
-                    root3D,
-                    filePathData['sequenceCode'],
-                    filePathData['shotCode'],
-                    fileName)
+        fileName = fileNameCamera.format(sequenceNumber, shotNumber, version, extensionHoudini)
+        filePath = filePathCamera.format(root3D, sequenceNumber, shotNumber, fileName)
 
     # print 'dna.buildFilePath() [filePath] = {}'.format(filePath)
 
@@ -457,7 +442,7 @@ def setupCharacterMaterials(materialNode, characterData):
         n += 1
 
 # DATABASE COMMUNICATIONS
-# sequenceCode = sequenceNumber = '010'
+# sequenceNumber = '010'
 # shotNumber = '010'
 # shotCode = 'SHOT_010'
 

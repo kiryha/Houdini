@@ -163,7 +163,7 @@ class CreateScene(QtWidgets.QWidget):
 
         return pathCacheFolder
 
-    def buildCharacterLoaders(self, CHARACTERS, charactersData):
+    def buildCharacterLoaders(self, CHARACTERS, charactersData, scenePath):
         '''
         Create network to load characters data (geo cache, hairs, etc)
 
@@ -182,10 +182,13 @@ class CreateScene(QtWidgets.QWidget):
             null.setInput(0, cache)
 
             # Build and set path to the 001 cache version
-            pathCache = dna.buildFilePath('001',
-                                          dna.fileTypes['cacheAnim'],
-                                          scenePath=hou.hipFile.path(),
-                                          characterName=characterName)
+            pathCache = dna.buildFilePath('001', dna.fileTypes['cacheAnim'], scenePath=scenePath, characterName=characterName)
+
+            # Check latest existing version, build new path if exists
+            pathCacheFolder = self.convertPathCache(pathCache)
+            latestCacheVersion = dna.extractLatestVersionFolder(pathCacheFolder)
+            if latestCacheVersion != '001':
+                pathCache = dna.buildFilePath(latestCacheVersion, dna.fileTypes['cacheAnim'],scenePath=scenePath, characterName=characterName)
 
             cache.parm('file').set(pathCache)
 
@@ -204,7 +207,11 @@ class CreateScene(QtWidgets.QWidget):
         '''
 
         cameraPath = dna.buildFilePath('001', dna.fileTypes['camera'], scenePath=scenePath)
-        sceneRoot.loadItemsFromFile(cameraPath)
+
+        try:
+            sceneRoot.loadItemsFromFile(cameraPath)
+        except:
+            print 'CreateScene.importCameraAnimation: No camera file found in {}'.format(cameraPath)
 
     def importCharacterAnimation(self, scenePath, charactersData):
         '''
@@ -283,7 +290,7 @@ class CreateScene(QtWidgets.QWidget):
             CHARACTERS.setPosition([0, -4 * dna.nodeDistance_y])
 
             # Create nodes to pull character caches
-            self.buildCharacterLoaders(CHARACTERS, charactersData)
+            self.buildCharacterLoaders(CHARACTERS, charactersData, scenePath)
 
             # IMPORT MATERIALS
             # Create Geometry node in scene root

@@ -82,7 +82,7 @@ class CreateProject(QMainWindow, createProject_Main.Ui_CreateProject):
 
         # SETUP FUNCTIONALITY
         self.act_docs.triggered.connect(lambda:  self.help(dna.DOCS))
-        self.act_help.triggered.connect(lambda:  self.help(dna.HELP))
+        self.act_help.triggered.connect(lambda:  self.help('{0}Tools#create-project'.format(dna.DOCS)))
         self.btn_create.clicked.connect(self.createProject)
         self.btn_setFolder.clicked.connect(self.selectProjectFolder)
 
