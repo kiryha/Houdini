@@ -6,10 +6,10 @@
   <menuBar>
     <!-- ======================== Mother Menu ============================== -->
     <subMenu id="mother_menu">
-    <label>MOTHER</label>
+    <label>EVE</label>
 
       <scriptItem id="motherHelp">
-          <label>Mother Help</label>
+          <label>EVE Help</label>
       <scriptCode><![CDATA[
 print 'https://github.com/kiryha/Houdini/wiki'
       ]]></scriptCode>

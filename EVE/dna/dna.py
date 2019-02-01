@@ -35,7 +35,7 @@ fileTypes = {'animationScene': 'ANM',
 
 # Common variables
 frameStart = 1
-resolution = (1280, 540)
+resolution = (1920, 810)
 
 # TEMP HARDCODE TO RUN DNA IN PYCHARM!!!
 # ++++++++++++++++++++++++++++++++++++++++++++

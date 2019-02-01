@@ -37,7 +37,7 @@ saveNextVersion.run()]]></script>
 
   <tool name="importFBX" label="import FBX" icon="PLASMA_App">
     <script scriptType="python"><![CDATA[#import os, sys
-#path = os.environ['JOB'].replace('PROD/3D', 'PREP/PIPELINE/MOTHER/tools')
+#path = os.environ['JOB'].replace('PROD/3D', 'PREP/PIPELINE/EVE/tools')
 #sys.path.append(path)
 
 import importFBX
