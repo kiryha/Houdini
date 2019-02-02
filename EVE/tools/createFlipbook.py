@@ -6,6 +6,7 @@ import os
 import hou
 
 from EVE.dna import dna
+reload(dna)
 
 from PySide2 import QtCore, QtUiTools, QtWidgets
 
@@ -59,7 +60,7 @@ def runFB(flipbookPath):
 
 def createFlipbook():
     # Setup flipbook settings
-    settings.resolution(dna.resolution)
+    settings.resolution(dna.resolution_LR)
     settings.frameRange((dna.frameStart, hou.playbar.frameRange()[1]))
 
     # Build 001 version of flipbook file path

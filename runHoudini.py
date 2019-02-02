@@ -32,9 +32,14 @@ def getHDA():
         :param listPaths: list of subfolders in processed folder
         '''
         global pathHDA
+
+        filterFolders = ['backup', 'REM_NC']
+
         for folder in listPaths:
             path = folder[0].replace('\\', '/')
-            if not 'backup' in path: # Exclude backup folders
+            # Filter unnecessary folders
+            if not path.split('/')[-1] in filterFolders:
+            # if not 'backup' in path: # Exclude backup folders
                 pathHDA += '{};'.format(folder[0].replace('\\', '/'))
 
     # Get list of sub folders

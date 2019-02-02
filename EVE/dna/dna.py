@@ -17,7 +17,7 @@ import glob
 # DEFINE COMMON VARIABLES AND PATHS
 # Pipeline items
 pipelineName = 'EVE'
-extensionHoudini = 'hipnc'
+extensionHoudini = 'hiplc' # Apprentice was hipnc
 extensionRender = 'exr'
 extensionFlipbook = 'jpg'
 extensionCacheAnim = 'bgeo.sc'
@@ -35,7 +35,8 @@ fileTypes = {'animationScene': 'ANM',
 
 # Common variables
 frameStart = 1
-resolution = (1920, 810)
+resolution_HR = (1920, 810)
+resolution_LR = (1280, 540)
 
 # TEMP HARDCODE TO RUN DNA IN PYCHARM!!!
 # ++++++++++++++++++++++++++++++++++++++++++++
