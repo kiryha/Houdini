@@ -260,6 +260,10 @@ class CreateScene(QtWidgets.QWidget):
 
         # Create Render scene
         if fileType == dna.fileTypes['renderScene']:
+
+            # TBD !!! Build assets dynamicaly (loop thorough shot assets and FX)
+            
+            
             # Get shot data
             shotData, assetsData, environmentData, charactersData = dna.getShotGenes(sequenceNumber, shotNumber)
 
@@ -268,29 +272,33 @@ class CreateScene(QtWidgets.QWidget):
 
             # BUILD ENVIRONMENT
             # Proxy
-            ENV_PRX = self.createContainer(sceneRoot, dna.nameEnvProxy)
-            self.createHDA(ENV_PRX, environmentData['proxy_hda']['hda_name'], environmentData['proxy_hda']['name'])
-            ENV_PRX.setPosition([0, 0])
+            #ENV_PRX = self.createContainer(sceneRoot, dna.nameEnvProxy)
+            #self.createHDA(ENV_PRX, environmentData['proxy_hda']['hda_name'], environmentData['proxy_hda']['name'])
+            #ENV_PRX.setPosition([0, 0])
             # Base
-            ENVIRONMENT = self.createContainer(sceneRoot, dna.nameEnv, bbox=2, disp=0)
-            self.createHDA(ENVIRONMENT, environmentData['hda_name'], environmentData['code'])
-            ENVIRONMENT.setPosition([0, -dna.nodeDistance_y])
+            #ENVIRONMENT = self.createContainer(sceneRoot, dna.nameEnv, bbox=2, disp=0)
+            #self.createHDA(ENVIRONMENT, environmentData['hda_name'], environmentData['code'])
+            #ENVIRONMENT.setPosition([0, -dna.nodeDistance_y])
             # Animation
-            ENV_ANM = self.createContainer(sceneRoot, dna.nameEnvAnim, bbox=2, mb=1)
-            self.createHDA(ENV_ANM, environmentData['animation_hda']['hda_name'], environmentData['animation_hda']['name'])
-            ENV_ANM.setPosition([0, -2 * dna.nodeDistance_y])
+            #ENV_ANM = self.createContainer(sceneRoot, dna.nameEnvAnim, bbox=2, mb=1)
+            #self.createHDA(ENV_ANM, environmentData['animation_hda']['hda_name'], environmentData['animation_hda']['name'])
+            #ENV_ANM.setPosition([0, -2 * dna.nodeDistance_y])
 
-            CROWDS = self.createContainer(sceneRoot, dna.nameCrowds, bbox=2, mb=1)
-            self.createHDA(CROWDS, environmentData['crowds_hda']['hda_name'], environmentData['crowds_hda']['name'])
-            CROWDS.setPosition([0, -3 * dna.nodeDistance_y])
+            #CROWDS = self.createContainer(sceneRoot, dna.nameCrowds, bbox=2, mb=1)
+            #self.createHDA(CROWDS, environmentData['crowds_hda']['hda_name'], environmentData['crowds_hda']['name'])
+            #CROWDS.setPosition([0, -3 * dna.nodeDistance_y])
 
             # BUILD CHARACTERS
             # Create characters container
             CHARACTERS = self.createContainer(sceneRoot, dna.nameChars, mb=1)
-            CHARACTERS.setPosition([0, -4 * dna.nodeDistance_y])
+            CHARACTERS.setPosition([0,0])
 
             # Create nodes to pull character caches
             self.buildCharacterLoaders(CHARACTERS, charactersData, scenePath)
+
+            # BUILD ENVIRONMENT
+            ENV = sceneRoot.createNode('city', 'CITY')
+            ENV.setPosition([0, -dna.nodeDistance_y])
 
             # IMPORT MATERIALS
             # Create Geometry node in scene root

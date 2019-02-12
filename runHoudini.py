@@ -33,7 +33,7 @@ def getHDA():
         '''
         global pathHDA
 
-        filterFolders = ['backup', 'REM_NC']
+        filterFolders = ['backup', 'REM_NC', 'REM']
 
         for folder in listPaths:
             path = folder[0].replace('\\', '/')
@@ -66,7 +66,7 @@ os.environ['JOB'] = root3D
 # Houdini digital assets folder including sub folders
 os.environ['HOUDINI_OTLSCAN_PATH'] = getHDA()
 # Houdini path
-os.environ['HOUDINI_PATH'] = '{}/EVE/houdini;'.format(rootPipeline)
+os.environ['HOUDINI_PATH'] = '{}/EVE/houdini;&'.format(rootPipeline)
 # Path to custom python tools
 os.environ['PYTHONPATH'] = '{}/EVE/tools;&'.format(rootPipeline)
 # Icons
@@ -75,9 +75,9 @@ os.environ['PYTHONPATH'] = '{}/EVE/tools;&'.format(rootPipeline)
 # os.environ['home'] = '{}/Documents/houdiniUserPrefs'.format(os.path.expanduser("~"))
 
 # Setup Redshift
-os.environ['HOUDINI_DSO_ERROR'] = '2'
-os.environ['PATH'] += ';' + 'C:/ProgramData/Redshift/bin;$PATH'
-os.environ['HOUDINI_PATH'] += 'C:/ProgramData/Redshift/Plugins/Houdini/17.0.459;&'
+# os.environ['HOUDINI_DSO_ERROR'] = '2'
+# os.environ['PATH'] += ';' + 'C:/ProgramData/Redshift/bin;$PATH'
+# os.environ['HOUDINI_PATH'] += 'C:/ProgramData/Redshift/Plugins/Houdini/17.0.459;&'
 
 # Run Houdini
 subprocess.Popen(houdini)
