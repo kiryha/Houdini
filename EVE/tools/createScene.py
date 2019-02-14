@@ -3,6 +3,7 @@
 
 import hou
 import os
+
 from PySide2 import QtCore, QtUiTools, QtWidgets
 from EVE.dna import dna
 reload(dna)
@@ -56,6 +57,8 @@ class CreateScene(QtWidgets.QWidget):
         :return:
         '''
 
+        print '>> Building Render scene...'
+
         # Get sequence and shot from UI
         sequenceNumber = self.ui.lin_episode.text()
         shotNumber = self.ui.lin_shot.text()
@@ -101,9 +104,14 @@ class CreateScene(QtWidgets.QWidget):
         # Build scene content
         self.buildSceneContent(fileType, sequenceNumber=sequenceNumber, shotNumber=shotNumber)
 
+        # Save scene
+        hou.hipFile.save()
+
+        print '>> Building Render scene done!'
+
     def createHDA(self, parent, hdaTypeName, hdaName):
         '''
-        Create Houdini digital asset node
+        Create Houdini digital asset node and set latest file version
         :param hdaTypeName:
         :param hdaName:
         :return:
@@ -134,9 +142,6 @@ class CreateScene(QtWidgets.QWidget):
         '''
 
         CONTAINER = parent.createNode('geo',name)
-        # Delete all nodes in container
-        for node in CONTAINER.children():
-            node.destroy()
 
         # Display as bounding box
         CONTAINER.parm('viewportlod').set(bbox)
@@ -150,108 +155,16 @@ class CreateScene(QtWidgets.QWidget):
 
         return CONTAINER
 
-    def convertPathCache(self, pathCache):
-        '''
-        Convert geometry cache string path (used in FileCacheSOP) to path suitable for dna.extractLatestVersionFolder()
-        Expand $JOB variable to a full path, remove file name
-        :param pathCache:
-        :return :
-        '''
-
-        fileName = pathCache.split('/')[-1]
-        pathCacheFolder = pathCache.replace('$JOB', dna.root3D).replace(fileName, '')
-
-        return pathCacheFolder
-
-    def buildCharacterLoaders(self, CHARACTERS, charactersData, scenePath):
-        '''
-        Create network to load characters data (geo cache, hairs, etc)
-
-        TBD: merge loaders in several chars are in shot
-        :param CHARACTERS: Characters container - geometry node object
-        :param charactersData: dictionaries with character data linked to a shot
-        :return:
-        '''
-
-        for characterData in charactersData:
-            # Create nodes network for each character
-            characterName = characterData['code']
-            cache = CHARACTERS.createNode('filecache', 'CACHE_{0}'.format(characterName))
-            cache.parm('loadfromdisk').set(1)
-            null = CHARACTERS.createNode('null', 'OUT_{0}'.format(characterName))
-            null.setInput(0, cache)
-
-            # Build and set path to the 001 cache version
-            pathCache = dna.buildFilePath('001', dna.fileTypes['cacheAnim'], scenePath=scenePath, characterName=characterName)
-
-            # Check latest existing version, build new path if exists
-            pathCacheFolder = self.convertPathCache(pathCache)
-            latestCacheVersion = dna.extractLatestVersionFolder(pathCacheFolder)
-            if latestCacheVersion != '001':
-                pathCache = dna.buildFilePath(latestCacheVersion, dna.fileTypes['cacheAnim'],scenePath=scenePath, characterName=characterName)
-
-            cache.parm('file').set(pathCache)
-
-            # Set render flags
-            null.setDisplayFlag(1)
-            null.setRenderFlag(1)
-
-
-        CHARACTERS.layoutChildren()
-
-    def importCameraAnimation(self, scenePath):
-        '''
-        Import camera to the render scene
-        :param scenePath:
-        :return:
-        '''
-
-        cameraPath = dna.buildFilePath('001', dna.fileTypes['camera'], scenePath=scenePath)
-
-        try:
-            sceneRoot.loadItemsFromFile(cameraPath)
-        except:
-            print 'CreateScene.importCameraAnimation: No camera file found in {}'.format(cameraPath)
-
-    def importCharacterAnimation(self, scenePath, charactersData):
-        '''
-        Import character animation for the current render scene: set FileCache nodes paths.
-
-        pathCache = $JOB/geo/SHOTS/010/SHOT_010/ROMA/GEO/001/E010_S010_ROMA_001.$F.bgeo.sc
-        :param charactersData: list of characters dics for the current shot
-        :param scenePath: Full path to Houdini render scene
-        :return:
-        '''
-
-        for characterData in charactersData:
-            characterName = characterData['code']
-
-            # BUILD CACHE PATH (LATEST VERSION)
-            # Build a path to the 001 version of cache
-
-            pathCache = dna.buildFilePath('001',
-                                          dna.fileTypes['cacheAnim'],
-                                          scenePath=scenePath,
-                                          characterName=characterName)
-
-            # Check latest existing version, build new path if exists
-            pathCacheFolder = self.convertPathCache(pathCache)
-            latestCacheVersion = dna.extractLatestVersionFolder(pathCacheFolder)
-            if latestCacheVersion != '001':
-                pathCache = dna.buildFilePath(latestCacheVersion,
-                                              dna.fileTypes['cacheAnim'],
-                                              scenePath=scenePath,
-                                              characterName=characterName)
-
-            # SET FILE CACHE NODE PARAM
-            # Get cache node
-            cache = hou.node('{0}/{1}/CACHE_{2}'.format(sceneRoot, dna.nameChars, characterName))
-            # Set path
-            cache.parm('file').set(pathCache)
-
     def buildSceneContent(self, fileType, sequenceNumber, shotNumber):
         '''
-        Create scene content: import characters, environments, materials etc.
+        Create scene content: import characters, environments, props, materials etc.
+
+        Render scene schema:
+            [Render obj]      [Environment]     [Characters]     [Props]      [FX]
+            - materials       - Env             - char 1         - prop 1     - fx 1
+            - lights                            - char 2         - prop 2     - fx 2
+            - camera                            - ...            - ...        - ...
+
         :param fileType:
         :param sequenceNumber:
         :param shotNumber:
@@ -261,60 +174,54 @@ class CreateScene(QtWidgets.QWidget):
         # Create Render scene
         if fileType == dna.fileTypes['renderScene']:
 
-            # TBD !!! Build assets dynamicaly (loop thorough shot assets and FX)
-            
-            
             # Get shot data
-            shotData, assetsData, environmentData, charactersData = dna.getShotGenes(sequenceNumber, shotNumber)
+            shotGenes = dna.getShotGenes(sequenceNumber, shotNumber)
+            env_data = shotGenes['environmentData']
 
             # Initialize scene
             scenePath = hou.hipFile.path()
 
-            # BUILD ENVIRONMENT
-            # Proxy
-            #ENV_PRX = self.createContainer(sceneRoot, dna.nameEnvProxy)
-            #self.createHDA(ENV_PRX, environmentData['proxy_hda']['hda_name'], environmentData['proxy_hda']['name'])
-            #ENV_PRX.setPosition([0, 0])
-            # Base
-            #ENVIRONMENT = self.createContainer(sceneRoot, dna.nameEnv, bbox=2, disp=0)
-            #self.createHDA(ENVIRONMENT, environmentData['hda_name'], environmentData['code'])
-            #ENVIRONMENT.setPosition([0, -dna.nodeDistance_y])
-            # Animation
-            #ENV_ANM = self.createContainer(sceneRoot, dna.nameEnvAnim, bbox=2, mb=1)
-            #self.createHDA(ENV_ANM, environmentData['animation_hda']['hda_name'], environmentData['animation_hda']['name'])
-            #ENV_ANM.setPosition([0, -2 * dna.nodeDistance_y])
+            # SETUP SCENE (end frame ...)
+            frameEnd = shotGenes['shotData']['sg_cut_out']
+            hou.playbar.setFrameRange(dna.frameStart, frameEnd)
+            hou.playbar.setPlaybackRange(dna.frameStart, frameEnd)
 
-            #CROWDS = self.createContainer(sceneRoot, dna.nameCrowds, bbox=2, mb=1)
-            #self.createHDA(CROWDS, environmentData['crowds_hda']['hda_name'], environmentData['crowds_hda']['name'])
-            #CROWDS.setPosition([0, -3 * dna.nodeDistance_y])
+            # [Render obj]
+            # Add Material lib HDA
+            mat_data = env_data['materials']
+            ML = sceneRoot.createNode(mat_data['hda_name'], mat_data['name'])
+            ML.setPosition([0, 0])
+            # Add lights HDA
+            lit_data = env_data['lights']
+            LIT = sceneRoot.createNode(lit_data['hda_name'], lit_data['name'])
+            LIT.setPosition([0, -dna.nodeDistance_y])
+            # Add Camera via ABC. Done in Import ANM
 
-            # BUILD CHARACTERS
-            # Create characters container
-            CHARACTERS = self.createContainer(sceneRoot, dna.nameChars, mb=1)
-            CHARACTERS.setPosition([0,0])
 
-            # Create nodes to pull character caches
-            self.buildCharacterLoaders(CHARACTERS, charactersData, scenePath)
+            # [Environment]
+            ENV = sceneRoot.createNode(env_data['hda_name'], env_data['code'])
+            ENV.setPosition([dna.nodeDistance_x, 0])
 
-            # BUILD ENVIRONMENT
-            ENV = sceneRoot.createNode('city', 'CITY')
-            ENV.setPosition([0, -dna.nodeDistance_y])
+            # [Characters]
+            char_data = shotGenes['charactersData']
+            for n, character in enumerate(char_data):
+                CHAR = self.createContainer(sceneRoot, char_data[n]['code'], mb=1)
+                CHAR.setPosition([2*dna.nodeDistance_x, n*dna.nodeDistance_y])
 
-            # IMPORT MATERIALS
-            # Create Geometry node in scene root
-            ML = sceneRoot.createNode('ml_general', dna.nameMats)
-            ML.setPosition([dna.nodeDistance_x, 0])
+            # [Props]
+            # No props for NSI project. Skipnig
 
-            # IMPORT ENV LIGHTS
-            LIT = sceneRoot.createNode(environmentData['light_hda']['hda_name'], environmentData['light_hda']['name'])
-            LIT.setPosition([dna.nodeDistance_x, -dna.nodeDistance_y])
+            # [FX]
+            fx_data = shotGenes['fxData']
+            for n, FX in enumerate(fx_data):
+                FX = self.createContainer(sceneRoot, fx_data[n]['code'], mb=1)
+                FX.setPosition([3*dna.nodeDistance_x, n*dna.nodeDistance_y])
 
-            # SETUP OUTPUT
+
+            # SETUP MANTRA OUTPUT
             # Create mantra render node
             mantra = outRoot.createNode('ifd', 'RENDER')
-
             # Render file version setup
-            # renderFile = '$JOB/render/010/SHOT_040/001/E010_S040_001.$F.exr'
             renderFile = dna.buildFilePath('001', dna.fileTypes['renderSequence'], scenePath=scenePath)
             # Create folder for render file
             fileLocation = dna.analyzeFliePath(renderFile)['fileLocation']
@@ -333,7 +240,8 @@ class CreateScene(QtWidgets.QWidget):
 
             # Setup Mantra parameters
             mantra.parm('vm_picture').set(renderFile)
-            mantra.parm('camera').set('/obj/E{0}_S{1}'.format(sequenceNumber, shotNumber))
+            cameraName = dna.nameCamera.format(sequenceNumber, shotNumber)
+            mantra.parm('camera').set('/obj/{}/cameraProperties'.format(cameraName))
             # Set common parameters from preset
             for param, value in dna.renderSettings['common'].iteritems():
                 mantra.parm(param).set(value)
@@ -341,23 +249,7 @@ class CreateScene(QtWidgets.QWidget):
             for param, value in dna.renderSettings['draft'].iteritems():
                 mantra.parm(param).set(value)
 
-            # SETUP SCENE (end frame ...)
-            frameEnd = shotData['sg_cut_out']
-            hou.playbar.setFrameRange(dna.frameStart, frameEnd)
-            hou.playbar.setPlaybackRange(dna.frameStart, frameEnd)
-
-            # IMPORT ANIMATION
-            # Later would be provided as separate tool
-            # Import camera
-            self.importCameraAnimation(scenePath)
-            # Import characters caches
-            self.importCharacterAnimation(scenePath, charactersData)
-
-
-        # Save scene
-        hou.hipFile.save()
-
-# Create CS object
+# Create CS objectfileTypes
 CS = CreateScene()
 
 def run():

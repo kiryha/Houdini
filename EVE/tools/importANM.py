@@ -6,52 +6,68 @@ import hou
 from EVE.dna import dna
 reload(dna)
 
-# Hardcoded values
-cacheVersion = '001'
-characterName = 'ROMA'
-
 # Get shot and sequence number from the scene name
-fileCode = dna.analyzeFliePath(hou.hipFile.path())[2]
-episodeCode, shotCode = dna.analyzeFileCode(fileCode)
-
+scenePath = hou.hipFile.path()
+pathMap = dna.analyzeFliePath(scenePath)
+sequenceNumber = pathMap['sequenceNumber']
+shotNumber = pathMap['shotNumber']
+# Get shot data
+shotGenes = dna.getShotGenes(sequenceNumber, shotNumber)
 # Get scene root
-OBJ = hou.node('/obj/')
+sceneRoot = hou.node('/obj/')
 
 
-def createCharacterCache(characterName):
+def importCameraAnim():
+    # Build camera path to the 001 version of ABC: '$JOB/geo/SHOTS/010/SHOT_010/CAM/E010_S010_001.abc'
+    pathCamera = dna.buildFilePath('001', dna.fileTypes['cacheCamera'], scenePath=scenePath)
+    # Build path latest version. TBD
+    cameraName = dna.nameCamera.format(sequenceNumber, shotNumber)
+    CAM = sceneRoot.createNode('alembicarchive', cameraName)
+    CAM.parm('fileName').set(pathCamera)
+    CAM.parm('buildSubnet').set(0)
+    CAM.parm('buildHierarchy').pressButton()
+    CAM.setPosition([0, -2*dna.nodeDistance_y])
+
+def importCharacterAnim():
     '''
-    Create CHARACTERS container to hold character caches
+    Import character animation for the current render scene: set FileCache nodes paths.
+
+    pathCache = $JOB/geo/SHOTS/010/SHOT_010/ROMA/GEO/001/E010_S010_ROMA_001.$F.bgeo.sc
+    :return:
     '''
+    # For each character in shot
+    for character in shotGenes['charactersData']:
+        characterName = character['code']
+        # Get character container
+        CHAR = hou.node('/obj/{0}'.format(characterName))
+        # Create File Cache SOP
+        CACHE = CHAR.createNode('filecache', dna.fileCacheName.format(characterName))
 
-    # Build cache path
-    pathCache = '$JOB/geo/SHOTS/{0}/SHOT_{1}/{2}/GEO/{3}/E{0}_S{1}_{2}_{3}.$F.bgeo.sc'.format(episodeCode, shotCode,
-                                                                                           characterName, cacheVersion)
-    # Check if CHARACTERS node exists in scene
-    chars = hou.node('/obj/{}'.format('CHARACTERS'))
+        # BUILD CACHE PATH (LATEST VERSION)
+        # Build a path to the 001 version of cache
+        pathCache = dna.buildFilePath('001',
+                                      dna.fileTypes['cacheAnim'],
+                                      scenePath=scenePath,
+                                      characterName=characterName)
 
-    if not chars:
-        # Create CHARACTERS node if its not exists in scene
-        chars = OBJ.createNode('geo', run_init_scripts=False)
-        chars.setName('CHARACTERS')
+        # Check latest existing version, build new path if exists
+        pathCacheFolder = dna.convertPathCache(pathCache)
+        latestCacheVersion = dna.extractLatestVersionFolder(pathCacheFolder)
+        if latestCacheVersion != '001':
+            pathCache = dna.buildFilePath(latestCacheVersion,
+                                          dna.fileTypes['cacheAnim'],
+                                          scenePath=scenePath,
+                                          characterName=characterName)
 
-    # Create and setup File Cache SOP
-    characterCache = chars.createNode('filecache')
-    characterCache.setName('GEO_{}'.format(characterName))
-    characterCache.parm('loadfromdisk').set(1)
-    characterCache.parm('file').set(pathCache)
-
-    # Create and setup OUT null SOP
-    out = chars.createNode('null')
-    out.setNextInput(characterCache)
-    out.setName('OUT_{}'.format(characterName))
-
-    # Set display flags
-    out.setDisplayFlag(1)
-    out.setRenderFlag(1)
-
-    # Layout geometry content in Network View
-    chars.layoutChildren()
-    print '>> IMPORTED CACHES FOR {}'.format(characterName)
+        CACHE.parm('file').set(pathCache)
+        CACHE.parm('loadfromdisk').set(1)
+        NULL = CHAR.createNode('null', 'OUT_{0}'.format(characterName))
+        NULL.setInput(0, CACHE)
+        NULL.setDisplayFlag(1)
+        NULL.setRenderFlag(1)
+        CHAR.layoutChildren()
 
 def run():
-    createCharacterCache(characterName)
+    importCameraAnim()
+    importCharacterAnim()
+    print '>> Animation imported!'
