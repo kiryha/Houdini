@@ -241,7 +241,7 @@ class CreateScene(QtWidgets.QWidget):
             # Setup Mantra parameters
             mantra.parm('vm_picture').set(renderFile)
             cameraName = dna.nameCamera.format(sequenceNumber, shotNumber)
-            mantra.parm('camera').set('/obj/{}/cameraProperties'.format(cameraName))
+            mantra.parm('camera').set('/obj/{}'.format(cameraName))
             # Set common parameters from preset
             for param, value in dna.renderSettings['common'].iteritems():
                 mantra.parm(param).set(value)

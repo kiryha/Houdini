@@ -21,7 +21,7 @@ extensionHoudini = 'hiplc'
 extensionRender = 'exr'
 extensionFlipbook = 'jpg'
 extensionCacheAnim = 'bgeo.sc'
-extensionCamera = 'abc'
+extensionCamera = 'hiplc' # 'abc'
 
 
 # FILE TYPES dictionary. Used for:
@@ -135,7 +135,7 @@ fileNameCamera =    fileTypes['cacheCamera'] + '_E{0}_S{1}_{2}.{3}'        # Cam
 filePathRender =          '{0}/scenes/RENDER/{1}/SHOT_{2}/{3}'             # Render scene path
 filePathSequenceRender =  '{0}/render/{1}/SHOT_{2}/{3}/{4}'                # Render sequence path
 filePathSequenceCache =   '$JOB/geo/SHOTS/{0}/SHOT_{1}/{2}/GEO/{3}/{4}'    # Characters geometry cache path
-filePathCamera =          '$JOB/geo/SHOTS/{0}/SHOT_{1}/CAM/{2}'            # Camera ANM >> RND path
+filePathCamera =          '{0}/geo/SHOTS/{1}/SHOT_{2}/CAM/{3}'             # Camera ANM >> RND path
 
 # HOUDINI SCENE CONTENT
 # Currently string oriented.
@@ -155,6 +155,7 @@ renderSettings = {
             'trange': 1,                     # Frame range
             'vm_dof': 1,                     # Enable DOF
             'allowmotionblur': 1,            # Enable MB
+            'vm_renderengine': 3,            # PBR render engine
             'vm_reflectlimit': 1,            # Reflection limit
             'vm_refractlimit': 1,            # Refraction limit
             'vm_diffuselimit': 1,            # Diffuse limit
@@ -397,7 +398,7 @@ def buildFilePath(version, fileType, scenePath=None, characterName=None, sequenc
     # CAMERA file ANM scene >> RND scene
     elif fileType == fileTypes['cacheCamera']:
         fileName = fileNameCamera.format(sequenceNumber, shotNumber, version, extensionCamera)
-        filePath = filePathCamera.format(sequenceNumber, shotNumber, fileName)
+        filePath = filePathCamera.format(root3D, sequenceNumber, shotNumber, fileName)
 
     # print 'dna.buildFilePath() [filePath] = {}'.format(filePath)
 
@@ -616,3 +617,4 @@ def createFolder(filePath):
 # print buildFilePath('010', fileTypes['renderScene'],sequenceNumber='010', shotNumber='010' )
 # print buildFilePath('001', fileTypes['cacheAnim'], scenePath='P:/PROJECTS/NSI/PROD/3D/scenes/RENDER/010/SHOT_010/RND_E010_S010_010.hipnc')
 # print buildFilePath('001', fileTypes['cacheCamera'], scenePath='P:/PROJECTS/NSI/PROD/3D/scenes/RENDER/010/SHOT_010/RND_E010_S010_006.hiplc')
+# print convertPathCache('P:/PROJECTS/NSI/PROD/3D/geo/SHOTS/010/SHOT_330/CAM/CAM_E010_S330_001.hiplc')

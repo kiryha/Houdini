@@ -18,6 +18,15 @@ sceneRoot = hou.node('/obj/')
 
 
 def importCameraAnim():
+    # HIP format
+    # Build camera path to the 001 version of ABC: '<root3D>/geo/SHOTS/010/SHOT_010/CAM/E010_S010_001.abc'
+    pathCamera = dna.buildFilePath('001', dna.fileTypes['cacheCamera'], scenePath=scenePath)
+    print pathCamera
+    # Build path latest version. TBD
+    sceneRoot.loadItemsFromFile(pathCamera)
+
+    # ABC format
+    """
     # Build camera path to the 001 version of ABC: '$JOB/geo/SHOTS/010/SHOT_010/CAM/E010_S010_001.abc'
     pathCamera = dna.buildFilePath('001', dna.fileTypes['cacheCamera'], scenePath=scenePath)
     # Build path latest version. TBD
@@ -27,6 +36,8 @@ def importCameraAnim():
     CAM.parm('buildSubnet').set(0)
     CAM.parm('buildHierarchy').pressButton()
     CAM.setPosition([0, -2*dna.nodeDistance_y])
+    """
+
 
 def importCharacterAnim():
     '''

@@ -21,11 +21,23 @@ char_data = shotGenes['charactersData']
 def exportCamera():
     '''
     Export shot camera
+    Two options avalable, ABC and HIP. Use HIP currently.
     :return:
     '''
     cameraName = dna.nameCamera.format(sequenceNumber, shotNumber)
     camera = hou.node('obj/{}'.format(cameraName))
     pathCamera = dna.buildFilePath('001', dna.fileTypes['cacheCamera'], scenePath=scenePath)
+    dna.createFolder(dna.convertPathCache(pathCamera))
+
+    # HIP export
+    listCameraNodes = []
+    listCameraNodes.extend(camera.inputAncestors())
+    listCameraNodes.append(camera)
+    # Export camera to a file
+    sceneRoot.saveItemsToFile(listCameraNodes, pathCamera)
+
+    """
+    # ABC export
     # Get Camera parent nodes
     listCameraNodes = '{}'.format(camera.name())
     for i in camera.inputAncestors():
@@ -40,6 +52,7 @@ def exportCamera():
     ABC.parm('objects').set(listCameraNodes)
     ABC.parm('execute').pressButton()
     ROP.destroy()
+    """
 
 def getRenderNode(container):
     '''
@@ -110,8 +123,8 @@ def exportCharacters():
 def ecxportAnimation():
 
     exportCamera()
-    createCacheNetwork()
-    exportCharacters()
+    #createCacheNetwork()
+    #exportCharacters()
 
 def run():
     print '>> Exporting Animation...'
