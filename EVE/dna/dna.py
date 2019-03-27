@@ -155,7 +155,7 @@ renderSettings = {
             'trange': 1,                     # Frame range
             'vm_dof': 1,                     # Enable DOF
             'allowmotionblur': 1,            # Enable MB
-            'vm_renderengine': 3,            # PBR render engine
+            'vm_renderengine': '3',            # PBR render engine
             'vm_reflectlimit': 1,            # Reflection limit
             'vm_refractlimit': 1,            # Refraction limit
             'vm_diffuselimit': 1,            # Diffuse limit

@@ -3,8 +3,8 @@
     {"code": "SHOT_010",
      "sg_cut_out": 125,
      "sg_sequence": {"name": "010"},
-     "assets": [{"name": "CITY"}, {"name": "ROMA"}],
-     "fxs": [{"name": "BRK"}],
+     "assets": [{"name": "CITY"}],
+     "fxs": [],
      "description":"Cloud fly-through"},
 
     {"code": "SHOT_020",
@@ -27,6 +27,13 @@
        "assets": [{"name": "CITY"}, {"name": "ROMA"}],
        "fxs": [{"name": "BRK"}],
        "description":"TOP view on monument"},
+
+  {"code": "SHOT_240",
+       "sg_cut_out": 125,
+       "sg_sequence": {"name": "010"},
+       "assets": [{"name": "CITY"}, {"name": "ROMA"}],
+       "fxs": [],
+       "description":"Start climbing on monument"},
 
     {"code": "SHOT_290",
        "sg_cut_out": 200,

@@ -1,8 +1,8 @@
 '''
-Export CHARACTER and CAMERA animation data from animation scene
-CAMERA should meet naming convension E<sequenceNumber>_S<shotNumber>
+Export CHARACTERs and CAMERA animation data from animation scene
+CAMERA should meet naming convention E<sequenceNumber>_S<shotNumber>
 
-Currently only builds cache network for  ROMA character. Need to run file caching manually
+Currently only builds cache network for ROMA character. Need to run file caching manually
 '''
 import os
 import hou
@@ -24,6 +24,9 @@ def exportCamera():
     Two options avalable, ABC and HIP. Use HIP currently.
     :return:
     '''
+
+    print '>> Exporting camera...'
+
     cameraName = dna.nameCamera.format(sequenceNumber, shotNumber)
     camera = hou.node('obj/{}'.format(cameraName))
     pathCamera = dna.buildFilePath('001', dna.fileTypes['cacheCamera'], scenePath=scenePath)
@@ -53,6 +56,7 @@ def exportCamera():
     ABC.parm('execute').pressButton()
     ROP.destroy()
     """
+    print '>> Exporting camera done: {}'.format(pathCamera)
 
 def getRenderNode(container):
     '''
@@ -72,43 +76,54 @@ def createCacheNetwork():
     :return:
     '''
 
+    print '>> Create Character caches network ...'
 
     for character in char_data:
         characterName = character['code']
         charContainer = hou.node('/obj/{0}'.format(characterName))
-        renderNode = getRenderNode(charContainer)
+        if charContainer is not None:
+            renderNode = getRenderNode(charContainer)
 
-        # Check if character has proper network:
-        if renderNode.name() != 'OUT_{}'.format(characterName):
-            # Create trail for Motion Blur
-            trail = charContainer.createNode('trail', 'MB_{}'.format(characterName))
-            trail.parm('result').set(3)
+            # Check if character has proper network:
+            if renderNode.name() != 'OUT_{}'.format(characterName):
+                # Create trail for Motion Blur
+                trail = charContainer.createNode('trail', 'MB_{}'.format(characterName))
+                trail.parm('result').set(3)
 
-            # Create Cache node
-            cache = charContainer.createNode('filecache', dna.fileCacheName.format(characterName))
-            # Build path to a file cache
-            pathCache = dna.buildFilePath('001',
-                                          dna.fileTypes['cacheAnim'],
-                                          scenePath=scenePath,
-                                          characterName=characterName)
+                # Create Cache node
+                cache = charContainer.createNode('filecache', dna.fileCacheName.format(characterName))
+                # Build path to a file cache
+                pathCache = dna.buildFilePath('001',
+                                              dna.fileTypes['cacheAnim'],
+                                              scenePath=scenePath,
+                                              characterName=characterName)
 
-            cache.parm('file').set(pathCache)
-            cache.parm('loadfromdisk').set(1)
+                cache.parm('file').set(pathCache)
+                cache.parm('loadfromdisk').set(1)
 
-            # Create OUT null
-            null = charContainer.createNode('null', 'OUT_{}'.format(characterName))
+                # Create OUT null
+                null = charContainer.createNode('null', 'OUT_{}'.format(characterName))
 
-            # Link nodes
-            trail.setInput(0, renderNode)
-            cache.setInput(0, trail)
-            null.setInput(0, cache)
+                # Link nodes
+                trail.setInput(0, renderNode)
+                cache.setInput(0, trail)
+                null.setInput(0, cache)
 
-            # Layout and set render flag
-            null.setDisplayFlag(1)
-            null.setRenderFlag(1)
-            charContainer.layoutChildren()
+                # Layout and set render flag
+                null.setDisplayFlag(1)
+                null.setRenderFlag(1)
+                charContainer.layoutChildren()
+
+                print '>> Character caches network created!'
+
+        else:
+            print '>> There is no character node named {}'.format(characterName)
+
+
 
 def exportCharacters():
+
+    print '>> Exporting Characters...'
 
     for character in char_data:
         characterName = character['code']
@@ -120,11 +135,13 @@ def exportCharacters():
         # Need to check existing cache and ask user overwrite or save next version
         # pathCache = FC.parm('file').rawValue()
 
+    print '>> Exporting caracters done!'
+
 def ecxportAnimation():
 
     exportCamera()
-    #createCacheNetwork()
-    #exportCharacters()
+    createCacheNetwork()
+    exportCharacters()
 
 def run():
     print '>> Exporting Animation...'

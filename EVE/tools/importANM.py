@@ -1,5 +1,5 @@
 # 256 Pipeline Tools
-# Import Character Caches to a render scene
+# Import Character Caches and camera animation to a render scene.
 
 import hou
 
@@ -21,9 +21,10 @@ def importCameraAnim():
     # HIP format
     # Build camera path to the 001 version of ABC: '<root3D>/geo/SHOTS/010/SHOT_010/CAM/E010_S010_001.abc'
     pathCamera = dna.buildFilePath('001', dna.fileTypes['cacheCamera'], scenePath=scenePath)
-    print pathCamera
     # Build path latest version. TBD
     sceneRoot.loadItemsFromFile(pathCamera)
+
+
 
     # ABC format
     """
@@ -79,6 +80,7 @@ def importCharacterAnim():
         CHAR.layoutChildren()
 
 def run():
+    print '>>Importing animation...'
     importCameraAnim()
     importCharacterAnim()
     print '>> Animation imported!'
