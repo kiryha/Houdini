@@ -229,7 +229,7 @@ def analyzeFileName(fileName):
     if parts[0].startswith('E'):
         # E010_S010_001.exr
         fileVersion = parts[-1]
-        shotNumber = parts[0][-3:]
+        shotNumber = parts[1][-3:]
         sequenceNumber = parts[0][-3:]
         fileType = ''
         fileCode = '{0}_{1}'.format(parts[0], parts[1])

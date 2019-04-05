@@ -42,11 +42,18 @@
        "fxs": [],
        "description":"Dance on monument pano"},
 
+    {"code": "SHOT_320",
+       "sg_cut_out": 125,
+       "sg_sequence": {"name": "010"},
+       "assets": [{"name": "CITY"}, {"name": "ROMA"}],
+       "fxs": [],
+       "description":"Roma fall down from statue"},
+
     {"code": "SHOT_330",
        "sg_cut_out": 120,
        "sg_sequence": {"name": "010"},
        "assets": [{"name": "CITY"}, {"name": "ROMA"}],
-       "fxs": [],
+       "fxs": ["BRK"],
        "description":"City fly out"},
 
     {"code": "SHOT_340",

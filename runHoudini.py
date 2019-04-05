@@ -69,6 +69,8 @@ os.environ['HOUDINI_OTLSCAN_PATH'] = getHDA()
 os.environ['HOUDINI_PATH'] = '{}/EVE/houdini;&'.format(rootPipeline)
 # Path to custom python tools
 os.environ['PYTHONPATH'] = '{}/EVE/tools;&'.format(rootPipeline)
+# Houdini console
+# os.environ['HOUDINI_WINDOW_CONSOLE'] = '1'
 # Icons
 # os.environ['HOUDINI_UI_ICON_PATH'] = '{}/EVE/icons'.format(rootPipeline)
 # Houdini current user pref folder in MyDocuments (win)
