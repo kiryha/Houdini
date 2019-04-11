@@ -288,13 +288,14 @@ def extractLatestVersionFolder(filePath):
     :return: string latest existing version ('001')
     '''
 
+    # print 'dna.extractLatestVersionFolder [filePath] = {}'.format(filePath)
+
     # Strip last slash from path
     if filePath.endswith('/'):
         filePath = filePath[:-1]
 
-    # Get list of folders
-    version = filePath.split('/')[-1]
-    pathVersions = filePath.replace(version, '')
+    # Get list of version folders
+    pathVersions = filePath[:-3] # strip version folder from path
     listVersions = os.listdir(pathVersions)
     listVersionsInt = []
 
@@ -308,6 +309,7 @@ def extractLatestVersionFolder(filePath):
     # Build a string ('002') from highest number
     latestVersion = '{:03d}'.format(maxInt)
 
+    # print 'dna.extractLatestVersionFolder [latestVersion] = {}'.format(latestVersion)
     return latestVersion
 
 def buildPathNextVersion(filePath):
@@ -483,7 +485,7 @@ def getShotData(sequenceNumber, shotNumber):
                 SHOT = shot
 
     if SHOT == None:
-        print 'dna.getStotData(): There is no data for shot E{0}_S{1}'.format(sequenceNumber, shotNumber)
+        print '>> dna.getShotData: There is no data for shot E{0}_S{1}'.format(sequenceNumber, shotNumber)
     else:
         return SHOT
 
