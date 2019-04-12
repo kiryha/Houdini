@@ -130,8 +130,10 @@ class CreateScene(QtWidgets.QWidget):
                 latestIndex = hdaPaths.index(i)
                 hdaDefinitions[latestIndex].setIsPreferred(True)
 
-    def createContainer(self, parent, name, bbox=0, mb=None, disp=1):
+    def createContainer_rem(self, parent, name, bbox=0, mb=None, disp=1):
         '''
+        Moved to DNA, need to be deleted!!!
+
         Create scene container for CHARS, ENV etc
         :param parent: container node parent object (where to cretae it)
         :param name: container name
@@ -205,7 +207,7 @@ class CreateScene(QtWidgets.QWidget):
             # [Characters]
             char_data = shotGenes['charactersData']
             for n, character in enumerate(char_data):
-                CHAR = self.createContainer(sceneRoot, char_data[n]['code'], mb=1)
+                CHAR = dna.createContainer(sceneRoot, char_data[n]['code'], mb=1)
                 CHAR.setPosition([2*dna.nodeDistance_x, n*dna.nodeDistance_y])
 
             # [Props]
@@ -214,7 +216,7 @@ class CreateScene(QtWidgets.QWidget):
             # [FX]
             fx_data = shotGenes['fxData']
             for n, FX in enumerate(fx_data):
-                FX = self.createContainer(sceneRoot, fx_data[n]['code'], mb=1)
+                FX = dna.createContainer(sceneRoot, fx_data[n]['code'], mb=1)
                 FX.setPosition([3*dna.nodeDistance_x, n*dna.nodeDistance_y])
 
 

@@ -155,7 +155,7 @@ renderSettings = {
             'trange': 1,                     # Frame range
             'vm_dof': 1,                     # Enable DOF
             'allowmotionblur': 1,            # Enable MB
-            'vm_renderengine': '3',            # PBR render engine
+            'vm_renderengine': '3',          # PBR render engine
             'vm_reflectlimit': 1,            # Reflection limit
             'vm_refractlimit': 1,            # Refraction limit
             'vm_diffuselimit': 1,            # Diffuse limit
@@ -357,6 +357,7 @@ def buildPathLatestVersion(filePath):
 def buildFilePath(version, fileType, scenePath=None, characterName=None, sequenceNumber=None, shotNumber=None):
     '''
     Generate and return a full path to a file <filePath> (string).
+    Rely on # FILE NAMES AND PATHS PATTERNS
     There are 2 options to build a path:
         - based on Houdini scene name (in addition to file type and version)
         - based on Scene and Shot code (in addition to file type and version)
@@ -419,7 +420,7 @@ def convertPathCache(pathCache):
 
     return pathCacheFolder
 
-###########################
+############# Legacy DB comunication ################
 
 def getCharacterData(charcterName):
     '''
@@ -590,6 +591,34 @@ def getShotGenes(sequenceNumber, shotNumber):
     shotGenes['fxData'] = fxData
 
     return shotGenes
+
+# SCENE MANIPULATIONS
+
+def createContainer(parent, name, bbox=0, mb=None, disp=1):
+    '''
+    Create scene container for CHARS, ENV etc
+    :param parent: container node parent object (where to cretae it)
+    :param name: container name
+    :param bbox: display container content as bounding box (bbox = 2, full = 0)
+    :param mb: turn on motion blur for container content geometry
+    :param disp: Display container node flag (ON = 1, OFF = 0)
+    :return:
+    '''
+
+    CONTAINER = parent.createNode('geo',name)
+
+    # Display as bounding box
+    CONTAINER.parm('viewportlod').set(bbox)
+
+    # Set display flag
+    CONTAINER.setDisplayFlag(disp)
+
+    # Turn ON motion blur
+    if mb is not None:
+        CONTAINER.parm('geo_velocityblur').set(1)
+
+    return CONTAINER
+
 
 # UNSORTED
 def createFolder(filePath):

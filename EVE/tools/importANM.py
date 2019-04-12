@@ -50,8 +50,11 @@ def importCharacterAnim():
     # For each character in shot
     for character in shotGenes['charactersData']:
         characterName = character['code']
-        # Get character container
+        # Get character container and create if not exists
         CHAR = hou.node('/obj/{0}'.format(characterName))
+        if not CHAR:
+            CHAR = dna.createContainer(sceneRoot, characterName, mb=1)
+
         # Create File Cache SOP
         CACHE = CHAR.createNode('filecache', dna.fileCacheName.format(characterName))
 
