@@ -38,9 +38,9 @@ class RenderManager(QtWidgets.QWidget):
             mantra.parm('vm_picture').set(renderSequence)
             print '>> Output Images updated: {}'.format(renderSequence)
 
-# Create CS objectfileTypes
+# Create Render Manager instance
 RM = RenderManager()
 
 def run():
-    # Run the Create Scene Tool
+    # Run the Render Manager Tool
     RM.show()

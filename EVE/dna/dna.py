@@ -57,9 +57,7 @@ rootPipeline = '{}/PREP/PIPELINE'.format(rootProject)
 # Get path to *.UI files <P:/PROJECTS/NSI/PREP/PIPELINE/EVE/ui/ui>
 folderUI = '{0}/{1}/ui/ui'.format(rootPipeline, pipelineName)
 
-# Database files
-databaseASSETS = '{0}/{1}/database/ASSETS.json'.format(rootPipeline, pipelineName)
-databaseSHOTS = '{0}/{1}/database/SHOTS.json'.format(rootPipeline, pipelineName)
+# Database file
 genesFile = '{0}/EVE/genes/genes.json'.format(rootPipeline)
 genes = json.load(open(genesFile))
 
@@ -145,7 +143,7 @@ filePathCamera =          '{0}/geo/SHOTS/{1}/SHOT_{2}/CAM/{3}'             # Cam
 nodeDistance_x = 3.0
 nodeDistance_y = 0.8
 # Shot camera name Animation scene
-nameCamera = 'E{0}_S{1}'
+cameraName = 'E{0}_S{1}'
 # File Cache SOP name for characters
 fileCacheName = 'CACHE_{}'
 # Mantra node
@@ -613,13 +611,28 @@ def createContainer(parent, name, bbox=0, mb=None, disp=1):
     if mb is not None:
         CONTAINER.parm('geo_velocityblur').set(1)
 
+    print '>>>> Created Container: {0}'.format(name)
+
     return CONTAINER
+
+def collectCamera(camera):
+    '''
+    Create and return list of all camera nodes (parents)
+    :param camera: shot camera object
+    :return:
+    '''
+
+    listCameraNodes = []
+    listCameraNodes.extend(camera.inputAncestors())
+    listCameraNodes.append(camera)
+
+    return listCameraNodes
 
 # UNSORTED
 def createFolder(filePath):
     '''
     Create folder for a FILE if not exists
-    !!! Does not support FLDER paths !!!
+    !!! Does not support FOLDER paths (without file name) !!!
     filePath = P:/PROJECTS/NSI/PROD/3D/geo/SHOTS/010/SHOT_340/CAM/CAM_E010_S340.hipnc
     :param filePath: full path to a file
     :return:
@@ -645,39 +658,3 @@ def createFolder(filePath):
 # print buildFilePath('001', fileTypes['cacheCamera'], scenePath='P:/PROJECTS/NSI/PROD/3D/scenes/RENDER/010/SHOT_010/RND_E010_S010_006.hiplc')
 # print convertPathCache('P:/PROJECTS/NSI/PROD/3D/geo/SHOTS/010/SHOT_330/CAM/CAM_E010_S330_001.hiplc')
 
-# Legacy DB communications
-
-def getCharacterData(charcterName):
-    '''
-    Load character data from database
-    :param charcterName: Name of Character
-    :return: Character data dictionary
-    '''
-
-    dataCharacters = json.load(open(databaseASSETS))
-    characterData = dataCharacters['CHARACTERS'][charcterName]
-    return characterData
-
-def setCharacterData(characterName, section, characterData):
-    with open(databaseASSETS, 'r+') as fileData:
-        data = json.load(fileData)
-        data['CHARACTERS'][characterName][section] = characterData
-        fileData.seek(0)  # reset file position to the beginning
-        json.dump(data, fileData, indent=4)
-        fileData.truncate()  # remove remaining part
-        print '>> Materials data saved to {}'.format(databaseASSETS)
-
-def setupCharacterMaterials(materialNode, characterData):
-    '''
-    Assign materials to a character (via groups) for conversion FBX to Geometry caches
-    Param: materialNode - material SOP node
-    '''
-    n = 1
-    # Get list of materials for the CHARACTER
-    listMaterials = characterData['materials'].keys()
-    materialNode.parm('num_materials').set(len(listMaterials))
-    for material in listMaterials:
-        materialPath = '/obj/MATERIALS/GENERAL/{}'.format(material) # Path to materials in Houdini scene
-        materialNode.parm('group{}'.format(n)).set(characterData['materials'][material]) # Set groups
-        materialNode.parm('shop_materialpath{}'.format(n)).set(materialPath) # Set materials
-        n += 1

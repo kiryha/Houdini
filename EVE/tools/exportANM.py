@@ -16,7 +16,7 @@ pathMap = dna.analyzeFliePath(scenePath)
 sequenceNumber = pathMap['sequenceNumber']
 shotNumber = pathMap['shotNumber']
 shotGenes = dna.getShotGenes(sequenceNumber, shotNumber)
-char_data = shotGenes['charactersData']
+characterData = shotGenes['charactersData']
 
 def exportCamera():
     '''
@@ -27,15 +27,13 @@ def exportCamera():
 
     print '>> Exporting camera...'
 
-    cameraName = dna.nameCamera.format(sequenceNumber, shotNumber)
+    cameraName = dna.cameraName.format(sequenceNumber, shotNumber)
     camera = hou.node('obj/{}'.format(cameraName))
     pathCamera = dna.buildFilePath('001', dna.fileTypes['cacheCamera'], scenePath=scenePath)
     dna.createFolder(dna.convertPathCache(pathCamera))
 
     # HIP export
-    listCameraNodes = []
-    listCameraNodes.extend(camera.inputAncestors())
-    listCameraNodes.append(camera)
+    listCameraNodes = dna.collectCamera(camera)
     # Export camera to a file
     sceneRoot.saveItemsToFile(listCameraNodes, pathCamera)
 
@@ -78,7 +76,7 @@ def createCacheNetwork():
 
     print '>> Create Character caches network ...'
 
-    for character in char_data:
+    for character in characterData:
         characterName = character['code']
         charContainer = hou.node('/obj/{0}'.format(characterName))
         if charContainer is not None:
@@ -125,7 +123,7 @@ def exportCharacters():
 
     print '>> Exporting Characters...'
 
-    for character in char_data:
+    for character in characterData:
         characterName = character['code']
         # Get Character File Cache node
         fileCacheName = dna.fileCacheName.format(characterName)
@@ -135,7 +133,7 @@ def exportCharacters():
         # Need to check existing cache and ask user overwrite or save next version
         # pathCache = FC.parm('file').rawValue()
 
-    print '>> Exporting caracters done!'
+    print '>> Exporting Characters done!'
 
 def ecxportAnimation():
 

@@ -18,12 +18,26 @@ sceneRoot = hou.node('/obj/')
 
 
 def importCameraAnim():
-    # HIP format
-    # Build camera path to the 001 version of ABC: '<root3D>/geo/SHOTS/010/SHOT_010/CAM/E010_S010_001.abc'
-    pathCamera = dna.buildFilePath('001', dna.fileTypes['cacheCamera'], scenePath=scenePath)
-    # Build path latest version. TBD
-    sceneRoot.loadItemsFromFile(pathCamera)
+    '''
+    Import camera to the render scene
+    :return:
+    '''
 
+    print '>> Importing Camera...'
+
+    # HIP format
+    # Check if shot camera exists - skip import
+    cameraName = dna.cameraName.format(sequenceNumber, shotNumber)
+    camera = hou.node('/obj/{}'.format(cameraName))
+
+    if camera:
+        print '>>>> Camera exists in scene! Delete camera and import again to update animation.'
+        # listCameraNodes = dna.collectCamera(camera)
+    else:
+        # Build camera path to the 001 version of ABC: '<root3D>/geo/SHOTS/010/SHOT_010/CAM/E010_S010_001.hiplc'
+        pathCamera = dna.buildFilePath('001', dna.fileTypes['cacheCamera'], scenePath=scenePath)
+        # Build path latest version. TBD
+        sceneRoot.loadItemsFromFile(pathCamera)
 
 
     # ABC format
@@ -39,6 +53,7 @@ def importCameraAnim():
     CAM.setPosition([0, -2*dna.nodeDistance_y])
     """
 
+    print '>> Importing Camera done!'
 
 def importCharacterAnim():
     '''
@@ -47,16 +62,29 @@ def importCharacterAnim():
     pathCache = $JOB/geo/SHOTS/010/SHOT_010/ROMA/GEO/001/E010_S010_ROMA_001.$F.bgeo.sc
     :return:
     '''
-    # For each character in shot
-    for character in shotGenes['charactersData']:
-        characterName = character['code']
-        # Get character container and create if not exists
-        CHAR = hou.node('/obj/{0}'.format(characterName))
-        if not CHAR:
-            CHAR = dna.createContainer(sceneRoot, characterName, mb=1)
 
-        # Create File Cache SOP
-        CACHE = CHAR.createNode('filecache', dna.fileCacheName.format(characterName))
+    # For each character in shot
+    for characterData in shotGenes['charactersData']:
+        characterName = characterData['code']
+        fileCacheName = dna.fileCacheName.format(characterName)
+
+        # Get character container or create if not exists
+        characterContainer = hou.node('/obj/{0}'.format(characterName))
+        if not characterContainer:
+            characterContainer = dna.createContainer(sceneRoot, characterName, mb=1)
+
+
+        # Get Character Cache node or create if not exists
+        characterCache = hou.node('/obj/{0}/{1}'.format(characterName, fileCacheName))
+        if not characterCache:
+            # Create File Cache SOP
+            characterCache = characterContainer.createNode('filecache', fileCacheName)
+            characterNull = characterContainer.createNode('null', 'OUT_{0}'.format(characterName))
+            characterNull.setInput(0, characterCache)
+            characterNull.setDisplayFlag(1)
+            characterNull.setRenderFlag(1)
+            characterContainer.layoutChildren()
+            print '>>>> Created Cache Network: {0}'.format(fileCacheName)
 
         # BUILD CACHE PATH (LATEST VERSION)
         # Build a path to the 001 version of cache
@@ -74,16 +102,13 @@ def importCharacterAnim():
                                           scenePath=scenePath,
                                           characterName=characterName)
 
-        CACHE.parm('file').set(pathCache)
-        CACHE.parm('loadfromdisk').set(1)
-        NULL = CHAR.createNode('null', 'OUT_{0}'.format(characterName))
-        NULL.setInput(0, CACHE)
-        NULL.setDisplayFlag(1)
-        NULL.setRenderFlag(1)
-        CHAR.layoutChildren()
+        # Set path to character cache
+        characterCache.parm('file').set(pathCache)
+        characterCache.parm('loadfromdisk').set(1)
+
 
 def run():
-    print '>>Importing animation...'
+    print '>> Importing animation...'
     importCameraAnim()
     importCharacterAnim()
     print '>> Animation imported!'
