@@ -222,26 +222,13 @@ class CreateScene(QtWidgets.QWidget):
 
             # SETUP MANTRA OUTPUT
             # Create mantra render node
-            mantra = outRoot.createNode('ifd', 'RENDER')
-            # Render file version setup
-            renderFile = dna.buildFilePath('001', dna.fileTypes['renderSequence'], scenePath=scenePath)
-            # Create folder for render file
-            fileLocation = dna.analyzeFliePath(renderFile)['fileLocation']
-            if not os.path.exists(fileLocation):
-                # Make 001 folder
-                os.makedirs(fileLocation)
-            else:
-                # If 001 file exists get latest version
-                latestVersion = dna.extractLatestVersionFolder(fileLocation)
-                nextVersion = '{:03d}'.format(int(latestVersion) + 1)
-                # Build latest existing path
-                renderFile = dna.buildFilePath(nextVersion, dna.fileTypes['renderSequence'], scenePath=scenePath)
-                os.makedirs(dna.analyzeFliePath(renderFile)['fileLocation'])
-                # Localize path (add $JOB)
-                renderFile = renderFile.replace(dna.root3D, '$JOB')
+            mantra = outRoot.createNode('ifd', dna.mantra)
+
+            # Render sequence setup
+            renderSequence = dna.buildRenderSequencePath(scenePath)
 
             # Setup Mantra parameters
-            mantra.parm('vm_picture').set(renderFile)
+            mantra.parm('vm_picture').set(renderSequence)
             cameraName = dna.nameCamera.format(sequenceNumber, shotNumber)
             mantra.parm('camera').set('/obj/{}'.format(cameraName))
             # Set common parameters from preset

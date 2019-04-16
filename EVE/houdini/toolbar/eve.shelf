@@ -13,6 +13,7 @@
     <memberTool name="importANM"/>
     <memberTool name="importFBX"/>
     <memberTool name="fbx_to_geo"/>
+    <memberTool name="render_manager"/>
   </toolshelf>
 
   <tool name="fbx_to_geo" label="FBX &gt; GEO" icon="PLASMA_App">
@@ -65,5 +66,11 @@ createFlipbook.run()]]></script>
     <script scriptType="python"><![CDATA[import exportANM
 reload(exportANM)
 exportANM.run()]]></script>
+  </tool>
+
+  <tool name="render_manager" label="RND" icon="PLASMA_App">
+    <script scriptType="python"><![CDATA[import renderManager
+reload(renderManager)
+renderManager.run()]]></script>
   </tool>
 </shelfDocument>

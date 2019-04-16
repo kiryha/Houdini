@@ -68,7 +68,7 @@ os.environ['HOUDINI_OTLSCAN_PATH'] = getHDA()
 # Houdini path
 os.environ['HOUDINI_PATH'] = '{}/EVE/houdini;&'.format(rootPipeline)
 # Path to custom python tools
-os.environ['PYTHONPATH'] = '{}/EVE/tools;&'.format(rootPipeline)
+os.environ['PYTHONPATH'] = '{0}/EVE/dna;{0}/EVE/tools;&'.format(rootPipeline)
 # Houdini console
 # os.environ['HOUDINI_WINDOW_CONSOLE'] = '1'
 # Icons

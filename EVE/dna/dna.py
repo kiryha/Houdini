@@ -148,6 +148,8 @@ nodeDistance_y = 0.8
 nameCamera = 'E{0}_S{1}'
 # File Cache SOP name for characters
 fileCacheName = 'CACHE_{}'
+# Mantra node
+mantra = 'RENDER'
 
 # SETTINGS
 renderSettings = {
@@ -420,42 +422,36 @@ def convertPathCache(pathCache):
 
     return pathCacheFolder
 
-############# Legacy DB comunication ################
-
-def getCharacterData(charcterName):
+def buildRenderSequencePath(scenePath):
     '''
-    Load character data from database
-    :param charcterName: Name of Character
-    :return: Character data dictionary
+    Create string path of the render images for MANTRA output node
+    :param scenePath: string render scene path
+                      P:/PROJECTS/NSI/PROD/3D/scenes/RENDER/010/SHOT_010/RND_E010_S010_004.hiplc
+    :return: render images path of the latest version
     '''
 
-    dataCharacters = json.load(open(databaseASSETS))
-    characterData = dataCharacters['CHARACTERS'][charcterName]
-    return characterData
+    # Create path of the 001 version
+    renderSequence = buildFilePath('001', fileTypes['renderSequence'], scenePath=scenePath)
+    # Create folder for render file
+    fileLocation = analyzeFliePath(renderSequence)['fileLocation']
+    if not os.path.exists(fileLocation):
+        # Make 001 folder
+        os.makedirs(fileLocation)
+    else:
+        # If 001 file exists get latest version
+        latestVersion = extractLatestVersionFolder(fileLocation)
+        # If latest version folder is empty, use it. Otherwise create and use next version
+        renderSequence = buildFilePath(latestVersion, fileTypes['renderSequence'], scenePath=scenePath)
+        if os.listdir(analyzeFliePath(renderSequence)['fileLocation']):
+            nextVersion = '{:03d}'.format(int(latestVersion) + 1)
+            # Build latest existing path
+            renderSequence = buildFilePath(nextVersion, fileTypes['renderSequence'], scenePath=scenePath)
+            os.makedirs(analyzeFliePath(renderSequence)['fileLocation'])
 
-def setCharacterData(characterName, section, characterData):
-    with open(databaseASSETS, 'r+') as fileData:
-        data = json.load(fileData)
-        data['CHARACTERS'][characterName][section] = characterData
-        fileData.seek(0)  # reset file position to the beginning
-        json.dump(data, fileData, indent=4)
-        fileData.truncate()  # remove remaining part
-        print '>> Materials data saved to {}'.format(databaseASSETS)
+        # Localize path (add $JOB)
+        renderSequence = renderSequence.replace(root3D, '$JOB')
 
-def setupCharacterMaterials(materialNode, characterData):
-    '''
-    Assign materials to a character (via groups) for conversion FBX to Geometry caches
-    Param: materialNode - material SOP node
-    '''
-    n = 1
-    # Get list of materials for the CHARACTER
-    listMaterials = characterData['materials'].keys()
-    materialNode.parm('num_materials').set(len(listMaterials))
-    for material in listMaterials:
-        materialPath = '/obj/MATERIALS/GENERAL/{}'.format(material) # Path to materials in Houdini scene
-        materialNode.parm('group{}'.format(n)).set(characterData['materials'][material]) # Set groups
-        materialNode.parm('shop_materialpath{}'.format(n)).set(materialPath) # Set materials
-        n += 1
+    return renderSequence
 
 # DATABASE COMMUNICATIONS
 # sequenceNumber = '010'
@@ -619,7 +615,6 @@ def createContainer(parent, name, bbox=0, mb=None, disp=1):
 
     return CONTAINER
 
-
 # UNSORTED
 def createFolder(filePath):
     '''
@@ -649,3 +644,40 @@ def createFolder(filePath):
 # print buildFilePath('001', fileTypes['cacheAnim'], scenePath='P:/PROJECTS/NSI/PROD/3D/scenes/RENDER/010/SHOT_010/RND_E010_S010_010.hipnc')
 # print buildFilePath('001', fileTypes['cacheCamera'], scenePath='P:/PROJECTS/NSI/PROD/3D/scenes/RENDER/010/SHOT_010/RND_E010_S010_006.hiplc')
 # print convertPathCache('P:/PROJECTS/NSI/PROD/3D/geo/SHOTS/010/SHOT_330/CAM/CAM_E010_S330_001.hiplc')
+
+# Legacy DB communications
+
+def getCharacterData(charcterName):
+    '''
+    Load character data from database
+    :param charcterName: Name of Character
+    :return: Character data dictionary
+    '''
+
+    dataCharacters = json.load(open(databaseASSETS))
+    characterData = dataCharacters['CHARACTERS'][charcterName]
+    return characterData
+
+def setCharacterData(characterName, section, characterData):
+    with open(databaseASSETS, 'r+') as fileData:
+        data = json.load(fileData)
+        data['CHARACTERS'][characterName][section] = characterData
+        fileData.seek(0)  # reset file position to the beginning
+        json.dump(data, fileData, indent=4)
+        fileData.truncate()  # remove remaining part
+        print '>> Materials data saved to {}'.format(databaseASSETS)
+
+def setupCharacterMaterials(materialNode, characterData):
+    '''
+    Assign materials to a character (via groups) for conversion FBX to Geometry caches
+    Param: materialNode - material SOP node
+    '''
+    n = 1
+    # Get list of materials for the CHARACTER
+    listMaterials = characterData['materials'].keys()
+    materialNode.parm('num_materials').set(len(listMaterials))
+    for material in listMaterials:
+        materialPath = '/obj/MATERIALS/GENERAL/{}'.format(material) # Path to materials in Houdini scene
+        materialNode.parm('group{}'.format(n)).set(characterData['materials'][material]) # Set groups
+        materialNode.parm('shop_materialpath{}'.format(n)).set(materialPath) # Set materials
+        n += 1
