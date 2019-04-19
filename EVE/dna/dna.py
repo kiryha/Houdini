@@ -110,11 +110,15 @@ FOLDERS = [
             ]],
             ['fx',TYPES],
             ['caches',TYPES],
-            ['hda',ASSETS],
+            ['hda', [
+                ['ASSETS', ASSETS],
+                ['FX', TYPES],
+             ]],
             ['render', SHOTS],
             ['scenes', [
                 ['ASSETS', ASSETS],
                 ['ANIMATION', SHOTS],
+                ['FX', TYPES],
                 ['LAYOUT', SHOTS],
                 ['LOOKDEV', TYPES],
                 ['RENDER', SHOTS]

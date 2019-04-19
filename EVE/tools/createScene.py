@@ -211,12 +211,12 @@ class CreateScene(QtWidgets.QWidget):
                 CHAR.setPosition([2*dna.nodeDistance_x, n*dna.nodeDistance_y])
 
             # [Props]
-            # No props for NSI project. Skipnig
+            # No props for NSI project.
 
             # [FX]
             fx_data = shotGenes['fxData']
             for n, FX in enumerate(fx_data):
-                FX = dna.createContainer(sceneRoot, fx_data[n]['code'], mb=1)
+                FX = sceneRoot.createNode(FX['hda_name'], FX['code'])
                 FX.setPosition([3*dna.nodeDistance_x, n*dna.nodeDistance_y])
 
 
