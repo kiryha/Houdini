@@ -58,7 +58,7 @@ rootPipeline = '{}/PREP/PIPELINE'.format(rootProject)
 folderUI = '{0}/{1}/ui/ui'.format(rootPipeline, pipelineName)
 
 # Database file
-genesFile = '{0}/EVE/genes/genes.json'.format(rootPipeline)
+genesFile = '{0}/EVE/genes/project.json'.format(rootPipeline)
 genes = json.load(open(genesFile))
 
 # PROJECT FOLDER STRUCTURE
@@ -464,7 +464,7 @@ def getShotData(sequenceNumber, shotNumber):
     '''
     Get shot dictionary via sequence and shot numbers (010 > 010)
 
-    To reduce database file (genes.json) before using Shotgun we don`t store sequences data there.
+    To reduce database file (project.json) before using Shotgun we don`t store sequences data there.
     So we looking for shots iterating shots dict, getting linked sequence, getting proper shot (shot > sequence > shot)
     Having Shotgun in place will allow to iterAte sequences and then find proper shot (sequence > shot)
     :param sequenceNumber: string '010'
@@ -646,7 +646,7 @@ def createFolder(filePath):
     if not os.path.exists(fileLocation):
         os.makedirs(fileLocation)
 
-#shotData = getShotData('010', '010')
+#shotData = getShotData('000', '010')
 #assetsData = getAssetsDataByShot(shotData)
 #envData = getAssetDataByType(assetsData,  'Environment')
 #charData = getAssetDataByType(assetsData,  'Character')
@@ -654,7 +654,8 @@ def createFolder(filePath):
 # print shotData
 # print assetsData
 # print charData
-# print getShotGenes('010', '010')
+# shotGenes = getShotGenes('000', '010')
+# print shotGenes['environmentData']
 
 # analyzeFileName('CITY_ANM_001.hipnc')
 # print buildFilePath('010', fileTypes['renderScene'],sequenceNumber='010', shotNumber='010' )

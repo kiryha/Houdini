@@ -189,35 +189,39 @@ class CreateScene(QtWidgets.QWidget):
             hou.playbar.setPlaybackRange(dna.frameStart, frameEnd)
 
             # [Render obj]
-            # Add Material lib HDA
-            mat_data = env_data['materials']
-            ML = sceneRoot.createNode(mat_data['hda_name'], mat_data['name'])
-            ML.setPosition([0, 0])
-            # Add lights HDA
-            lit_data = env_data['lights']
-            LIT = sceneRoot.createNode(lit_data['hda_name'], lit_data['name'])
-            LIT.setPosition([0, -dna.nodeDistance_y])
-            # Add Camera via ABC. Done in Import ANM
+            if env_data:
+                # Add Material lib HDA
+                mat_data = env_data['materials']
+                ML = sceneRoot.createNode(mat_data['hda_name'], mat_data['name'])
+                ML.setPosition([0, 0])
+                # Add lights HDA
+                lit_data = env_data['lights']
+                LIT = sceneRoot.createNode(lit_data['hda_name'], lit_data['name'])
+                LIT.setPosition([0, -dna.nodeDistance_y])
+                # Add Camera via ABC. Done in Import ANM
 
 
             # [Environment]
-            ENV = sceneRoot.createNode(env_data['hda_name'], env_data['code'])
-            ENV.setPosition([dna.nodeDistance_x, 0])
+            if env_data:
+                ENV = sceneRoot.createNode(env_data['hda_name'], env_data['code'])
+                ENV.setPosition([dna.nodeDistance_x, 0])
 
             # [Characters]
             char_data = shotGenes['charactersData']
-            for n, character in enumerate(char_data):
-                CHAR = dna.createContainer(sceneRoot, char_data[n]['code'], mb=1)
-                CHAR.setPosition([2*dna.nodeDistance_x, n*dna.nodeDistance_y])
+            if char_data:
+                for n, character in enumerate(char_data):
+                    CHAR = dna.createContainer(sceneRoot, char_data[n]['code'], mb=1)
+                    CHAR.setPosition([2*dna.nodeDistance_x, n*dna.nodeDistance_y])
 
             # [Props]
             # No props for NSI project.
 
             # [FX]
             fx_data = shotGenes['fxData']
-            for n, FX in enumerate(fx_data):
-                FX = sceneRoot.createNode(FX['hda_name'], FX['code'])
-                FX.setPosition([3*dna.nodeDistance_x, n*dna.nodeDistance_y])
+            if fx_data:
+                for n, FX in enumerate(fx_data):
+                    FX = sceneRoot.createNode(FX['hda_name'], FX['code'])
+                    FX.setPosition([3*dna.nodeDistance_x, n*dna.nodeDistance_y])
 
 
             # SETUP MANTRA OUTPUT

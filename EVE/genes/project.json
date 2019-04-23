@@ -1,5 +1,20 @@
 {
 "SHOTS": [
+
+    {"code": "SHOT_010",
+     "sg_cut_out": 2,
+     "sg_sequence": {"name": "000"},
+     "assets": [],
+     "fxs": [],
+     "description":"Render batch test"},
+
+    {"code": "SHOT_020",
+     "sg_cut_out": 3,
+     "sg_sequence": {"name": "000"},
+     "assets": [],
+     "fxs": [],
+     "description":"Render batch test"},
+
     {"code": "SHOT_010",
      "sg_cut_out": 125,
      "sg_sequence": {"name": "010"},
