@@ -17,5 +17,9 @@
      "light_hda": {"name": "CITY_LIT", "hda_name": "city_lights"}},
 
     {"code": "ROMA",
-     "sg_asset_type": "Character"}]
+     "sg_asset_type": "Character"},
+
+    {"code": "VANISH",
+     "sg_asset_type": "FX",
+     "hda_name": "city_vanish"}]
 }

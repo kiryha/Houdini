@@ -1,4 +1,4 @@
 mread P:/PROJECTS/NSI/PROD/3D/scenes/RENDER/010/SHOT_050/RND_E010_S050_002.hiplc
-render -f 17 110 -V /out/RENDER
+render -f 18 110 -V /out/RENDER
 mread P:/PROJECTS/NSI/PROD/3D/scenes/RENDER/010/SHOT_060/RND_E010_S060_001.hiplc
 render -f 1 110 -V /out/RENDER

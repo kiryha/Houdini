@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>BatchRender</class>
+ <widget class="QWidget" name="BatchRender">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>480</width>
+    <height>195</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Batch Render</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QTableWidget" name="tab_shots"/>
+   </item>
+   <item>
+    <widget class="QSplitter" name="splitter">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <widget class="QPushButton" name="btn_addShots">
+      <property name="text">
+       <string>Add Shots</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btn_delShots">
+      <property name="text">
+       <string>Del Shots</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btn_reload">
+      <property name="text">
+       <string>Reload</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btn_render">
+      <property name="text">
+       <string>Render</string>
+      </property>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

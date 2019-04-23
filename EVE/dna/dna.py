@@ -57,9 +57,12 @@ rootPipeline = '{}/PREP/PIPELINE'.format(rootProject)
 # Get path to *.UI files <P:/PROJECTS/NSI/PREP/PIPELINE/EVE/ui/ui>
 folderUI = '{0}/{1}/ui/ui'.format(rootPipeline, pipelineName)
 
-# Database file
-genesFile = '{0}/EVE/genes/project.json'.format(rootPipeline)
-genes = json.load(open(genesFile))
+# Database files
+genesFile_project = '{0}/EVE/genes/project.json'.format(rootPipeline)
+genes_project = json.load(open(genesFile_project))
+genesFile_render = '{0}/EVE/genes/render.json'.format(rootPipeline)
+#genes_render = json.load(open(genesFile_render))
+
 
 # PROJECT FOLDER STRUCTURE
 # Shots structure
@@ -476,7 +479,7 @@ def getShotData(sequenceNumber, shotNumber):
     shotCode = 'SHOT_{0}'.format(shotNumber)
     SHOT = None
 
-    for shot in genes['SHOTS']:
+    for shot in genes_project['SHOTS']:
         # Get shot > sequence data
         if shot['sg_sequence']['name'] == sequenceNumber:
             # Get shot data
@@ -502,12 +505,12 @@ def getAssetsDataByShot(shotData):
 
     # Get assets
     for asset in shotData['assets']:
-        for assetData in genes['ASSETS']:
+        for assetData in genes_project['ASSETS']:
             if assetData['code'] == asset['name']:
                 assetsData.append(assetData)
     # Get FXs
     for FX in shotData['fxs']:
-        for assetData in genes['ASSETS']:
+        for assetData in genes_project['ASSETS']:
             if assetData['code'] == FX['name']:
                 assetsData.append(assetData)
 
