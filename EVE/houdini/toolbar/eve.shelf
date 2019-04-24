@@ -14,7 +14,7 @@
     <memberTool name="importFBX"/>
     <memberTool name="fbx_to_geo"/>
     <memberTool name="render_manager"/>
-    <memberTool name="batch_render"/>
+    <memberTool name="render_farm"/>
   </toolshelf>
 
   <tool name="fbx_to_geo" label="FBX &gt; GEO" icon="PLASMA_App">
@@ -75,9 +75,9 @@ reload(renderManager)
 renderManager.run()]]></script>
   </tool>
 
-  <tool name="batch_render" label="BR" icon="PLASMA_App">
-    <script scriptType="python"><![CDATA[import batchRender
-reload(batchRender)
-batchRender.run()]]></script>
+  <tool name="render_farm" label="Farm" icon="PLASMA_App">
+    <script scriptType="python"><![CDATA[import renderFarm
+reload(renderFarm)
+renderFarm.run()]]></script>
   </tool>
 </shelfDocument>

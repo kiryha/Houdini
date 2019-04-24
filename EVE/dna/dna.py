@@ -187,7 +187,9 @@ renderSettings = {
 def analyzeFliePath(filePath):
     '''
     Disassemble full path (string) into components
-    Example filePath: 'P:/PROJECTS/NSI/PROD/3D/scenes/ANIMATION/ANM_E010_S010_001.hipnc'
+    Example filePaths:
+        'P:/PROJECTS/NSI/PROD/3D/scenes/ANIMATION/ANM_E010_S010_001.hipnc'
+        'P:/PROJECTS/NSI/PROD/3D/render/010/SHOT_020/001/E010_S020_002.$F.exr'
 
     fileLocation = P:/PROJECTS/NSI/PROD/3D/scenes/ANIMATION/
     fileName = ANM_E010_S010_001.hipnc
@@ -205,13 +207,14 @@ def analyzeFliePath(filePath):
 
     # File elements dictionary
     pathMap = {'fileLocation': fileLocation,
-                     'fileName': fileName,
-                     'fileType': outputMapName['fileType'],
-                     'sequenceNumber': outputMapName['sequenceNumber'],
-                     'shotNumber': outputMapName['shotNumber'],
-                     'fileVersion': outputMapName['fileVersion'],
-                     'fileCode': outputMapName['fileCode'],
-                     'fileExtension': outputMapName['fileExtension']}
+               'folderVersion': fileLocation.split('/')[-2],
+               'fileName': fileName,
+               'fileType': outputMapName['fileType'],
+               'sequenceNumber': outputMapName['sequenceNumber'],
+               'shotNumber': outputMapName['shotNumber'],
+               'fileVersion': outputMapName['fileVersion'],
+               'fileCode': outputMapName['fileCode'],
+               'fileExtension': outputMapName['fileExtension']}
 
     return pathMap
 
@@ -427,12 +430,13 @@ def convertPathCache(pathCache):
 
     return pathCacheFolder
 
-def buildRenderSequencePath(scenePath):
+def buildRenderSequencePath(scenePath=None):
     '''
-    Create string path of the render images for MANTRA output node
+    Create string path of the render images for MANTRA output node (LATEST VERSION)
+
     :param scenePath: string render scene path
                       P:/PROJECTS/NSI/PROD/3D/scenes/RENDER/010/SHOT_010/RND_E010_S010_004.hiplc
-    :return: render images path of the latest version
+    :return: render images path of the LATEST VERSION ($JOB/render/010/SHOT_010/005/E010_S010_005.$F.exr)
     '''
 
     # Create path of the 001 version
@@ -475,6 +479,9 @@ def getShotData(sequenceNumber, shotNumber):
     :return shot: shot dictionary
     {'code': 'SHOT_010', 'sg_cut_out': 200, 'sg_sequence': {'name': '010'}, 'assets': [{'name': 'CITY'}, {'name': 'ROMA'}]}
     '''
+
+    # Reload project data
+    genes_project = json.load(open(genesFile_project))
 
     shotCode = 'SHOT_{0}'.format(shotNumber)
     SHOT = None
@@ -666,3 +673,7 @@ def createFolder(filePath):
 # print buildFilePath('001', fileTypes['cacheCamera'], scenePath='P:/PROJECTS/NSI/PROD/3D/scenes/RENDER/010/SHOT_010/RND_E010_S010_006.hiplc')
 # print convertPathCache('P:/PROJECTS/NSI/PROD/3D/geo/SHOTS/010/SHOT_330/CAM/CAM_E010_S330_001.hiplc')
 
+#scenePath = buildFilePath('001', fileTypes['renderScene'], sequenceNumber='010', shotNumber='010')
+#print scenePath
+#print buildRenderSequencePath(scenePath)
+#print analyzeFliePath('P:/PROJECTS/NSI/PROD/3D/render/010/SHOT_020/001/E010_S020_002.$F.exr')
