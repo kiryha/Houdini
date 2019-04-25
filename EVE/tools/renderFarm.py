@@ -5,16 +5,19 @@ For each new render shot row in table:
     - looks into the project.json database and HDD (render dir, render hips) to get parameters (shotItemParams),
     - populate parameters to UI and save them in render.json database
 
+Stop on setup Folder button (openFolder())
+
 '''
 
 import hou
 import json
 import glob
+import os
 from EVE.dna import dna
 from PySide2 import QtCore, QtUiTools, QtWidgets
 reload(dna)
 
-shotItemParams = ['E', 'S', 'hip', 'exr', 'range', 'done', 'start', 'end', 'R', 'notes']
+shotItemParams = ['E', 'S', 'hip', 'exr', 'range', 'done', 'start', 'end', 'R', 'actions']
 nonEditable = [0, 1, 4, 5] # Table cells: read and select only
 # shotItemTemplate = {"E": "", "S": "", "hip": "", "exr": "", "range": "", "done": "", "start": "", "end": ""}
 
@@ -65,8 +68,8 @@ class BatchRender(QtWidgets.QWidget):
         self.ui.tab_shots.setColumnWidth(5, 60)
         self.ui.tab_shots.setColumnWidth(6, 40)
         self.ui.tab_shots.setColumnWidth(7, 40)
-        self.ui.tab_shots.setColumnWidth(8, 20)
-        self.ui.tab_shots.setColumnWidth(9, 120)
+        self.ui.tab_shots.setColumnWidth(8, 30)
+        self.ui.tab_shots.setColumnWidth(9, 210)
         self.ui.tab_shots.horizontalHeader().setSectionResizeMode(9, QtWidgets.QHeaderView.Stretch)
 
         # Load shots from database
@@ -77,11 +80,32 @@ class BatchRender(QtWidgets.QWidget):
         self.ui.btn_reload.clicked.connect(self.addShots)
         self.ui.btn_delShots.clicked.connect(self.deleteShots)
 
+    def openFolder(self):
+        print 'OLA!'
+        #print self.ui.tab_shots.cellWidget(0, 9).parent()
+
     def render(self):
         print '>> Rendering...'
 
         # get shot items from UI
         shotItems = self.readShotTable()
+
+        for shotItem in shotItems:
+
+            # Skip completely rendered shots (START value set to '' in populateShotItem)
+            if not shotItem['start'] == '':
+                renderScenePath = dna.buildFilePath(shotItem['hip'],
+                                                    dna.fileTypes['renderScene'],
+                                                    sequenceNumber=shotItem['E'],
+                                                    shotNumber=shotItem['S'])
+
+                hou.hipFile.load(renderScenePath)
+                rop = hou.node('/out/{}'.format(dna.mantra))
+                rop.render(frame_range=(int(shotItem['start']), int(shotItem['end'])))
+            else:
+                print '>> Shot E{0}_S{1} already rendered in {2} version!'.format(shotItem['E'],shotItem['S'], shotItem['exr'])
+
+        print '>> Rendering done!'
 
     def createShotItems(self):
         AS = CreateShotItems()
@@ -126,18 +150,24 @@ class BatchRender(QtWidgets.QWidget):
                                             sequenceNumber=sequenceNumber,
                                             shotNumber=shotNumber)
 
+        latestHIP = dna.buildPathLatestVersion(renderScenePath)
+        pathMapHIP = dna.analyzeFliePath(latestHIP)
+
         renderSequencePath = dna.buildFilePath('001',
                                            dna.fileTypes['renderSequence'],
                                            sequenceNumber=sequenceNumber,
                                            shotNumber=shotNumber)
 
+        shotItem['hip'] = pathMapHIP['fileVersion']
+
         pathMapEXR = dna.analyzeFliePath(renderSequencePath)
-        latestEXR = dna.extractLatestVersionFolder(pathMapEXR['fileLocation'])
-        latestHIP = dna.buildPathLatestVersion(renderScenePath)
-        pathMapHIP = dna.analyzeFliePath(latestHIP)
+        fileLocation = pathMapEXR['fileLocation']
+        # Check if folder exists, create if not
+        if not os.path.exists(fileLocation):
+            os.makedirs(fileLocation)
+        latestEXR = dna.extractLatestVersionFolder(fileLocation)
 
         shotItem['exr'] = latestEXR
-        shotItem['hip'] = pathMapHIP['fileVersion']
 
         renderFilePath = dna.buildFilePath(latestEXR,
                                            dna.fileTypes['renderSequence'],
@@ -147,14 +177,27 @@ class BatchRender(QtWidgets.QWidget):
         pathMapEXR = dna.analyzeFliePath(renderFilePath)
         latestFolderPath = pathMapEXR['fileLocation']
         listExisted = glob.glob('{0}*.exr'.format(latestFolderPath))
-        doneStart, doneEnd = self.extractFrames(listExisted)
+
+        # Clean list from partially rendered files 'E010_S060_012.1.exr.mantra_checkpoint'
+        listCorruptedFiles = glob.glob('{0}*.exr.mantra_checkpoint'.format(latestFolderPath))
+        listCorrupted = []
+        for file in listCorruptedFiles:
+            file = file.replace('\\','/').replace('.mantra_checkpoint', '')
+            listCorrupted.append(file.split('/')[-1])
+
+        doneStart, doneEnd = self.extractFrames(listExisted, listCorrupted)
+
         if doneStart != 0:
             shotItem['done'] = '{0:03d} - {1:03d}'.format(doneStart, doneEnd)
 
         # Check if sequence is not rendered completely
+        # Otherwise set START to a blank value. This will be skipped when render
         if not doneEnd == shotData['sg_cut_out']:
             shotItem['start'] = str(doneEnd + 1)
-            shotItem['end'] = str(shotData['sg_cut_out'])
+        else:
+            shotItem['start'] = ''
+
+        shotItem['end'] = str(shotData['sg_cut_out'])
 
         self.addShotRow(shotItem)
 
@@ -215,6 +258,9 @@ class BatchRender(QtWidgets.QWidget):
 
             # Create shot CELL
             cell = QtWidgets.QTableWidgetItem()
+            btn = QtWidgets.QPushButton()
+            btn.setText('Open Folder')
+            btn.clicked.connect(self.openFolder)
 
             # Fill shot CELL with data database
             if shotItemParams[n] in shotItem:
@@ -227,14 +273,25 @@ class BatchRender(QtWidgets.QWidget):
             if n in nonEditable:
                 cell.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
 
-            # Add check box to RENDER to cell
-            #chb = QtWidgets.QCheckBox()
-            #table.setCellWidget(n, 8, chb)
+            # Add Open Folder button
+            if n == 9:
+                table.setCellWidget(rows, n, btn)
 
-            # Add comboBox to cell
-            # itemTemp = QtWidgets.QComboBox()
-            # itemTemp.addItems(['A', 'B'])
-            # table.setCellWidget(n, 8, itemTemp)
+
+        #print 'C', table.rowCount()
+        # Add button NOTES to cell
+        #for i in range(table.rowCount()):
+            #print i
+        #btn = QtWidgets.QPushButton()
+        #table.setCellWidget(0, 9, btn)
+
+        # Add check box to RENDER to cell
+        #chb = QtWidgets.QCheckBox()
+        #table.setCellWidget(n, 8, chb)
+        # Add comboBox to cell
+        # itemTemp = QtWidgets.QComboBox()
+        # itemTemp.addItems(['A', 'B'])
+        # table.setCellWidget(n, 8, itemTemp)
 
     def deleteShots(self):
         '''
@@ -258,27 +315,31 @@ class BatchRender(QtWidgets.QWidget):
 
         # Read shots by ROW
         for i in range(self.ui.tab_shots.rowCount()):
+
             shotItem = {}
             for n, param in enumerate(shotItemParams):
                 shotItem[param] = self.ui.tab_shots.item(i, n).text()
+            shotItems.append(shotItem)
+
         return shotItems
 
-    # DATABASE
-    def getShotRange(self):
-        return range
 
     # MISC
-    def extractFrames(self, listEXR):
+    def extractFrames(self, listExisted, listCorrupted):
         '''
-        Get 1 and last frames from sequence of EXR
-        :param listEXR:
+        Get from and last frames from sequence of EXR
+        :param listExisted: list of EXR in render shot folder
+        :param listCorrupted: list of corrupted EXR
         :return:
         '''
+
         listFrames = []
-        for exr in listEXR:
+        for exr in listExisted:
             exr = exr.replace('\\','/')
-            frame = exr.split('/')[-1].split('.')[-2]
-            listFrames.append(int(frame))
+            if not exr.split('/')[-1] in listCorrupted:
+                # print '{} not in {}'.format(exr.split('/')[-1], listCorrupted)
+                frame = exr.split('/')[-1].split('.')[-2]
+                listFrames.append(int(frame))
 
         if listFrames:
             return min(listFrames), max(listFrames)
