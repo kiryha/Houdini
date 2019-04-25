@@ -13,8 +13,9 @@ import hou
 import json
 import glob
 import os
+import subprocess
 from EVE.dna import dna
-from PySide2 import QtCore, QtUiTools, QtWidgets
+from PySide2 import QtCore, QtUiTools, QtWidgets, QtGui
 reload(dna)
 
 shotItemParams = ['E', 'S', 'hip', 'exr', 'range', 'done', 'start', 'end', 'R', 'actions']
@@ -81,8 +82,36 @@ class BatchRender(QtWidgets.QWidget):
         self.ui.btn_delShots.clicked.connect(self.deleteShots)
 
     def openFolder(self):
-        print 'OLA!'
-        #print self.ui.tab_shots.cellWidget(0, 9).parent()
+
+        splitter = self.sender().parent()
+        index = self.ui.tab_shots.indexAt(splitter.pos())
+        sequenceNumber = self.ui.tab_shots.item(index.row(), 0).text()
+        shotNumber = self.ui.tab_shots.item(index.row(), 1).text()
+        exrVersion = self.ui.tab_shots.item(index.row(), 3).text()
+
+        renderFilePath = dna.buildFilePath(exrVersion,
+                                           dna.fileTypes['renderSequence'],
+                                           sequenceNumber=sequenceNumber,
+                                           shotNumber=shotNumber)
+
+        renderFileFloder = dna.analyzeFliePath(renderFilePath)['fileLocation']
+        subprocess.Popen('explorer "{}"'.format(renderFileFloder.replace('/', '\\')))
+
+    def openHip(self):
+
+        splitter = self.sender().parent()
+        index = self.ui.tab_shots.indexAt(splitter.pos())
+        sequenceNumber = self.ui.tab_shots.item(index.row(), 0).text()
+        shotNumber = self.ui.tab_shots.item(index.row(), 1).text()
+        hipVersion = self.ui.tab_shots.item(index.row(), 2).text()
+
+        renderScenePath = dna.buildFilePath(hipVersion,
+                                            dna.fileTypes['renderScene'],
+                                            sequenceNumber=sequenceNumber,
+                                            shotNumber=shotNumber)
+
+        hou.hipFile.load(renderScenePath)
+
 
     def render(self):
         print '>> Rendering...'
@@ -189,15 +218,19 @@ class BatchRender(QtWidgets.QWidget):
 
         if doneStart != 0:
             shotItem['done'] = '{0:03d} - {1:03d}'.format(doneStart, doneEnd)
+        else:
+            shotItem['done'] = ''
 
         # Check if sequence is not rendered completely
         # Otherwise set START to a blank value. This will be skipped when render
         if not doneEnd == shotData['sg_cut_out']:
             shotItem['start'] = str(doneEnd + 1)
+            shotItem['end'] = str(shotData['sg_cut_out'])
         else:
             shotItem['start'] = ''
+            shotItem['end'] = ''
 
-        shotItem['end'] = str(shotData['sg_cut_out'])
+
 
         self.addShotRow(shotItem)
 
@@ -215,11 +248,20 @@ class BatchRender(QtWidgets.QWidget):
             # Clear table
             self.ui.tab_shots.setRowCount(0)
 
+            # Shot items list with updated data
+            shotItemsUP = []
+
             for n, shotItem in enumerate(shotItems):
-                self.populateShotItem(shotItem)
+                shotItem = self.populateShotItem(shotItem)
+                shotItemsUP.append(shotItem)
+
                 # Paint cells
+                if shotItem['range'] == shotItem['done']:
+                    self.ui.tab_shots.item(n, 8).setBackground(QtGui.QColor(75, 150, 75))
                 # self.ui.tab_shots.item(n, 0).setBackground(QtGui.QColor(75, 75, 75))
                 # self.ui.tab_shots.item(n, 1).setBackground(QtGui.QColor(75, 75, 75))
+
+            json.dump(shotItemsUP, open(dna.genesFile_render, 'w'), indent=4)
 
         # LAUNCH FROM CreateShotItems CLASS
         else:
@@ -258,9 +300,18 @@ class BatchRender(QtWidgets.QWidget):
 
             # Create shot CELL
             cell = QtWidgets.QTableWidgetItem()
-            btn = QtWidgets.QPushButton()
-            btn.setText('Open Folder')
-            btn.clicked.connect(self.openFolder)
+
+            btn1 = QtWidgets.QPushButton()
+            btn1.setText('Open Folder')
+            btn1.clicked.connect(self.openFolder)
+
+            btn2 = QtWidgets.QPushButton()
+            btn2.setText('Open Hip')
+            btn2.clicked.connect(self.openHip)
+
+            s = QtWidgets.QSplitter()
+            s.addWidget(btn1)
+            s.addWidget(btn2)
 
             # Fill shot CELL with data database
             if shotItemParams[n] in shotItem:
@@ -275,7 +326,8 @@ class BatchRender(QtWidgets.QWidget):
 
             # Add Open Folder button
             if n == 9:
-                table.setCellWidget(rows, n, btn)
+                table.setCellWidget(rows, n, s)
+                #table.setCellWidget(rows, n, btn2)
 
 
         #print 'C', table.rowCount()
