@@ -29,3 +29,4 @@ Working [tools](https://github.com/kiryha/Houdini/wiki/tools):
 - **Save next version**: Incremental save current scene
 - **Create scene**: Build a render scene with all necessary components (environment, caches, materials etc)
 - **Create flipbook**: Make a hardware render of shot camera and place it to a proper location with version control
+- **Reder Farm**: Render set of HIP files
