@@ -5,7 +5,9 @@ For each new render shot row in table:
     - looks into the project.json database and HDD (render dir, render hips) to get parameters (shotItemParams),
     - populate parameters to UI and save them in render.json database
 
-Stop on setup Folder button (openFolder())
+Working version
+
+TBD: Move shots up and down in list
 
 '''
 
@@ -20,7 +22,6 @@ reload(dna)
 
 shotItemParams = ['E', 'S', 'hip', 'exr', 'range', 'done', 'start', 'end', 'R', 'actions']
 nonEditable = [0, 1, 4, 5] # Table cells: read and select only
-# shotItemTemplate = {"E": "", "S": "", "hip": "", "exr": "", "range": "", "done": "", "start": "", "end": ""}
 
 class AlignDelegate(QtWidgets.QItemDelegate):
     '''
@@ -80,6 +81,7 @@ class BatchRender(QtWidgets.QWidget):
         self.ui.btn_render.clicked.connect(self.render)
         self.ui.btn_reload.clicked.connect(self.addShots)
         self.ui.btn_delShots.clicked.connect(self.deleteShots)
+        #self.ui.btn_up.clicked.connect(self.moveRowUp)
 
     def openFolder(self):
 
@@ -111,7 +113,6 @@ class BatchRender(QtWidgets.QWidget):
                                             shotNumber=shotNumber)
 
         hou.hipFile.load(renderScenePath)
-
 
     def render(self):
         print '>> Rendering...'
@@ -345,6 +346,17 @@ class BatchRender(QtWidgets.QWidget):
         # itemTemp.addItems(['A', 'B'])
         # table.setCellWidget(n, 8, itemTemp)
 
+    def deleteShotDB(self, sequenceNumber, shotNumber):
+
+        shotItems = json.load(open(dna.genesFile_render))
+
+        for i in range(len(shotItems)):
+            if shotItems[i]['E'] == sequenceNumber and shotItems[i]['S'] == shotNumber:
+                del shotItems[i]
+                break
+
+        json.dump(shotItems, open(dna.genesFile_render, 'w'), indent=4)
+
     def deleteShots(self):
         '''
         REMOVE selected shots from the SHOTs TABLE
@@ -353,9 +365,12 @@ class BatchRender(QtWidgets.QWidget):
         # Delete shot from UI
         tab = self.ui.tab_shots
         rows = [tab.row(item) for item in tab.selectedItems()]
-        [tab.removeRow(row) for row in sorted(rows, reverse=True)]
 
-        # TBD: Delete shot from render.json database
+        for row in sorted(rows, reverse=True):
+            sequenceNumber = tab.item(row, 0).text()
+            shotNumber = tab.item(row, 1).text()
+            self.deleteShotDB(sequenceNumber, shotNumber)
+            tab.removeRow(row)
 
     def readShotTable(self):
         '''
@@ -375,6 +390,56 @@ class BatchRender(QtWidgets.QWidget):
 
         return shotItems
 
+    def moveRowUp(self):
+        tab = self.ui.tab_shots
+        row = tab.currentRow()
+        column = tab.currentColumn();
+        if row > 0:
+            tab.insertRow(row-1)
+            for i in range(tab.columnCount()):
+               tab.setItem(row-1,i,tab.takeItem(row+1,i))
+               tab.setCurrentCell(row-1,column)
+            tab.removeRow(row+1)
+
+    def moveRowDown(self):
+        tab = self.ui.tab_shots
+        row = tab.currentRow()
+        column = tab.currentColumn();
+        if row < tab.rowCount() - 1:
+            tab.insertRow(row + 2)
+            for i in range(tab.columnCount()):
+                tab.setItem(row + 2, i, tab.takeItem(row, i))
+                tab.setCurrentCell(row + 2, column)
+            tab.removeRow(row)
+
+    def moveDown(self, shotItems, indexCurrent, operation):
+        '''
+        Move shot dictionary up or down in the list of shot items (shotItems)
+        :param shotItems: list of shot items dics
+        :param indexCurrent: index of current row in UI (= index of shot item in list of dics)
+        :param operation: integer UP(-1) or down(+1)
+        :return: 
+        '''
+
+        # operation: UP(-1) or down(+1)
+
+        # Generate SRC list of indexes for shotItems list
+        indexes = []
+        for i in range(len(shotItems)):
+            indexes.append(i)
+
+        # Swap current index with right (left) element = DOWN (UP)
+        indexes[indexCurrent], indexes[indexCurrent + operation] = indexes[indexCurrent + operation], indexes[
+            indexCurrent]
+
+        # Build a new list of dics
+        shotItemsNEW = []
+        for i, shotItem in zip(indexes, shotItems):
+            shotItemsNEW.append(shotItems[i])
+
+        return shotItemsNEW
+
+        # print moveDown(shotItems, 1, -1)
 
     # MISC
     def extractFrames(self, listExisted, listCorrupted):
