@@ -71,7 +71,7 @@ class BatchRender(QtWidgets.QWidget):
         self.ui.tab_shots.setColumnWidth(6, 40)
         self.ui.tab_shots.setColumnWidth(7, 40)
         self.ui.tab_shots.setColumnWidth(8, 30)
-        self.ui.tab_shots.setColumnWidth(9, 210)
+        self.ui.tab_shots.setColumnWidth(9, 290)
         self.ui.tab_shots.horizontalHeader().setSectionResizeMode(9, QtWidgets.QHeaderView.Stretch)
 
         # Load shots from database
@@ -81,7 +81,8 @@ class BatchRender(QtWidgets.QWidget):
         self.ui.btn_render.clicked.connect(self.render)
         self.ui.btn_reload.clicked.connect(self.addShots)
         self.ui.btn_delShots.clicked.connect(self.deleteShots)
-        #self.ui.btn_up.clicked.connect(self.moveRowUp)
+        self.ui.btn_up.clicked.connect(lambda: self.moveShotItems(-1))
+        self.ui.btn_down.clicked.connect(lambda: self.moveShotItems(1))
 
     def openFolder(self):
 
@@ -412,34 +413,59 @@ class BatchRender(QtWidgets.QWidget):
                 tab.setCurrentCell(row + 2, column)
             tab.removeRow(row)
 
-    def moveDown(self, shotItems, indexCurrent, operation):
+    def moveShotItems(self,  operation):
         '''
         Move shot dictionary up or down in the list of shot items (shotItems)
         :param shotItems: list of shot items dics
         :param indexCurrent: index of current row in UI (= index of shot item in list of dics)
         :param operation: integer UP(-1) or down(+1)
-        :return: 
+        :return:
         '''
 
-        # operation: UP(-1) or down(+1)
+        tab = self.ui.tab_shots
+        #rows = [tab.row(item) for item in tab.selectedItems()]
 
-        # Generate SRC list of indexes for shotItems list
-        indexes = []
-        for i in range(len(shotItems)):
-            indexes.append(i)
+        # Selected row index (only one row should be selected)
+        if len( tab.selectedItems()) != 1:
+            print '>> Select only ONE cell!'
+        else:
+            rowIndex = tab.selectedItems()[0].row()
+            columnIndex = tab.selectedItems()[0].column()
+            tab.item(rowIndex, columnIndex).setSelected(False) # Clear selection
 
-        # Swap current index with right (left) element = DOWN (UP)
-        indexes[indexCurrent], indexes[indexCurrent + operation] = indexes[indexCurrent + operation], indexes[
-            indexCurrent]
+            # MOVE SHOT ITEM IN DATABASE
+            indexCurrent = rowIndex
+            shotItems = json.load(open(dna.genesFile_render))
 
-        # Build a new list of dics
-        shotItemsNEW = []
-        for i, shotItem in zip(indexes, shotItems):
-            shotItemsNEW.append(shotItems[i])
+            # Generate SRC list of indexes for shotItems list
+            indexes = []
+            for i in range(len(shotItems)):
+                indexes.append(i)
 
-        return shotItemsNEW
+            indexSwap = indexCurrent + operation
+            numItems = len(indexes)
+            if indexSwap == numItems:  # Last element move to first
+                indexes[indexCurrent], indexes[0] = indexes[0], indexes[indexCurrent]
+            elif indexSwap == -1:  # First element move to last
+                indexes[indexCurrent], indexes[numItems - 1] = indexes[numItems - 1], indexes[0]
+            else:
+                indexes[indexCurrent], indexes[indexSwap] = indexes[indexSwap], indexes[indexCurrent]
 
-        # print moveDown(shotItems, 1, -1)
+            # Build a new list of dics
+            shotItemsNEW = []
+            for i, shotItem in zip(indexes, shotItems):
+                shotItemsNEW.append(shotItems[i])
+
+            json.dump(shotItemsNEW, open(dna.genesFile_render, 'w'), indent=4)
+
+
+            self.addShots()
+            # Select same shot item
+            tab.item(rowIndex + operation, columnIndex).setSelected(True)
+
+
+
+
 
     # MISC
     def extractFrames(self, listExisted, listCorrupted):

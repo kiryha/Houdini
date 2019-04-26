@@ -50,6 +50,13 @@
      "fxs": [],
      "description":"Pano 1. Start. 50 mm"},
 
+    {"code": "SHOT_080",
+     "sg_cut_out": 110,
+     "sg_sequence": {"name": "010"},
+     "assets": [{"name": "CITY"}, {"name": "ROMA"}],
+     "fxs": [],
+     "description":"Run down from garbage hill. 35mm"},
+
     {"code": "SHOT_061",
      "sg_cut_out": 175,
      "sg_sequence": {"name": "010"},
