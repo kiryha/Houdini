@@ -7,8 +7,7 @@ For each new render shot row in table:
 
 Working version
 
-TBD: Move shots up and down in list
-
+TBD: Check restrictions in moveShotItems()
 '''
 
 import hou
@@ -78,7 +77,7 @@ class BatchRender(QtWidgets.QWidget):
         self.addShots()
 
         self.ui.btn_addShots.clicked.connect(self.createShotItems)
-        self.ui.btn_render.clicked.connect(self.render)
+        self.ui.btn_render.clicked.connect(lambda: self.recurciveRender(self.readShotTable()))
         self.ui.btn_reload.clicked.connect(self.addShots)
         self.ui.btn_delShots.clicked.connect(self.deleteShots)
         self.ui.btn_up.clicked.connect(lambda: self.moveShotItems(-1))
@@ -115,11 +114,38 @@ class BatchRender(QtWidgets.QWidget):
 
         hou.hipFile.load(renderScenePath)
 
-    def render(self):
-        print '>> Rendering...'
+    def needRender(self, shotItems):
+        ''' Check if any frame need to be rendered (return true) '''
 
-        # get shot items from UI
-        shotItems = self.readShotTable()
+        for shot in shotItems:
+            if shot['start'] != '':
+                return True
+
+    def recurciveRender(self, shotItems):
+        '''
+        Recursively render list of shots until all shots done
+
+        :param shotItems: list of shot dictionaries to render
+        :return:
+        '''
+
+        if self.needRender(shotItems):
+            self.render(shotItems)
+            self.addShots() # Reload shots
+            shotItems = self.readShotTable() # read table
+            self.recurciveRender(shotItems)
+        else:
+            print '>>>> Recurcive rendering complete!'
+            return
+
+    def render(self, shotItems):
+        '''
+        Render list of shots
+        :param shotItems: list of shot dictionaries to render
+        :return:
+        '''
+
+        print '>> Rendering list of shots...'
 
         for shotItem in shotItems:
 
@@ -260,8 +286,10 @@ class BatchRender(QtWidgets.QWidget):
                 # Paint cells
                 if shotItem['range'] == shotItem['done']:
                     self.ui.tab_shots.item(n, 8).setBackground(QtGui.QColor(75, 150, 75))
-                # self.ui.tab_shots.item(n, 0).setBackground(QtGui.QColor(75, 75, 75))
-                # self.ui.tab_shots.item(n, 1).setBackground(QtGui.QColor(75, 75, 75))
+                elif shotItem['done'] == '':
+                    self.ui.tab_shots.item(n, 8).setBackground(QtGui.QColor(150, 75, 75))
+                else:
+                    self.ui.tab_shots.item(n, 8).setBackground(QtGui.QColor(150, 150, 75))
 
             json.dump(shotItemsUP, open(dna.genesFile_render, 'w'), indent=4)
 
@@ -278,7 +306,6 @@ class BatchRender(QtWidgets.QWidget):
                         shotItem = {}
                         shotItem[shotItemParams[0]] = sequenceNumber
                         shotItem[shotItemParams[1]] = shotNumber
-
                         shotItem = self.populateShotItem(shotItem)
                         shotItems.append(shotItem)
 
@@ -391,86 +418,67 @@ class BatchRender(QtWidgets.QWidget):
 
         return shotItems
 
-    def moveRowUp(self):
-        tab = self.ui.tab_shots
-        row = tab.currentRow()
-        column = tab.currentColumn();
-        if row > 0:
-            tab.insertRow(row-1)
-            for i in range(tab.columnCount()):
-               tab.setItem(row-1,i,tab.takeItem(row+1,i))
-               tab.setCurrentCell(row-1,column)
-            tab.removeRow(row+1)
-
-    def moveRowDown(self):
-        tab = self.ui.tab_shots
-        row = tab.currentRow()
-        column = tab.currentColumn();
-        if row < tab.rowCount() - 1:
-            tab.insertRow(row + 2)
-            for i in range(tab.columnCount()):
-                tab.setItem(row + 2, i, tab.takeItem(row, i))
-                tab.setCurrentCell(row + 2, column)
-            tab.removeRow(row)
-
     def moveShotItems(self,  operation):
         '''
         Move shot dictionary up or down in the list of shot items (shotItems)
-        :param shotItems: list of shot items dics
-        :param indexCurrent: index of current row in UI (= index of shot item in list of dics)
-        :param operation: integer UP(-1) or down(+1)
+        Restrictions:
+            - Only one row at a time could be moved
+            - First row could not be moved UP
+            - Last row could not be moved DOWN
+
+        :param operation: integer UP(-1) or DOWN(+1)
         :return:
         '''
 
-        tab = self.ui.tab_shots
-        #rows = [tab.row(item) for item in tab.selectedItems()]
+        table = self.ui.tab_shots
 
         # Selected row index (only one row should be selected)
-        if len( tab.selectedItems()) != 1:
+        if len(table.selectedItems()) != 1:
             print '>> Select only ONE cell!'
         else:
-            rowIndex = tab.selectedItems()[0].row()
-            columnIndex = tab.selectedItems()[0].column()
-            tab.item(rowIndex, columnIndex).setSelected(False) # Clear selection
+            rowIndex = table.selectedItems()[0].row()
+            columnIndex = table.selectedItems()[0].column()
 
-            # MOVE SHOT ITEM IN DATABASE
-            indexCurrent = rowIndex
-            shotItems = json.load(open(dna.genesFile_render))
+            # Restrict first UP and last DOWN
+            if rowIndex == 0 and operation == -1:
+                print '>> Such move not supported!'
+            elif rowIndex == table.rowCount()-1 and operation == 1:
+                print '>> Such move not supported!'
 
-            # Generate SRC list of indexes for shotItems list
-            indexes = []
-            for i in range(len(shotItems)):
-                indexes.append(i)
-
-            indexSwap = indexCurrent + operation
-            numItems = len(indexes)
-            if indexSwap == numItems:  # Last element move to first
-                indexes[indexCurrent], indexes[0] = indexes[0], indexes[indexCurrent]
-            elif indexSwap == -1:  # First element move to last
-                indexes[indexCurrent], indexes[numItems - 1] = indexes[numItems - 1], indexes[0]
             else:
+                # Clear selection
+                table.item(rowIndex, columnIndex).setSelected(False)
+
+                # MOVE SHOT ITEM IN DATABASE
+                indexCurrent = rowIndex
+                # Load list of shots
+                shotItems = json.load(open(dna.genesFile_render))
+
+                # Generate SRC list of indexes for shotItems list
+                indexes = []
+                for i in range(len(shotItems)):
+                    indexes.append(i)
+
+                indexSwap = indexCurrent + operation
                 indexes[indexCurrent], indexes[indexSwap] = indexes[indexSwap], indexes[indexCurrent]
 
-            # Build a new list of dics
-            shotItemsNEW = []
-            for i, shotItem in zip(indexes, shotItems):
-                shotItemsNEW.append(shotItems[i])
+                # Build a new list of shots
+                shotItemsNEW = []
+                for i, shotItem in zip(indexes, shotItems):
+                    shotItemsNEW.append(shotItems[i])
 
-            json.dump(shotItemsNEW, open(dna.genesFile_render, 'w'), indent=4)
-
-
-            self.addShots()
-            # Select same shot item
-            tab.item(rowIndex + operation, columnIndex).setSelected(True)
+                # Save rearranged list of shots
+                json.dump(shotItemsNEW, open(dna.genesFile_render, 'w'), indent=4)
 
 
-
-
+                self.addShots()
+                # Select same shot item
+                table.item(rowIndex + operation, columnIndex).setSelected(True)
 
     # MISC
     def extractFrames(self, listExisted, listCorrupted):
         '''
-        Get from and last frames from sequence of EXR
+        Get first and last frames from sequence of EXR
         :param listExisted: list of EXR in render shot folder
         :param listCorrupted: list of corrupted EXR
         :return:
