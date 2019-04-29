@@ -77,7 +77,7 @@ class BatchRender(QtWidgets.QWidget):
         self.addShots()
 
         self.ui.btn_addShots.clicked.connect(self.createShotItems)
-        self.ui.btn_render.clicked.connect(lambda: self.recurciveRender(self.readShotTable()))
+        self.ui.btn_render.clicked.connect(lambda: self.render(self.readShotTable()))
         self.ui.btn_reload.clicked.connect(self.addShots)
         self.ui.btn_delShots.clicked.connect(self.deleteShots)
         self.ui.btn_up.clicked.connect(lambda: self.moveShotItems(-1))
@@ -121,23 +121,6 @@ class BatchRender(QtWidgets.QWidget):
             if shot['start'] != '':
                 return True
 
-    def recurciveRender(self, shotItems):
-        '''
-        Recursively render list of shots until all shots done
-
-        :param shotItems: list of shot dictionaries to render
-        :return:
-        '''
-
-        if self.needRender(shotItems):
-            self.render(shotItems)
-            self.addShots() # Reload shots
-            shotItems = self.readShotTable() # read table
-            self.recurciveRender(shotItems)
-        else:
-            print '>>>> Recurcive rendering complete!'
-            return
-
     def render(self, shotItems):
         '''
         Render list of shots
@@ -147,22 +130,29 @@ class BatchRender(QtWidgets.QWidget):
 
         print '>> Rendering list of shots...'
 
-        for shotItem in shotItems:
+        if self.needRender(shotItems):
+            for n, shotItem in enumerate(shotItems):
 
-            # Skip completely rendered shots (START value set to '' in populateShotItem)
-            if not shotItem['start'] == '':
                 renderScenePath = dna.buildFilePath(shotItem['hip'],
                                                     dna.fileTypes['renderScene'],
                                                     sequenceNumber=shotItem['E'],
                                                     shotNumber=shotItem['S'])
 
-                hou.hipFile.load(renderScenePath)
-                rop = hou.node('/out/{}'.format(dna.mantra))
-                rop.render(frame_range=(int(shotItem['start']), int(shotItem['end'])))
-            else:
-                print '>> Shot E{0}_S{1} already rendered in {2} version!'.format(shotItem['E'],shotItem['S'], shotItem['exr'])
+                print '>> Rendering shot [ {0} - {1} ]...'.format(shotItem['E'], shotItem['S'])
 
-        print '>> Rendering done!'
+                try:
+                    hou.hipFile.load(renderScenePath)
+                    rop = hou.node('/out/{}'.format(dna.mantra))
+                    rop.render(frame_range=(int(shotItem['start']), int(shotItem['end'])))
+                    print '>> Shot complete'
+                except:
+                    print '>> Rendering of shot FAILS! Reload render...'
+                    self.addShots()  # Reload shots
+                    shotItems = self.readShotTable()  # read table
+                    self.render([shotItems[n]])
+
+        print '>> Rendering list of shots done!'
+        self.addShots()  # Reload shots
 
     def createShotItems(self):
         AS = CreateShotItems()
