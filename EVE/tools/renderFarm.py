@@ -54,12 +54,13 @@ class BatchRender(QtWidgets.QWidget):
         ui_file = "{}/batchRender_Main.ui".format(dna.folderUI)
         self.ui = QtUiTools.QUiLoader().load(ui_file, parentWidget=self)
 
+        # Setup window properties
         mainLayout = QtWidgets.QVBoxLayout()
         mainLayout.setContentsMargins(0, 0, 0, 0)
-        # mainLayout.setSizePolicy(QtWidgets.QSizePolicy())
         mainLayout.addWidget(self.ui)
         self.setLayout(mainLayout)
         self.resize(680, 200)  # resize window
+        self.setWindowTitle('Render Farm')  # Title Main window
 
         self.setParent(hou.ui.mainQtWindow(), QtCore.Qt.Window)
 

@@ -195,6 +195,13 @@
        "sg_sequence": {"name": "020"},
        "assets": [{"name": "BRAIN"}],
        "fxs": [],
+       "description":"Fly through neurones"},
+
+    {"code": "SHOT_020",
+       "sg_cut_out": 130,
+       "sg_sequence": {"name": "020"},
+       "assets": [{"name": "BRAIN"}],
+       "fxs": [],
        "description":"Fly through neurones"}],
 
 "ASSETS": [

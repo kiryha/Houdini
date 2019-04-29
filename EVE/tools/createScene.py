@@ -43,8 +43,17 @@ class CreateScene(QtWidgets.QWidget):
         super(CreateScene, self).__init__()
         ui_file = "{}/createScene_Main.ui".format(dna.folderUI)
         self.ui = QtUiTools.QUiLoader().load(ui_file, parentWidget=self)
+
+        # Setup window properties
+        mainLayout = QtWidgets.QVBoxLayout()
+        mainLayout.setContentsMargins(0, 0, 0, 0)
+        mainLayout.addWidget(self.ui)
+        self.setLayout(mainLayout)
+        self.resize(240, 65)  # resize window
+        self.setWindowTitle('Create Scene')  # Title Main window
+
         self.setParent(hou.ui.mainQtWindow(), QtCore.Qt.Window)
-        
+
         self.ui.btn_createRenderScene.clicked.connect(lambda: self.createScene(fileType=dna.fileTypes['renderScene']))
         self.ui.btn_createRenderScene.clicked.connect(self.close)
 
