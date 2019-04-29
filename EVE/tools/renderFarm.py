@@ -53,6 +53,14 @@ class BatchRender(QtWidgets.QWidget):
         super(BatchRender, self).__init__()
         ui_file = "{}/batchRender_Main.ui".format(dna.folderUI)
         self.ui = QtUiTools.QUiLoader().load(ui_file, parentWidget=self)
+
+        mainLayout = QtWidgets.QVBoxLayout()
+        mainLayout.setContentsMargins(0, 0, 0, 0)
+        # mainLayout.setSizePolicy(QtWidgets.QSizePolicy())
+        mainLayout.addWidget(self.ui)
+        self.setLayout(mainLayout)
+        self.resize(680, 200)  # resize window
+
         self.setParent(hou.ui.mainQtWindow(), QtCore.Qt.Window)
 
         # SETUP SHOTS TABLE
