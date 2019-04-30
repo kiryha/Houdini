@@ -79,6 +79,9 @@
         <height>20</height>
        </size>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
       <property name="readOnly">
        <bool>true</bool>
       </property>
@@ -101,6 +104,12 @@
         <height>20</height>
        </size>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+      <property name="placeholderText">
+       <string>15</string>
+      </property>
      </widget>
      <widget class="QLabel" name="label_5">
       <property name="maximumSize">
@@ -119,6 +128,9 @@
         <width>16777215</width>
         <height>20</height>
        </size>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
       </property>
       <property name="readOnly">
        <bool>true</bool>

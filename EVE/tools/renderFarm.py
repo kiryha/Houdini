@@ -84,6 +84,9 @@ class BatchRender(QtWidgets.QWidget):
 
         # Load shots from database
         self.addShots()
+        # Fill statistics
+        self.fillStatistics(self.readShotTable())
+
 
         self.ui.btn_addShots.clicked.connect(self.createShotItems)
         self.ui.btn_render.clicked.connect(lambda: self.render(self.readShotTable()))
@@ -91,6 +94,7 @@ class BatchRender(QtWidgets.QWidget):
         self.ui.btn_delShots.clicked.connect(self.deleteShots)
         self.ui.btn_up.clicked.connect(lambda: self.moveShotItems(-1))
         self.ui.btn_down.clicked.connect(lambda: self.moveShotItems(1))
+        self.ui.lin_rt.textChanged.connect(lambda: self.fillStatistics(self.readShotTable(), self.ui.lin_rt.text()))
 
     def openFolder(self):
 
@@ -122,6 +126,22 @@ class BatchRender(QtWidgets.QWidget):
                                             shotNumber=shotNumber)
 
         hou.hipFile.load(renderScenePath)
+
+    def fillStatistics(self, shotItems, frameRenderTime=None):
+        # Fill STATISTICS
+        if frameRenderTime== None:
+                self.ui.lin_rt.setText('15')
+        framesTotal = self.calculateFrames(shotItems)
+        self.ui.lin_totalFrames.setText('{}'.format(framesTotal))
+        renderTimeTotal = round((float(self.ui.lin_rt.text())*framesTotal/1440), 1)
+        self.ui.lin_rtTotal.setText(str(renderTimeTotal))
+
+    def calculateFrames(self, shotItems):
+        '''Calculate total frames to render'''
+        framesTotal = 0
+        for shot in shotItems:
+            framesTotal += int(shot['end']) - int(shot['start'])
+        return framesTotal + 1
 
     def needRender(self, shotItems):
         ''' Check if any frame need to be rendered (return true) '''
@@ -312,6 +332,9 @@ class BatchRender(QtWidgets.QWidget):
                         print '>> Shot E{0}-S{1} already exists!'.format(sequenceNumber, shotNumber)
 
             json.dump(shotItems, open(dna.genesFile_render, 'w'), indent=4)
+
+        # Update stat
+        self.fillStatistics(shotItems)
 
     def addShotRow(self, shotItem):
         '''
