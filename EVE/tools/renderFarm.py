@@ -59,7 +59,7 @@ class BatchRender(QtWidgets.QWidget):
         mainLayout.setContentsMargins(0, 0, 0, 0)
         mainLayout.addWidget(self.ui)
         self.setLayout(mainLayout)
-        self.resize(680, 200)  # resize window
+        self.resize(680, 400)  # resize window
         self.setWindowTitle('Render Farm')  # Title Main window
 
         self.setParent(hou.ui.mainQtWindow(), QtCore.Qt.Window)
@@ -78,7 +78,7 @@ class BatchRender(QtWidgets.QWidget):
         self.ui.tab_shots.setColumnWidth(5, 60)
         self.ui.tab_shots.setColumnWidth(6, 40)
         self.ui.tab_shots.setColumnWidth(7, 40)
-        self.ui.tab_shots.setColumnWidth(8, 30)
+        self.ui.tab_shots.setColumnWidth(8, 30) # 450
         self.ui.tab_shots.setColumnWidth(9, 290)
         self.ui.tab_shots.horizontalHeader().setSectionResizeMode(9, QtWidgets.QHeaderView.Stretch)
 

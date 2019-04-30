@@ -31,6 +31,10 @@ def exportCamera():
     camera = hou.node('obj/{}'.format(cameraName))
     pathCamera = dna.buildFilePath('001', dna.fileTypes['cacheCamera'], scenePath=scenePath)
     dna.createFolder(dna.convertPathCache(pathCamera))
+    # Set camera parameters
+    camera.parm('far').set(5000)
+    camera.parm('resx').set(dna.resolution_HR[0])
+    camera.parm('resy').set(dna.resolution_HR[1])
 
     # HIP export
     listCameraNodes = dna.collectCamera(camera)

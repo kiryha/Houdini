@@ -64,6 +64,13 @@
      "fxs": [],
      "description":"Pano 1. End. 24 mm"},
 
+    {"code": "SHOT_090",
+     "sg_cut_out": 110,
+     "sg_sequence": {"name": "010"},
+     "assets": [{"name": "CITY"}, {"name": "ROMA"}],
+     "fxs": [],
+     "description":"Roma go to Futurama"},
+
     {"code": "SHOT_091",
      "sg_cut_out": 100,
      "sg_sequence": {"name": "010"},
@@ -195,14 +202,14 @@
        "sg_sequence": {"name": "020"},
        "assets": [{"name": "BRAIN"}],
        "fxs": [],
-       "description":"Fly through neurones"},
+       "description":"Fly tIN the brain"},
 
     {"code": "SHOT_020",
        "sg_cut_out": 130,
        "sg_sequence": {"name": "020"},
        "assets": [{"name": "BRAIN"}],
        "fxs": [],
-       "description":"Fly through neurones"}],
+       "description":"Fly OUT from brain"}],
 
 "ASSETS": [
     {"code": "CITY",
