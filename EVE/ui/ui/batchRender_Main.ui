@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>668</width>
-    <height>257</height>
+    <height>316</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -45,23 +45,11 @@
     </widget>
    </item>
    <item>
-    <widget class="QSplitter" name="stat">
-     <property name="maximumSize">
-      <size>
-       <width>16777215</width>
-       <height>20</height>
-      </size>
-     </property>
-     <property name="baseSize">
-      <size>
-       <width>0</width>
-       <height>20</height>
-      </size>
-     </property>
+    <widget class="QSplitter" name="splitter">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
-     <widget class="QLabel" name="lab_frames_2">
+     <widget class="QLabel" name="lab_stat">
       <property name="maximumSize">
        <size>
         <width>16777215</width>
@@ -69,7 +57,7 @@
        </size>
       </property>
       <property name="text">
-       <string>  Total Frames:  </string>
+       <string>  Total Frames | Frame Render Time (min) |  Total Render Time (days)  </string>
       </property>
      </widget>
      <widget class="QLineEdit" name="lin_totalFrames">
@@ -86,17 +74,6 @@
        <bool>true</bool>
       </property>
      </widget>
-     <widget class="QLabel" name="label_2">
-      <property name="maximumSize">
-       <size>
-        <width>16777215</width>
-        <height>20</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>  Frame Render Time (min):  </string>
-      </property>
-     </widget>
      <widget class="QLineEdit" name="lin_rt">
       <property name="maximumSize">
        <size>
@@ -109,17 +86,6 @@
       </property>
       <property name="placeholderText">
        <string>15</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_5">
-      <property name="maximumSize">
-       <size>
-        <width>16777215</width>
-        <height>20</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>  Total Render Time (days):  </string>
       </property>
      </widget>
      <widget class="QLineEdit" name="lin_rtTotal">

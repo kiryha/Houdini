@@ -139,32 +139,7 @@ class CreateScene(QtWidgets.QWidget):
                 latestIndex = hdaPaths.index(i)
                 hdaDefinitions[latestIndex].setIsPreferred(True)
 
-    def createContainer_rem(self, parent, name, bbox=0, mb=None, disp=1):
-        '''
-        Moved to DNA, need to be deleted!!!
-
-        Create scene container for CHARS, ENV etc
-        :param parent: container node parent object (where to cretae it)
-        :param name: container name
-        :param bbox: display container content as bounding box (bbox = 2, full = 0)
-        :param mb: turn on motion blur for container content geometry
-        :param disp: Display container node flag (ON = 1, OFF = 0)
-        :return:
-        '''
-
-        CONTAINER = parent.createNode('geo',name)
-
-        # Display as bounding box
-        CONTAINER.parm('viewportlod').set(bbox)
-
-        # Set display flag
-        CONTAINER.setDisplayFlag(disp)
-
-        # Turn ON motion blur
-        if mb is not None:
-            CONTAINER.parm('geo_velocityblur').set(1)
-
-        return CONTAINER
+        return hda
 
     def buildSceneContent(self, fileType, sequenceNumber, shotNumber):
         '''
@@ -212,7 +187,8 @@ class CreateScene(QtWidgets.QWidget):
 
             # [Environment]
             if env_data:
-                ENV = sceneRoot.createNode(env_data['hda_name'], env_data['code'])
+                #ENV = sceneRoot.createNode(env_data['hda_name'], env_data['code'])
+                ENV = self.createHDA(sceneRoot, env_data['hda_name'], env_data['code'])
                 ENV.setPosition([dna.nodeDistance_x, 0])
 
             # [Characters]

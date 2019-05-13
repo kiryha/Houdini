@@ -140,7 +140,8 @@ class BatchRender(QtWidgets.QWidget):
         '''Calculate total frames to render'''
         framesTotal = 0
         for shot in shotItems:
-            framesTotal += int(shot['end']) - int(shot['start'])
+            if shot['start'] != '':
+                framesTotal += int(shot['end']) - int(shot['start'])
         return framesTotal + 1
 
     def needRender(self, shotItems):
@@ -170,7 +171,7 @@ class BatchRender(QtWidgets.QWidget):
                 print '>> Rendering shot [ {0} - {1} ]...'.format(shotItem['E'], shotItem['S'])
 
                 try:
-                    hou.hipFile.load(renderScenePath)
+                    hou.hipFile.load(renderScenePath, suppress_save_prompt=True)
                     rop = hou.node('/out/{}'.format(dna.mantra))
                     rop.render(frame_range=(int(shotItem['start']), int(shotItem['end'])))
                     print '>> Shot complete'

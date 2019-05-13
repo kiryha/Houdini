@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>320</width>
-    <height>85</height>
+    <height>141</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -85,6 +85,19 @@
        <set>Qt::AlignCenter</set>
       </property>
      </widget>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="btn_createAnimScene">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>35</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>CREATE ANIMATION SCENE</string>
+     </property>
     </widget>
    </item>
    <item>
