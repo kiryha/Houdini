@@ -76,7 +76,7 @@
      "sg_sequence": {"name": "010"},
      "assets": [{"name": "CITY"}, {"name": "ROMA"}],
      "fxs": [],
-     "description":"Pre vanish"},
+     "description":"Pre vanish. LIT from 100"},
 
     {"code": "SHOT_100",
        "sg_cut_out": 110,
@@ -95,7 +95,7 @@
     {"code": "SHOT_102",
        "sg_cut_out": 100,
        "sg_sequence": {"name": "010"},
-       "assets": [{"name": "CITY"}, {"name": "ROMA"}],
+       "assets": [{"name": "CITY"}],
        "fxs": [{"name": "VANISH"}],
        "description":"Vanish continue COLSE UP. Vanish time shift +230"},
 
@@ -106,12 +106,26 @@
        "fxs": [],
        "description":"Boring middle. Top walk"},
 
+      {"code": "SHOT_130",
+       "sg_cut_out": 100,
+       "sg_sequence": {"name": "010"},
+       "assets": [{"name": "CITY"}, {"name": "ROMA"}],
+       "fxs": [],
+       "description":"Boring middle. Front supermarket"},
+
     {"code": "SHOT_140",
        "sg_cut_out": 80,
        "sg_sequence": {"name": "010"},
        "assets": [{"name": "CITY"}, {"name": "ROMA"}],
        "fxs": [],
        "description":"Boring middle. Top walk shopping center"},
+
+    {"code": "SHOT_150",
+       "sg_cut_out": 125,
+       "sg_sequence": {"name": "010"},
+       "assets": [{"name": "CITY"}, {"name": "ROMA"}],
+       "fxs": [],
+       "description":"Middle shot. Combined 150 + 160. From builds to monument"},
 
     {"code": "SHOT_170",
        "sg_cut_out": 90,
@@ -126,13 +140,6 @@
        "assets": [{"name": "CITY"}],
        "fxs": [],
        "description":"New AERO closeup. 55 long 91-145. 145 = 90+55 to catch previous shot anim"},
-
-      {"code": "SHOT_150",
-       "sg_cut_out": 125,
-       "sg_sequence": {"name": "010"},
-       "assets": [{"name": "CITY"}, {"name": "ROMA"}],
-       "fxs": [],
-       "description":"Middle shot. Combined 150 + 160. From builds to monument"},
 
     {"code": "SHOT_200",
        "sg_cut_out": 145,
