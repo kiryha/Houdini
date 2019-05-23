@@ -141,12 +141,27 @@
        "fxs": [],
        "description":"New AERO closeup. 55 long 91-145. 145 = 90+55 to catch previous shot anim"},
 
+    {"code": "SHOT_190",
+       "sg_cut_out": 65,
+       "sg_sequence": {"name": "010"},
+       "assets": [{"name": "CITY"}, {"name": "ROMA"}],
+       "fxs": [],
+       "description":"Start walk in AEROS"},
+
+
     {"code": "SHOT_200",
-       "sg_cut_out": 145,
+       "sg_cut_out": 50,
        "sg_sequence": {"name": "010"},
        "assets": [{"name": "CITY"}, {"name": "ROMA"}],
        "fxs": [{"name": "BRK"}],
        "description":"TOP view on monument"},
+
+    {"code": "SHOT_220",
+       "sg_cut_out": 90,
+       "sg_sequence": {"name": "010"},
+       "assets": [{"name": "CITY"}, {"name": "ROMA"}],
+       "fxs": [{"name": "BRK"}],
+       "description":"TOP view on Roma waling through Aeros"},
 
     {"code": "SHOT_230",
        "sg_cut_out": 190,
@@ -169,8 +184,15 @@
        "fxs": [],
        "description":"SClimbing on monument body"},
 
+    {"code": "SHOT_260",
+       "sg_cut_out": 50,
+       "sg_sequence": {"name": "010"},
+       "assets": [{"name": "CITY"}, {"name": "ROMA"}],
+       "fxs": [],
+       "description":"Walk on top of the statue"},
+
     {"code": "SHOT_290",
-       "sg_cut_out": 200,
+       "sg_cut_out": 195,
        "sg_sequence": {"name": "010"},
        "assets": [{"name": "CITY"}, {"name": "ROMA"}],
        "fxs": [],
