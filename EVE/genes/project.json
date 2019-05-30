@@ -95,7 +95,7 @@
     {"code": "SHOT_102",
        "sg_cut_out": 100,
        "sg_sequence": {"name": "010"},
-       "assets": [{"name": "CITY"}],
+       "assets": [{"name": "CITY"}, {"name": "ROMA"}],
        "fxs": [{"name": "VANISH"}],
        "description":"Vanish continue COLSE UP. Vanish time shift +230"},
 
@@ -231,7 +231,7 @@
        "sg_sequence": {"name": "010"},
        "assets": [{"name": "CITY"}],
        "fxs": [{"name": "BRK"}],
-       "description":"BREAK completed from top. Time shift BRK + 320"},
+       "description":"BREAK completed from top. Time shift BRK + 360"},
 
     {"code": "SHOT_320",
        "sg_cut_out": 125,
