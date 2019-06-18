@@ -13,14 +13,14 @@ pipeline steps, version and publish files.
 
 The pipeline would be heavily rely on [Animation DNA](https://github.com/kiryha/AnimationDNA/wiki) structure and ideas.
 
-### How to use
+### How to install and use
 Clone this repository to a local drive and run **createProject.bat**. Select directory to hold the new project under 
 `Eve` control, enter project name and press "CREATE PROJECT" to build a folder structure with necessary data.
 
-Check [installation tutorial](https://github.com/kiryha/Houdini/wiki/pipeline-tutorials#installation) for more details.
+Check [Eve tutorials](https://github.com/kiryha/Houdini/wiki/pipeline-tutorials) for more details.
 
 ### Learning database
-Check documentation, examples and tutorials in [Houdini pipeline wiki](https://github.com/kiryha/Houdini/wiki)!
+In addition to Eve specific materials there are plenty of Houdini tutorials. Check [Eve wiki](https://github.com/kiryha/Houdini/wiki)!
 
 ### Requirements
 Windows, Python 2.7, PySide
