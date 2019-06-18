@@ -2,34 +2,34 @@
 [![](https://live.staticflickr.com/65535/48087908673_fb38ed89fe_o.jpg)](https://live.staticflickr.com/65535/48087908673_fb38ed89fe_o.jpg)
 
 ### Introduction
-This repository is a Houdini Pipeline Toolkit named "EVE", currently at the early stages of developing. 
-The goal is to create **out of the box VFX pipeline** for **Houdini** and **Nuke** applications under control of Shotgun project management system
-for a single artist or animation studio. It is full CG oriented pipeline which can handle small tasks with just a few shots as well as huge projects like animation feature or TV series.
+"Eve" is an **out of the box VFX pipeline** for Houdini application. It is a full CG oriented pipeline which can 
+handle small tasks with just a few shots as well as huge projects like animation feature or TV series. Eve does not 
+provide any particular solutions for any of CG techniques like modeling, rendering etc, its just allows to structure all 
+necessary data storage and exchange. In other words, Eve is an abstract data management tool for your Houdini projects.
+
+No matter how you would create your model, Eve will provide tools to save the scene, share results for the next 
+pipeline steps, version and publish files.
+
 
 The pipeline would be heavily rely on [Animation DNA](https://github.com/kiryha/AnimationDNA/wiki) structure and ideas.
 
-This repository is a draft pipeline version. If you want to use Eve for your projects, go to the [new Eve repo](https://github.com/kiryha/Eve) and follow instructions. 
-
 ### How to use
-Download repository as a zip file, extract to any temp location and run **setupProject.bat**. 
-Select directory to hold the project, enter project name and press "CREATE PROJECT" to build a project folder structure with a pipeline.
+Clone this repository to a local drive and run **createProject.bat**. Select directory to hold the new project under 
+`Eve` control, enter project name and press "CREATE PROJECT" to build a folder structure with necessary data.
 
-Check [installation tutorial](https://github.com/kiryha/Houdini/wiki/pipeline-tutorials#requirments-and-installation) for more details.
+Check [installation tutorial](https://github.com/kiryha/Houdini/wiki/pipeline-tutorials#installation) for more details.
 
 ### Learning database
-Despite the tools are not ready yet, Houdini learning database is full of useful materials, and it constantly updates.
-Example Houdini scenes are located in the **hips** folder.
- 
-Go and check examples and tutorials in [Houdini pipeline wiki](https://github.com/kiryha/Houdini/wiki)!
+Check documentation, examples and tutorials in [Houdini pipeline wiki](https://github.com/kiryha/Houdini/wiki)!
 
 ### Requirements
 Windows, Python 2.7, PySide
 
 ### Current state
 Supported OS: Windows  
-Working [tools](https://github.com/kiryha/Houdini/wiki/tools):  
+Working [Tools](https://github.com/kiryha/Houdini/wiki/tools):  
 - **Create project**: Build a folder structure for the new project with pipeline data and tools
 - **Save next version**: Incremental save current scene
-- **Create scene**: Build a render scene with all necessary components (environment, caches, materials etc)
+- **Project Manager**: "Shotgun" for free, assets and shots management tool.
 - **Create flipbook**: Make a hardware render of shot camera and place it to a proper location with version control
-- **Reder Farm**: Render set of HIP files
+- **Render Farm**: Render set of HIP files
