@@ -1,5 +1,5 @@
 # Eve: Out of the box Houdini Pipeline
-[![](https://live.staticflickr.com/65535/48087753286_d82d6097d2_o.jpg)](https://live.staticflickr.com/65535/48087753286_d82d6097d2_o.jpg)
+[![](https://live.staticflickr.com/65535/48087908673_fb38ed89fe_o.jpg)](https://live.staticflickr.com/65535/48087908673_fb38ed89fe_o.jpg)
 
 ### Introduction
 This repository is a Houdini Pipeline Toolkit named "EVE", currently at the early stages of developing. 
