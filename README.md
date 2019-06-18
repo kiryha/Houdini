@@ -8,6 +8,8 @@ for a single artist or animation studio. It is full CG oriented pipeline which c
 
 The pipeline would be heavily rely on [Animation DNA](https://github.com/kiryha/AnimationDNA/wiki) structure and ideas.
 
+This repository is a draft pipeline version. If you want to use Eve for your projects, go to the [new Eve repo](https://github.com/kiryha/Eve) and follow instructions. 
+
 ### How to use
 Download repository as a zip file, extract to any temp location and run **setupProject.bat**. 
 Select directory to hold the project, enter project name and press "CREATE PROJECT" to build a project folder structure with a pipeline.
