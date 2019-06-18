@@ -135,11 +135,11 @@
        "description":"New AERO full"},
 
     {"code": "SHOT_180",
-       "sg_cut_out": 145,
+       "sg_cut_out": 60,
        "sg_sequence": {"name": "010"},
        "assets": [{"name": "CITY"}],
        "fxs": [],
-       "description":"New AERO closeup. 55 long 91-145. 145 = 90+55 to catch previous shot anim"},
+       "description":"New AERO closeup. 55 long 91-145. 145 = 90+55 to catch previous shot anim. "},
 
     {"code": "SHOT_190",
        "sg_cut_out": 65,
@@ -213,18 +213,18 @@
        "description":"Continue of BREAK. Time shift BRK + 100"},
 
     {"code": "SHOT_302",
-       "sg_cut_out": 60,
+       "sg_cut_out": 210,
        "sg_sequence": {"name": "010"},
        "assets": [{"name": "CITY"}],
        "fxs": [{"name": "BRK"}],
-       "description":"Continue of BREAK. Time shift BRK + 180"},
+       "description":"Continue of BREAK. Time shift BRK + 185"},
 
     {"code": "SHOT_303",
        "sg_cut_out": 135,
        "sg_sequence": {"name": "010"},
        "assets": [{"name": "CITY"}],
        "fxs": [{"name": "BRK"}],
-       "description":"BREAK Close up. End. Time shift BRK + 230 (210)"},
+       "description":"BREAK Close up. End. Time shift BRK + 230 (210). Canseled, 302 made 135 frames longer"},
 
     {"code": "SHOT_304",
        "sg_cut_out": 65,

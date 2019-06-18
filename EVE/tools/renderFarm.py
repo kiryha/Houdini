@@ -78,7 +78,7 @@ class BatchRender(QtWidgets.QWidget):
         self.ui.tab_shots.setColumnWidth(5, 60)
         self.ui.tab_shots.setColumnWidth(6, 40)
         self.ui.tab_shots.setColumnWidth(7, 40)
-        self.ui.tab_shots.setColumnWidth(8, 30) # 450
+        self.ui.tab_shots.setColumnWidth(8, 30)
         self.ui.tab_shots.setColumnWidth(9, 290)
         self.ui.tab_shots.horizontalHeader().setSectionResizeMode(9, QtWidgets.QHeaderView.Stretch)
 
