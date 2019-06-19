@@ -16,7 +16,7 @@ Clone this repository to a local drive and run **Project Creator** tool with `cr
 `Eve` control, enter project name and press "Create New Project" button to build a folder structure with necessary data.
 
 Create assets and shots in database with **Project Manager** tool and you ar ready to produce the CGI magic with Houdini!
-[![](https://live.staticflickr.com/65535/48019770601_10f9642217_o.gif)](https://live.staticflickr.com/65535/48019770601_10f9642217_o.gif)
+[![](https://live.staticflickr.com/65535/48056687948_124c55d2fe_o.gif)](https://live.staticflickr.com/65535/48056687948_124c55d2fe_o.gif)
 
 Check [Eve tutorials](https://github.com/kiryha/Houdini/wiki/pipeline-tutorials) for quick start.
 
@@ -42,3 +42,5 @@ Working [Tools](https://github.com/kiryha/Houdini/wiki/tools):
 - **Project Manager**: "Shotgun" for free, assets and shots management tool.
 - **Create flipbook**: Make a hardware render of shot camera and place it to a proper location with version control
 - **Render Farm**: Render list of HIP files
+
+[![](https://live.staticflickr.com/65535/48093904051_82f1509e49_o.jpg)](https://live.staticflickr.com/65535/48093904051_82f1509e49_o.jpg)
