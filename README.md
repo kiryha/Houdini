@@ -13,8 +13,10 @@ No matter how you would create your model, Eve will provide [tools](https://gith
 ### How to use Eve
 [Install necessary components](https://github.com/kiryha/Houdini/wiki/pipeline-tutorials#installation). 
 Clone this repository to a local drive and run **Project Creator** tool with `createProject.bat`. Select directory to hold the new project under 
-`Eve` control, enter project name and press "Create New Project" button to build a folder structure with necessary data 
-and you ar ready to produce the CGI magic with Houdini!
+`Eve` control, enter project name and press "Create New Project" button to build a folder structure with necessary data.
+
+Create assets and shots in database with **Project Manager** tool and you ar ready to produce the CGI magic with Houdini!
+[![](https://live.staticflickr.com/65535/48087767582_928942e9c1_o.jpg)](https://live.staticflickr.com/65535/48087767582_928942e9c1_o.jpg)
 
 Check [Eve tutorials](https://github.com/kiryha/Houdini/wiki/pipeline-tutorials) for quick start.
 
