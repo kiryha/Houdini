@@ -60,7 +60,7 @@ resolution_LR = (1280, 540)
 
 # PATHS
 # Documentation paths
-DOCS = 'https://github.com/kiryha/Eve/wiki/'
+DOCS = 'https://github.com/kiryha/Houdini/wiki/'
 # Get Eve pipeline root folder <X:/Eve>
 rootPipeline = os.path.dirname(os.path.dirname(__file__)).replace('\\','/')
 # Get project root folder, defined in runHoudini.py  <P:/PROJECTS/NSI/>
@@ -76,7 +76,6 @@ genesFileSequences = '{0}/PREP/PIPELINE/genes/sequences.json'
 genesFileRender = '{0}/PREP/PIPELINE/genes/render.json'
 
 # FILE NAMES AND PATHS PATTERNS
-# TODO: collapse to 3: fileShot, fileAsset, fileSequence
 fileNameSequence =  'E{0}_S{1}_{2}.$F.{3}'                                 # Output sequence (flipbook, mantra, cache)
 fileNameAnimation = fileTypes['animationScene'] + '_E{0}_S{1}_{2}.{3}'     # Animation scene name
 fileNameRender =    fileTypes['renderScene'] + '_E{0}_S{1}_{2}.{3}'        # Render scene name
@@ -98,7 +97,10 @@ filePathProp =            '{0}/scenes/ASSETS/PROPS/{1}/{2}'                # Pro
 filePathFX =              '{0}/scenes/FX/ASSETS/ENVIRONMENTS/{1}/{2}'      # FX asset scene path. Need solve sorting!!!
 filePathHDA =             '{0}/hda/{1}/{2}/{3}/{4}'                        # HDA path.
 
-
+# TODO: collapse to 3: fileShot, fileAsset, fileSequence
+fileNameAsset = '{0}_{1}_{2}.{3}'
+fileNameShot =  '{0}_E{1}_S{2}_{3}.{4}'
+fileNameSeq =   '{0}_E{1}_S{2}_{3}.$F.{4}'
 
 # HOUDINI SCENE CONTENT
 # Currently string oriented.
@@ -202,10 +204,10 @@ def analyzeFileName(fileName):
     '''
     Disassemble <fileName> string
     Example naming conventions:
-        <fileName> = ANM_E010_S010_001.hipnc (ANM, RND scenes)
-        <fileName> = CITY_001.hipnc,  CITY_ANM_001.hipnc (HDA)
-        <fileName> = GEO_CITY_001.hipnc (asset scenes)
-        <fileName> = E010_S010_001.exr ( Render sequence (Flipbook or mantra))
+        <fileName> = ANM_E010_S010_001.hip (ANM, RND scenes)
+        <fileName> = CITY_001.hip,  CITY_ANM_001.hip (HDA)
+        <fileName> = GEO_CITY_001.hip (asset scenes)
+        <fileName> = E010_S010_001.$F.exr ( Render sequence (Flipbook or mantra))
 
     '''
 
@@ -217,7 +219,7 @@ def analyzeFileName(fileName):
     # HANDLE DIFFERENT NAMING CONVENTIONS:
     # Output sequence (Flipbook or mantra or cache)
     if parts[0].startswith('E'):
-        # E010_S010_001.exr
+        # E010_S010_001.$F.exr
         fileVersion = parts[-1]
         shotNumber = parts[1][-3:]
         sequenceNumber = parts[0][-3:]
