@@ -845,6 +845,10 @@ class ProjectManager(QtWidgets.QWidget):
             dna.buildShotContent(fileType, sequenceNumber, shotNumber, genesShots, genesAssets)
             print '>> Shot scene created!'
 
+    def openShotHip(self):
+        sequenceNumber = self.ui_shot.com_shotSequence.currentText()
+        shotNumber = self.ui_shot.lin_shotName.text()
+
 
 # Create Tool instance
 PM = ProjectManager()

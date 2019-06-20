@@ -71,6 +71,7 @@ folderUI = '{0}/ui'.format(rootPipeline)
 genesFileAssets = '{0}/PREP/PIPELINE/genes/assets.json'
 genesFileShots = '{0}/PREP/PIPELINE/genes/shots.json'
 genesFileSequences = '{0}/PREP/PIPELINE/genes/sequences.json'
+genesFileRender = '{0}/PREP/PIPELINE/genes/render.json'
 
 # FILE NAMES AND PATHS PATTERNS
 fileNameSequence =  'E{0}_S{1}_{2}.$F.{3}'                                 # Output sequence (flipbook, mantra, cache)

@@ -28,6 +28,7 @@ DOCS = 'https://github.com/kiryha/Eve/wiki/'
 genesFileAssets = '{0}/PREP/PIPELINE/genes/assets.json'
 genesFileShots = '{0}/PREP/PIPELINE/genes/shots.json'
 genesFileSequences = '{0}/PREP/PIPELINE/genes/sequences.json'
+genesFileRender = '{0}/PREP/PIPELINE/genes/render.json'
 # Folder names to skip when run copyTree
 filterFolders = ['.dev', '.git', '.idea', 'hips']
 # File names to skip when run copyTree
@@ -135,11 +136,11 @@ class Warning(QWidget):
 
     def proceed(self):
         # PROCEED button
-        ProjectManager.createProject(self.parent, 'OK')
+        ProjectCreator.createProject(self.parent, 'OK')
 
     def cancel(self):
         # CANCEL button
-        ProjectManager.createProject(self.parent, 'NO')
+        ProjectCreator.createProject(self.parent, 'NO')
 
 # MAIN MODULE
 class ProjectCreator(QWidget):
@@ -303,6 +304,8 @@ class ProjectCreator(QWidget):
             with open(genesFileShots.format(rootProject), 'w') as f:
                 json.dump([], f)
             with open(genesFileSequences.format(rootProject), 'w') as f:
+                json.dump([], f)
+            with open(genesFileRender.format(rootProject), 'w') as f:
                 json.dump([], f)
 
         # Copy Houdini prefs
