@@ -422,6 +422,8 @@ class ProjectManager(QtWidgets.QWidget):
         self.ui.btn_assetHipOpen.clicked.connect(self.openAssetHip)
         self.ui.btn_shotHipANMCreate.clicked.connect(lambda: self.createShotHip(dna.fileTypes['animationScene']))
         self.ui.btn_shotHipRNDCreate.clicked.connect(lambda: self.createShotHip(dna.fileTypes['renderScene']))
+        self.ui.btn_shotHipANMOpen.clicked.connect(lambda: self.openShotHip(dna.fileTypes['animationScene']))
+        self.ui.btn_shotHipRNDOpen.clicked.connect(lambda: self.openShotHip(dna.fileTypes['renderScene']))
         self.ui.btn_assetAdd.clicked.connect(self.addAsset)
         self.ui.btn_assetDel.clicked.connect(self.delAssets)
         self.ui.btn_seqAdd.clicked.connect(self.addSequences)
@@ -845,9 +847,19 @@ class ProjectManager(QtWidgets.QWidget):
             dna.buildShotContent(fileType, sequenceNumber, shotNumber, genesShots, genesAssets)
             print '>> Shot scene created!'
 
-    def openShotHip(self):
+    def openShotHip(self, fileTypes):
+
         sequenceNumber = self.ui_shot.com_shotSequence.currentText()
         shotNumber = self.ui_shot.lin_shotName.text()
+
+        # Build path to a 001 version of HIP file
+        pathScene = dna.buildFilePath('001', fileTypes, sequenceNumber=sequenceNumber, shotNumber=shotNumber)
+
+        # Get latest file version
+        pathScene = dna.buildPathLatestVersion(pathScene)
+        # Open file
+        hou.hipFile.load(pathScene)
+
 
 
 # Create Tool instance

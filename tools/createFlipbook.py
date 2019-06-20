@@ -67,6 +67,32 @@ def createFlipbook():
     flipbookPath = dna.buildFilePath('001', dna.fileTypes['flipbookSequence'], scenePath=hou.hipFile.path())
     fileLocation = dna.analyzeFliePath(flipbookPath)['fileLocation']
 
+
+    global versionSolverState
+    versionSolverState = None
+    state = dna.versionSolver(flipbookPath)
+
+    if state == 'SNV':
+        # If exists and user choose save next version
+        #pathScene = buildPathNextVersion(buildPathLatestVersion(pathScene))
+        print 'SNV'
+    elif state == 'OVR':
+        # If exists and user choose overwrite latest existing version
+        # pathScene = buildPathLatestVersion(pathScene)
+        print 'OVR'
+    else:
+        if state:
+            # File does not exists, save it as is.
+            pathScene = state
+            # Create FOLDER for HIP
+            #createFolder(pathScene)
+            print pathScene
+        else:
+            # User cancel action
+            print '>> Canceled!'
+            return
+
+    """
     if not os.path.exists(fileLocation):
         # Write flipbook if not exists
         os.makedirs(fileLocation)
@@ -79,6 +105,7 @@ def createFlipbook():
         # Ask user to save next version or overwrite latest
         win = SNV(flipbookPath)
         win.show()
+    """
 
 def run():
     createFlipbook()
