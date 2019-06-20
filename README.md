@@ -45,4 +45,9 @@ Working [Tools](https://github.com/kiryha/Houdini/wiki/tools):
 - **Create flipbook**: Make a hardware render of shot camera and place it to a proper location with version control
 - **Render Farm**: Render list of HIP files
 
-[![](https://live.staticflickr.com/65535/48093904051_82f1509e49_o.jpg)](https://live.staticflickr.com/65535/48093904051_82f1509e49_o.jpg)
+### History
+"Eve" is an evolution of my VFX pipeline [Animation DNA](https://github.com/kiryha/AnimationDNA/wiki) used to 
+create our [first Ukrainian 3D Animation film](https://www.imdb.com/title/tt5954304/). The core logic remains the same, 
+I just switch from Maya to Houdini. The developing was done during personal project creation:
+
+[![](https://vimeo.com/343421950)](https://live.staticflickr.com/65535/48093904051_82f1509e49_o.jpg)
