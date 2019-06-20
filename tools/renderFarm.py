@@ -15,9 +15,11 @@ import json
 import glob
 import os
 import subprocess
+
 import dna
-from PySide2 import QtCore, QtUiTools, QtWidgets, QtGui
 reload(dna)
+
+from PySide2 import QtCore, QtUiTools, QtWidgets, QtGui
 
 shotItemParams = ['E', 'S', 'hip', 'exr', 'range', 'done', 'start', 'end', 'R', 'actions']
 nonEditable = [0, 1, 4, 5] # Table cells: read and select only
@@ -27,7 +29,6 @@ genesFileRender = dna.genesFileRender.format(rootProject)
 genesFileShots = dna.genesFileShots.format(rootProject)
 genesRender = dna.loadGenes(genesFileRender)
 genesShots = dna.loadGenes(genesFileShots)
-
 
 class AlignDelegate(QtWidgets.QItemDelegate):
     '''
@@ -527,7 +528,7 @@ class BatchRender(QtWidgets.QWidget):
         else:
             return 0, 0
 
-# Create CS objectfileTypes
+# Create CS object
 BR = BatchRender()
 
 def run():

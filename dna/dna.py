@@ -12,6 +12,8 @@ we will consider LATEST version of file published (which needs to be used).
 # TODO: Solve sorting of FX assets scenes(ASSETS(CHAR, ENV, PROP), SHOTS) in PATTERNS ()
 # TODO: Solve sorting of CHARACTER assets scenes (GEO, RIG, FUR) in PATTERNS. (rise window and ask the type)
 # TODO: optimize buildFilePath with PATTERNS
+# TODO: avoid creating next versions if folder empty (buildShotContent > renderSequencePath, sceneManager)
+
 import os
 import json
 import glob
@@ -74,6 +76,7 @@ genesFileSequences = '{0}/PREP/PIPELINE/genes/sequences.json'
 genesFileRender = '{0}/PREP/PIPELINE/genes/render.json'
 
 # FILE NAMES AND PATHS PATTERNS
+# TODO: collapse to 3: fileShot, fileAsset, fileSequence
 fileNameSequence =  'E{0}_S{1}_{2}.$F.{3}'                                 # Output sequence (flipbook, mantra, cache)
 fileNameAnimation = fileTypes['animationScene'] + '_E{0}_S{1}_{2}.{3}'     # Animation scene name
 fileNameRender =    fileTypes['renderScene'] + '_E{0}_S{1}_{2}.{3}'        # Render scene name
@@ -159,6 +162,7 @@ assetTemplate = {"code": "",
 # <fileName> = <fileCode>_<fileVersion>.<fileExtension>
 # filePathExample = 'P:/PROJECTS/NSI/PROD/3D/scenes/ANIMATION/ANM_E010_S010_001.hipnc'
 # folderPathExample = 'P:/PROJECTS/NSI/PROD/3D/render/010/SHOT_010/001/'
+# filePath [FILE, FOLDER] = version only file (hip files), version file and folder (sequences files)
 
 def analyzeFliePath(filePath):
     '''
@@ -322,14 +326,16 @@ def buildPathNextVersionFile(filePath):
     return filePathNextVersion
 
 def buildPathNextVersionFolder(filePath):
-    # C:/MY_PROJECT/PROD/3D/render/010/SHOT_010/001/E010_S010_001.$F.jpg
+    '''
+    For input filePath (FOLDER) create path win next version (+1 to existing)
+    :param filePath: string <root3D>/render/010/SHOT_010/001/E010_S010_001.$F.jpg
+    :return:
+    '''
 
     fileLocation = analyzeFliePath(filePath)['fileLocation']
-    fileName = analyzeFliePath(filePath)['fileName']
-    latestVersion = extractLatestVersionFolder(fileLocation)  # '002'
+    latestVersion = extractLatestVersionFolder(fileLocation)
     nextVersion = '{:03d}'.format(int(latestVersion) + 1)
     filePath = buildFilePath(nextVersion, fileTypes['flipbookSequence'], scenePath=filePath)
-    # os.makedirs(dna.analyzeFliePath(filePath)['fileLocation'])
 
     return filePath
 
@@ -341,8 +347,6 @@ def buildPathLatestVersionFile(filePath):
     :return:
     '''
 
-    #print 'dna.buildPathLatestVersionFile [filePath] = {}'.format(filePath)
-
     # Disassemble file path
     filePathData = analyzeFliePath(filePath)
     fileLocation= filePathData['fileLocation']
@@ -352,8 +356,6 @@ def buildPathLatestVersionFile(filePath):
     listExisted = glob.glob('{0}{1}_*.{2}'.format(fileLocation, fileCode, fileExtension))
     fileVersionLatest = extractLatestVersionFile(listExisted)
     filePathLatestVersion = '{0}{1}_{2}.{3}'.format(fileLocation, fileCode, fileVersionLatest, fileExtension)
-
-    #print 'dna.buildPathLatestVersionFile [filePathLatestVersion] = {}'.format(filePathLatestVersion)
 
     return filePathLatestVersion
 
@@ -892,8 +894,14 @@ def buildShotContent(fileType, sequenceNumber, shotNumber, genesShots, genesAsse
         # Create mantra render node
         mantra = outRoot.createNode('ifd', mantraName)
 
-        # Render sequence setup
-        renderSequence = ''# buildRenderSequencePath(scenePath)
+        # Render sequence path setup: create path with latest available version (existing + 1)
+        renderSequence = buildFilePath('001', fileTypes['renderSequence'], scenePath=scenePath)
+        fileLocation = analyzeFliePath(renderSequence)['fileLocation']
+        if os.path.exists(fileLocation):
+            renderSequence = buildPathNextVersionFolder(renderSequence)
+        createFolder(renderSequence)
+        # Localize path (add $JOB)
+        renderSequence = renderSequence.replace(root3D, '$JOB')
 
         # Setup Mantra parameters
         mantra.parm('vm_picture').set(renderSequence)
@@ -986,8 +994,8 @@ def versionSolver(filePath, fileType=None):
     Check if provided FILE or FOLDER path exists.
         If not - return the same path.
         If exists - ask user save next version or overwrite. Return new path based on user decision
-    :
-    param filePath: string, file path to check (FILE or FOLDER)
+
+    :param filePath: string, file path to check (FILE or FOLDER)
                         <>/fileName_001.hip
                         <>/001/fileName_001.$.exr
     :return: path based on user decision or None if user cancel
@@ -1023,7 +1031,6 @@ def versionSolver(filePath, fileType=None):
             else:
                 return None
 
-# UI
 class VersionSolver(QtWidgets.QDialog):
     def __init__(self, filePath):
         # Setup UI
@@ -1040,7 +1047,7 @@ class VersionSolver(QtWidgets.QDialog):
         mainLayout.setContentsMargins(0, 0, 0, 0)
         mainLayout.addWidget(self.ui)
         self.setLayout(mainLayout)
-        self.resize(400, 60)  # resize window
+        self.resize(400, 40)  # resize window
         self.setWindowTitle('Warning')  # Title Main window
         self.setParent(hou.ui.mainQtWindow(), QtCore.Qt.Window)
 

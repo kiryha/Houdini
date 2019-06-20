@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>312</width>
-    <height>41</height>
+    <height>70</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,9 +15,16 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
+    <widget class="QPushButton" name="btn_updateScene">
+     <property name="text">
+      <string>Update Shot Data</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QPushButton" name="btn_updateRenderPath">
      <property name="text">
-      <string>Update Render Path</string>
+      <string>Update Shot Render Path</string>
      </property>
     </widget>
    </item>
