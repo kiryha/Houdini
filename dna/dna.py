@@ -298,13 +298,13 @@ def extractLatestVersionFolder(filePath):
     # print 'dna.extractLatestVersionFolder [latestVersion] = {}'.format(latestVersion)
     return latestVersion
 
-def buildPathNextVersion(filePath):
+def buildPathNextVersionFile(filePath):
     '''
     Build next version of input path
     Get filePath, create new full filePath with a next version in fileName (P:/.../ANM_E010_S010_002.hipnc)
     '''
 
-    # print 'dna.buildPathNextVersion [filePath] = {}'.format(filePath)
+    # print 'dna.buildPathNextVersionFile [filePath] = {}'.format(filePath)
 
     # Disassemble file path
     filePathData = analyzeFliePath(filePath)
@@ -312,12 +312,12 @@ def buildPathNextVersion(filePath):
     fileCode = filePathData['fileCode']
     fileVersion = filePathData['fileVersion']
     fileExtension = filePathData['fileExtension']
-    # print 'dna.buildPathNextVersion [filePathData] = {}'.format(filePathData)
+    # print 'dna.buildPathNextVersionFile [filePathData] = {}'.format(filePathData)
 
     fileVersionNext = '{:03}'.format(int(fileVersion) + 1)
     filePathNextVersion = '{0}{1}_{2}.{3}'.format(fileLocation, fileCode, fileVersionNext, fileExtension)
 
-    # print 'dna.buildPathNextVersion [filePathNextVersion] = {}'.format(filePathNextVersion)
+    # print 'dna.buildPathNextVersionFile [filePathNextVersion] = {}'.format(filePathNextVersion)
 
     return filePathNextVersion
 
@@ -735,7 +735,7 @@ def exportHDA(assetType, hdaName, hdaLabel):
 
     if state == 'SNV':
         # If exists and user choose save next version
-        filePathHDA = buildPathNextVersion(buildPathLatestVersionFile(filePathHDA))
+        filePathHDA = buildPathNextVersionFile(buildPathLatestVersionFile(filePathHDA))
     elif state == 'OVR':
         # If exists and user choose overwrite latest existing version
         filePathHDA = buildPathLatestVersionFile(filePathHDA)
@@ -859,7 +859,6 @@ def buildShotContent(fileType, sequenceNumber, shotNumber, genesShots, genesAsse
     hou.playbar.setFrameRange(frameStart, frameEnd)
     hou.playbar.setPlaybackRange(frameStart, frameEnd)
 
-
     # [Environment] + [Render objects]
     if environmentsData:
         for envData in environmentsData:
@@ -948,7 +947,7 @@ def createHip(fileType, sequenceNumber=None, shotNumber=None, assetName=None):
 
     if state == 'SNV':
         # If exists and user choose save next version
-        pathScene = buildPathNextVersion(buildPathLatestVersionFile(pathScene))
+        pathScene = buildPathNextVersionFile(buildPathLatestVersionFile(pathScene))
     elif state == 'OVR':
         # If exists and user choose overwrite latest existing version
         pathScene = buildPathLatestVersionFile(pathScene)
@@ -987,16 +986,17 @@ def versionSolver(filePath, fileType=None):
     Check if provided FILE or FOLDER path exists.
         If not - return the same path.
         If exists - ask user save next version or overwrite. Return new path based on user decision
-    :param filePath: string, file path to check (file or folder)
-                        <>/file_001.hip
-                        <>/001/file_001.$.exr
+    :
+    param filePath: string, file path to check (FILE or FOLDER)
+                        <>/fileName_001.hip
+                        <>/001/fileName_001.$.exr
     :return: path based on user decision or None if user cancel
     '''
 
     global versionSolverState
 
-    # Check if we version FILE or FOLDER
-    if fileType: # FOLDER
+    # Version FOLDER
+    if fileType:
         if not os.path.exists(analyzeFliePath(filePath)['fileLocation']):
             return filePath
         else:
@@ -1009,8 +1009,8 @@ def versionSolver(filePath, fileType=None):
             else:
                 return None
 
-
-    else: # FILE
+    # Version FILE
+    else:
         if not os.path.exists(filePath):
             return filePath
         else:

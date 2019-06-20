@@ -9,6 +9,8 @@ import hou
 import os
 
 import dna
+reload(dna)
+
 from PySide2 import QtCore, QtUiTools, QtWidgets
 
 class SNV(QtWidgets.QWidget):
@@ -39,7 +41,7 @@ class SNV(QtWidgets.QWidget):
         self.ui.btn_ESC.clicked.connect(self.close)
 
     def SNV(self, filePath):
-        newPath = dna.buildPathNextVersion(filePath)
+        newPath = dna.buildPathNextVersionFile(filePath)
         hou.hipFile.save(newPath)
         print '>> File saved with a LATEST version!'
 
@@ -52,7 +54,7 @@ def saveNextVersion():
     filePath = hou.hipFile.path()
 
     # Get next version
-    newPath = dna.buildPathNextVersion(filePath)
+    newPath = dna.buildPathNextVersionFile(filePath)
 
     # Check if next version exists
     if not os.path.exists(newPath):
