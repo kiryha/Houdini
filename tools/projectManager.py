@@ -828,7 +828,7 @@ class ProjectManager(QtWidgets.QWidget):
         fileType = dna.fileTypes[assetData['sg_asset_type']]
         pathScene = dna.buildFilePath('001', fileType, assetName=assetName)
         # Get latest file version
-        pathScene = dna.buildPathLatestVersion(pathScene)
+        pathScene = dna.buildPathLatestVersionFile(pathScene)
         # Open file
         hou.hipFile.load(pathScene)
 
@@ -856,7 +856,7 @@ class ProjectManager(QtWidgets.QWidget):
         pathScene = dna.buildFilePath('001', fileTypes, sequenceNumber=sequenceNumber, shotNumber=shotNumber)
 
         # Get latest file version
-        pathScene = dna.buildPathLatestVersion(pathScene)
+        pathScene = dna.buildPathLatestVersionFile(pathScene)
         # Open file
         hou.hipFile.load(pathScene)
 

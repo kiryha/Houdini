@@ -321,12 +321,27 @@ def buildPathNextVersion(filePath):
 
     return filePathNextVersion
 
-def buildPathLatestVersion(filePath):
+def buildPathNextVersionFolder(filePath):
+    # C:/MY_PROJECT/PROD/3D/render/010/SHOT_010/001/E010_S010_001.$F.jpg
+
+    fileLocation = analyzeFliePath(filePath)['fileLocation']
+    fileName = analyzeFliePath(filePath)['fileName']
+    latestVersion = extractLatestVersionFolder(fileLocation)  # '002'
+    nextVersion = '{:03d}'.format(int(latestVersion) + 1)
+    filePath = buildFilePath(nextVersion, fileTypes['flipbookSequence'], scenePath=filePath)
+    # os.makedirs(dna.analyzeFliePath(filePath)['fileLocation'])
+
+    return filePath
+
+def buildPathLatestVersionFile(filePath):
     '''
     Get filePath, create new filePath with a latest available version in fileName
+    :param filePath: string path to a version of file
+                     <root3D>/scenes/RENDER/010/SHOT_010/RND_E010_S010_004.hiplc
+    :return:
     '''
 
-    #print 'dna.buildPathLatestVersion [filePath] = {}'.format(filePath)
+    #print 'dna.buildPathLatestVersionFile [filePath] = {}'.format(filePath)
 
     # Disassemble file path
     filePathData = analyzeFliePath(filePath)
@@ -338,7 +353,19 @@ def buildPathLatestVersion(filePath):
     fileVersionLatest = extractLatestVersionFile(listExisted)
     filePathLatestVersion = '{0}{1}_{2}.{3}'.format(fileLocation, fileCode, fileVersionLatest, fileExtension)
 
-    #print 'dna.buildPathLatestVersion [filePathLatestVersion] = {}'.format(filePathLatestVersion)
+    #print 'dna.buildPathLatestVersionFile [filePathLatestVersion] = {}'.format(filePathLatestVersion)
+
+    return filePathLatestVersion
+
+def buildPathLatestVersionFolder(filePath):
+    '''
+    Get fileLocation, create new fileLocation with a latest available version in fileName
+    :param filePath: string path to a sequence
+                         <root3D>/render/010/SHOT_010/001/E010_S010_001.$F.exr
+    :return:
+    '''
+    latestVersion = extractLatestVersionFolder(analyzeFliePath(filePath)['fileLocation'])
+    filePathLatestVersion = buildFilePath(latestVersion, fileTypes['flipbookSequence'], scenePath=filePath)
 
     return filePathLatestVersion
 
@@ -437,7 +464,7 @@ def convertPathCache(pathCache):
 
     return pathCacheFolder
 
-def buildRenderSequencePath(scenePath=None):
+def buildRenderSequencePath_rem(scenePath=None):
     '''
     Create string path of the render images for MANTRA output node (LATEST VERSION)
 
@@ -708,10 +735,10 @@ def exportHDA(assetType, hdaName, hdaLabel):
 
     if state == 'SNV':
         # If exists and user choose save next version
-        filePathHDA = buildPathNextVersion(buildPathLatestVersion(filePathHDA))
+        filePathHDA = buildPathNextVersion(buildPathLatestVersionFile(filePathHDA))
     elif state == 'OVR':
         # If exists and user choose overwrite latest existing version
-        filePathHDA = buildPathLatestVersion(filePathHDA)
+        filePathHDA = buildPathLatestVersionFile(filePathHDA)
     else:
         if state:
             # File does not exists, save it as is.
@@ -816,6 +843,11 @@ def buildShotContent(fileType, sequenceNumber, shotNumber, genesShots, genesAsse
     fxsData = shotGene['fxsData']
     frameEnd = shotGene['shotData']['sg_cut_out']
 
+    if frameEnd:
+        frameEnd = int(frameEnd)
+    else:
+        frameEnd = frameStart
+
     # Debug
     # print 'shotGene = ', shotGene
     # print 'charactersData = ', charactersData
@@ -823,10 +855,9 @@ def buildShotContent(fileType, sequenceNumber, shotNumber, genesShots, genesAsse
     # Initialize scene
     scenePath = hou.hipFile.path()
 
-
     # SETUP SCENE general
-    hou.playbar.setFrameRange(frameStart, int(frameEnd))
-    hou.playbar.setPlaybackRange(frameStart, int(frameEnd))
+    hou.playbar.setFrameRange(frameStart, frameEnd)
+    hou.playbar.setPlaybackRange(frameStart, frameEnd)
 
 
     # [Environment] + [Render objects]
@@ -863,7 +894,7 @@ def buildShotContent(fileType, sequenceNumber, shotNumber, genesShots, genesAsse
         mantra = outRoot.createNode('ifd', mantraName)
 
         # Render sequence setup
-        renderSequence = buildRenderSequencePath(scenePath)
+        renderSequence = ''# buildRenderSequencePath(scenePath)
 
         # Setup Mantra parameters
         mantra.parm('vm_picture').set(renderSequence)
@@ -875,13 +906,11 @@ def buildShotContent(fileType, sequenceNumber, shotNumber, genesShots, genesAsse
         for param, value in renderSettings['draft'].iteritems():
             mantra.parm(param).set(value)
 
-
-
     # Setup ANIMATION Scene
     if fileType == fileTypes['animationScene']:
         # Create Camera
         camera = sceneRoot.createNode('cam', cameraName.format(sequenceNumber, shotNumber))
-        camera.setPosition([0, -nodeDistance_y*2])
+        camera.setPosition([0, 0]) # -nodeDistance_y*2
         setCameraParameters(camera)
 
     # Save HIP file
@@ -919,10 +948,10 @@ def createHip(fileType, sequenceNumber=None, shotNumber=None, assetName=None):
 
     if state == 'SNV':
         # If exists and user choose save next version
-        pathScene = buildPathNextVersion(buildPathLatestVersion(pathScene))
+        pathScene = buildPathNextVersion(buildPathLatestVersionFile(pathScene))
     elif state == 'OVR':
         # If exists and user choose overwrite latest existing version
-        pathScene = buildPathLatestVersion(pathScene)
+        pathScene = buildPathLatestVersionFile(pathScene)
     else:
         if state:
             # File does not exists, save it as is.
@@ -953,30 +982,46 @@ def createFolder(filePath):
     if not os.path.exists(fileLocation):
         os.makedirs(fileLocation)
 
-def versionSolver(filePath):
+def versionSolver(filePath, fileType=None):
     '''
-    Check if provided file path exists.
+    Check if provided FILE or FOLDER path exists.
         If not - return the same path.
         If exists - ask user save next version or overwrite. Return new path based on user decision
-    :param filePath: string, file path to check
+    :param filePath: string, file path to check (file or folder)
+                        <>/file_001.hip
+                        <>/001/file_001.$.exr
     :return: path based on user decision or None if user cancel
     '''
 
     global versionSolverState
 
-    if not os.path.exists(filePath):
-        return filePath
-    else:
-        # If 001 version exists, get latest existing version
-        filePath = buildPathLatestVersion(filePath)
-        # Run Save Next Version dialog
-        VS = VersionSolver(filePath)
-        if VS.exec_():
-            # print 'versionSolverState 01 = {}'.format(versionSolverState)
-            return versionSolverState
+    # Check if we version FILE or FOLDER
+    if fileType: # FOLDER
+        if not os.path.exists(analyzeFliePath(filePath)['fileLocation']):
+            return filePath
         else:
-            # print 'versionSolverState 02 = {}'.format(versionSolverState)
-            return None
+            # If 001 version exists, get latest existing version
+            filePath = buildPathLatestVersionFolder(filePath)
+            # Run Save Next Version dialog
+            VS = VersionSolver(filePath)
+            if VS.exec_():
+                return versionSolverState
+            else:
+                return None
+
+
+    else: # FILE
+        if not os.path.exists(filePath):
+            return filePath
+        else:
+            # If 001 version exists, get latest existing version
+            filePath = buildPathLatestVersionFile(filePath)
+            # Run Save Next Version dialog
+            VS = VersionSolver(filePath)
+            if VS.exec_():
+                return versionSolverState
+            else:
+                return None
 
 # UI
 class VersionSolver(QtWidgets.QDialog):

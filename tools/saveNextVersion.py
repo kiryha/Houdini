@@ -60,7 +60,7 @@ def saveNextVersion():
         print '>> File saved with a NEXT version!'
     else:
         # If next version exists, get latest existing version
-        newPath = dna.buildPathLatestVersion(newPath)
+        newPath = dna.buildPathLatestVersionFile(newPath)
         win = SNV(newPath)
         win.show()
 
