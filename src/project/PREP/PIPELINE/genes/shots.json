@@ -1,0 +1,21 @@
+[
+    {
+        "sg_sequence": {
+            "name": "010"
+        }, 
+        "code": "SHOT_010", 
+        "sg_cut_out": "125", 
+        "assets": [
+            {
+                "code": "ROMA"
+            }, 
+            {
+                "code": "KIEV"
+            }, 
+            {
+                "code": "VANISH"
+            }
+        ], 
+        "description": "Intro shot: fly through"
+    }
+]

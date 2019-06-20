@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<shelfDocument>
+  <!-- This file contains definitions of shelves, toolbars, and tools.
+ It should not be hand-edited when it is being used by the application.
+ Note, that two definitions of the same element are not allowed in
+ a single file. -->
+
+  <toolshelf name="eve" label="EVE">
+    <memberTool name="project_manager"/>
+    <memberTool name="snv"/>
+    <memberTool name="create Flipbook"/>
+    <memberTool name="scene_manager"/>
+    <memberTool name="export animation data"/>
+    <memberTool name="importANM"/>
+    <memberTool name="render_farm"/>
+  </toolshelf>
+
+  <tool name="importANM" label="import ANM" icon="PLASMA_App">
+    <script scriptType="python"><![CDATA[import importANM
+reload(importANM)
+importANM.run()
+]]></script>
+  </tool>
+
+  <tool name="snv" label="SNV" icon="PLASMA_App">
+    <script scriptType="python"><![CDATA[import saveNextVersion
+reload(saveNextVersion)
+saveNextVersion.run()]]></script>
+  </tool>
+
+  <tool name="create Flipbook" label="FlipB" icon="PLASMA_App">
+    <script scriptType="python"><![CDATA[import createFlipbook
+reload(createFlipbook)
+createFlipbook.run()]]></script>
+  </tool>
+
+  <tool name="export animation data" label="export ANM" icon="PLASMA_App">
+    <script scriptType="python"><![CDATA[import exportAnimation
+reload(exportAnimation)
+exportAnimation.run()]]></script>
+  </tool>
+
+  <tool name="render_farm" label="Farm" icon="PLASMA_App">
+    <script scriptType="python"><![CDATA[import renderFarm
+reload(renderFarm)
+renderFarm.run()]]></script>
+  </tool>
+
+  <tool name="project_manager" label="PM" icon="PLASMA_App">
+    <script scriptType="python"><![CDATA[import projectManager
+reload(projectManager)
+projectManager.run()
+
+#if kwargs["ctrlclick"] != True:
+#createScene.run()]]></script>
+  </tool>
+
+  <tool name="scene_manager" label="Scene M" icon="PLASMA_App">
+    <script scriptType="python"><![CDATA[import sceneManager
+reload(sceneManager)
+sceneManager.run()]]></script>
+  </tool>
+</shelfDocument>

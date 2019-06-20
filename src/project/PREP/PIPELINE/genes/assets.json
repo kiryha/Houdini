@@ -1,0 +1,29 @@
+[
+    {
+        "code": "ROMA", 
+        "description": "Main hero", 
+        "hda_name": "", 
+        "lights": [], 
+        "materials": [], 
+        "sg_asset_type": "character", 
+        "hda_version": ""
+    }, 
+    {
+        "code": "KIEV", 
+        "description": "Environment city", 
+        "hda_name": "", 
+        "lights": [], 
+        "materials": [], 
+        "sg_asset_type": "environment", 
+        "hda_version": ""
+    }, 
+    {
+        "code": "VANISH", 
+        "description": "Kiev building destruction", 
+        "hda_name": "", 
+        "lights": [], 
+        "materials": [], 
+        "sg_asset_type": "FX", 
+        "hda_version": ""
+    }
+]
