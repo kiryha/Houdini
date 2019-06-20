@@ -16,6 +16,8 @@ Clone this repository to a local drive and run **Project Creator** tool with `cr
 `Eve` control, enter project name and press "Create New Project" button to build a folder structure with necessary data.
 
 Create assets and shots in database with **Project Manager** tool and you ar ready to produce the CGI magic with Houdini!
+
+Project Manager is a system which controls your pipeline data. It serves to replicate Shotgun functionality, very basic but for free. 
 [![](https://live.staticflickr.com/65535/48056687948_124c55d2fe_o.gif)](https://live.staticflickr.com/65535/48056687948_124c55d2fe_o.gif)
 
 Check [Eve tutorials](https://github.com/kiryha/Houdini/wiki/pipeline-tutorials) for quick start.
