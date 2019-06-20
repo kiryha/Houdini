@@ -622,6 +622,7 @@ def getAssetDataByType(assetsData, assetType):
     # assetsData = list of assets dictionaries linked to shot
     # assetType = 'Environment', 'Character', 'Prop'
 
+    """
     if assetType == 'environment':
         listEnvironments = []
         for assetData in assetsData:
@@ -642,6 +643,22 @@ def getAssetDataByType(assetsData, assetType):
             if assetData['sg_asset_type'] == assetType:
                 listFXs.append(assetData)
         return listFXs
+
+    if assetType == 'prop':
+        listProps = []
+        for assetData in assetsData:
+            if assetData['sg_asset_type'] == assetType:
+                listProps.append(assetData)
+    
+        return listProps
+    """
+
+    listData = []
+    for assetData in assetsData:
+        if assetData['sg_asset_type'] == assetType:
+            listData.append(assetData)
+
+    return listData
 
 def getAssetDataByName(genesAssets, assetCode):
     '''
@@ -691,18 +708,36 @@ def getShotGenes(sequenceNumber, shotNumber, genesShots, genesAssets):
 
     if shotData:
         assetsData = getAssetsDataByShot(shotData, genesAssets)
-        environmentsData = getAssetDataByType(assetsData, 'environment')
         charactersData = getAssetDataByType(assetsData, 'character')
+        environmentsData = getAssetDataByType(assetsData, 'environment')
+        propsData = getAssetDataByType(assetsData, 'prop')
         fxsData = getAssetDataByType(assetsData, 'FX')
 
         shotGene['shotData'] = shotData
-        shotGene['environmentsData'] = environmentsData
         shotGene['charactersData'] = charactersData
+        shotGene['environmentsData'] = environmentsData
+        shotGene['propsData'] = propsData
         shotGene['fxsData'] = fxsData
 
         return shotGene
 
 # SCENE MANIPULATIONS
+def setLatestHDAVersion(hda):
+    '''
+    Set HDA to the latest existing version
+
+    :param hda:
+    :return:
+    '''
+    hdaDefinitions = hda.type().allInstalledDefinitions()
+    hdaPaths = [i.libraryFilePath() for i in hdaDefinitions]
+    latestVersion = extractLatestVersionFile(hdaPaths)
+
+    for i in hdaPaths:
+        if latestVersion in i.split('/')[-1]:
+            latestIndex = hdaPaths.index(i)
+            hdaDefinitions[latestIndex].setIsPreferred(True)
+
 def collectCamera(camera):
     '''
     Create and return list of all camera nodes (parents)
@@ -763,6 +798,12 @@ def exportHDA(assetType, hdaName, hdaLabel):
         hda_file_name=filePathHDA,
         description=hdaLabel)
 
+    # Set HDA file version (latest)
+    setLatestHDAVersion(hda)
+
+
+    # Set latest HDA vesion
+
     # Update and save HDA
     # hdaDefinition = hda.type().definition()
     # hdaOptions = hdaDefinition.options()
@@ -782,15 +823,8 @@ def importHDA(parent, hdaName, hdaLabel):
     # Create HDA node inside parent container
     hda = parent.createNode(hdaName, hdaLabel)
 
-    # Set HDA file version (latest)
-    hdaDefinitions = hda.type().allInstalledDefinitions()
-    hdaPaths = [i.libraryFilePath() for i in hdaDefinitions]
-    latestVersion = extractLatestVersionFile(hdaPaths)  # 010
-
-    for i in hdaPaths:
-        if latestVersion in i.split('/')[-1]:
-            latestIndex = hdaPaths.index(i)
-            hdaDefinitions[latestIndex].setIsPreferred(True)
+    # Set HDA latest version (pick up new versions only after Houdini reboot)
+    setLatestHDAVersion(hda)
 
     return hda
 
@@ -842,8 +876,9 @@ def buildShotContent(fileType, sequenceNumber, shotNumber, genesShots, genesAsse
 
     # Expand shot data
     shotGene = getShotGenes(sequenceNumber, shotNumber, genesShots, genesAssets)
-    environmentsData = shotGene['environmentsData']
     charactersData = shotGene['charactersData']
+    environmentsData = shotGene['environmentsData']
+    propsData = shotGene['propsData']
     fxsData = shotGene['fxsData']
     frameEnd = shotGene['shotData']['sg_cut_out']
 
@@ -884,11 +919,17 @@ def buildShotContent(fileType, sequenceNumber, shotNumber, genesShots, genesAsse
             character = createContainer(sceneRoot, charData['code'], mb=1)
             character.setPosition([2*nodeDistance_x, n*nodeDistance_y])
 
+    # [Props]
+    if propsData:
+        for n, propData in enumerate(propsData):
+            character = createContainer(sceneRoot, propData['code'], mb=1)
+            character.setPosition([3 * nodeDistance_x, n * nodeDistance_y])
+
     # [FX]
     if fxsData:
         for n, fxData in enumerate(fxsData):
-            FX = sceneRoot.createNode(fxData['hda_name'], fxData['code'])
-            FX.setPosition([3*nodeDistance_x, n*nodeDistance_y])
+            FX = importHDA(sceneRoot, fxData['hda_name'], fxData['code'])
+            FX.setPosition([4*nodeDistance_x, n*nodeDistance_y])
 
     # Setup RENDER scene
     if fileType == fileTypes['renderScene']:

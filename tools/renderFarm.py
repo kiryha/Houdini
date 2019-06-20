@@ -54,7 +54,6 @@ class CreateShotItems(QtWidgets.QWidget):
         shotNumbers = self.ui.lin_shots.text()
         BR.addShots(sequenceNumber, shotNumbers)
 
-
 class BatchRender(QtWidgets.QWidget):
     def __init__(self):
         # SETUP UI WINDOW
