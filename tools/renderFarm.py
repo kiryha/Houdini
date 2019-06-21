@@ -225,8 +225,8 @@ class BatchRender(QtWidgets.QWidget):
         # Get shot frame range from database
         shotData = dna.getShotData(sequenceNumber, shotNumber, genesShots)
         # Get end frame
-
         frameEnd = shotData['sg_cut_out']
+
         if frameEnd:
             frameEnd = int(frameEnd)
         else:
@@ -243,7 +243,7 @@ class BatchRender(QtWidgets.QWidget):
                                             sequenceNumber=sequenceNumber,
                                             shotNumber=shotNumber)
 
-        latestHIP = dna.buildPathNextVersionFile(renderScenePath)
+        latestHIP = dna.buildPathLatestVersionFile(renderScenePath)
         pathMapHIP = dna.analyzeFliePath(latestHIP)
 
         renderSequencePath = dna.buildFilePath('001',
@@ -302,20 +302,23 @@ class BatchRender(QtWidgets.QWidget):
 
     def addShots(self, sequenceNumber=None, shotNumbers=None):
         '''
-        Add shot to UI
+        Add shot from database to UI
         :param sequenceNumber:
         :param shotNumbers:
         :return:
         '''
 
-        # Reload genes shot
+        # Reload genes shot (if shot updated in Project Manager)
         global genesShots
         genesShots = dna.loadGenes(genesFileShots)
+        global genesRender
+        genesRender = dna.loadGenes(genesFileRender)
 
         # print 'addShots [sequenceNumber, shotNumbers] = ', sequenceNumber, shotNumbers
+
         # Load existing shots from database
+        # shotItems [{u'hip': u'000', u'S': u'010', u'E': u'010'}, {u'hip': u'001', u'S': u'020', u'E': u'010'}]
         shotItems = genesRender
-        # print shotItems # [{u'hip': u'000', u'S': u'010', u'E': u'010'}, {u'hip': u'001', u'S': u'020', u'E': u'010'}]
 
         # INIT LAUNCH: LOAD (RELOAD) EXISTING SHOTS
         if sequenceNumber == None:

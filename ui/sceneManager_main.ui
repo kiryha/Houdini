@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>312</width>
-    <height>70</height>
+    <height>100</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -25,6 +25,13 @@
     <widget class="QPushButton" name="btn_updateRenderPath">
      <property name="text">
       <string>Update Shot Render Path</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="btn_updateRenderPath_2">
+     <property name="text">
+      <string>Publish Render Scene</string>
      </property>
     </widget>
    </item>
