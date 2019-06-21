@@ -38,12 +38,46 @@ class AlignDelegate(QtWidgets.QItemDelegate):
         option.displayAlignment = QtCore.Qt.AlignCenter # Center align
         QtWidgets.QItemDelegate.paint(self, painter, option, index)
 
+class HiddenShots(QtWidgets.QWidget):
+    def __init__(self):
+        # SETUP UI WINDOW
+        super(HiddenShots, self).__init__()
+        ui_file = "{}/renderFarm_hiddenShots.ui".format(dna.folderUI)
+        self.ui = QtUiTools.QUiLoader().load(ui_file, parentWidget=self)
+
+        # Setup window properties
+        mainLayout = QtWidgets.QVBoxLayout()
+        mainLayout.setContentsMargins(0, 0, 0, 0)
+        mainLayout.addWidget(self.ui)
+        self.setLayout(mainLayout)
+        self.resize(680, 200)  # resize window
+        self.setWindowTitle('Hidden Shots')  # Title Main window
+        self.setParent(hou.ui.mainQtWindow(), QtCore.Qt.Window)
+
+        self.ui.btn_unhide.clicked.connect(self.unhideShots)
+        self.ui.btn_unhide.clicked.connect(self.close)
+
+    def unhideShots(self):
+        #sequenceNumber = self.ui.lin_sequence.text()
+        #shotNumbers = self.ui.lin_shots.text()
+        #BR.addShots(sequenceNumber, shotNumbers)
+        pass
+
+
 class CreateShotItems(QtWidgets.QWidget):
     def __init__(self):
         # SETUP UI WINDOW
         super(CreateShotItems, self).__init__()
         ui_file = "{}/renderFarm_addShots.ui".format(dna.folderUI)
         self.ui = QtUiTools.QUiLoader().load(ui_file, parentWidget=self)
+
+        # Setup window properties
+        mainLayout = QtWidgets.QVBoxLayout()
+        mainLayout.setContentsMargins(0, 0, 0, 0)
+        mainLayout.addWidget(self.ui)
+        self.setLayout(mainLayout)
+        self.resize(320, 20)  # resize window
+        self.setWindowTitle('Add shots')  # Title Main window
         self.setParent(hou.ui.mainQtWindow(), QtCore.Qt.Window)
 
         self.ui.btn_add.clicked.connect(self.addShots)
@@ -99,6 +133,7 @@ class BatchRender(QtWidgets.QWidget):
         self.ui.btn_render.clicked.connect(lambda: self.render(self.readShotTable()))
         self.ui.btn_reload.clicked.connect(self.addShots)
         self.ui.btn_delShots.clicked.connect(self.deleteShots)
+        self.ui.btn_unhideShots.clicked.connect(self.unhideShots)
         self.ui.btn_up.clicked.connect(lambda: self.moveShotItems(-1))
         self.ui.btn_down.clicked.connect(lambda: self.moveShotItems(1))
         self.ui.lin_rt.textChanged.connect(lambda: self.fillStatistics(self.readShotTable(), self.ui.lin_rt.text()))
@@ -530,6 +565,10 @@ class BatchRender(QtWidgets.QWidget):
                 self.addShots()
                 # Select same shot item
                 table.item(rowIndex + operation, columnIndex).setSelected(True)
+
+    def unhideShots(self):
+        HS = HiddenShots()
+        HS.show()
 
     # MISC
     def extractFrames(self, listExisted, listCorrupted):

@@ -100,7 +100,7 @@ filePathHDA =             '{0}/hda/{1}/{2}/{3}/{4}'                        # HDA
 # TODO: collapse to 3: fileShot, fileAsset, fileSequence
 fileNameAsset = '{0}_{1}_{2}.{3}'
 fileNameShot =  '{0}_E{1}_S{2}_{3}.{4}'
-fileNameSeq =   '{0}_E{1}_S{2}_{3}.$F.{4}'
+fileNameSeq =   '{0}_E{1}_S{2}_{3}.$F.{4}' # !!!! Need to fix analyzeFileName() for this change !!!
 
 # HOUDINI SCENE CONTENT
 # Currently string oriented.
