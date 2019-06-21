@@ -5,10 +5,10 @@ For each new render shot row in table:
     - looks into the project.json database and HDD (render dir, render hips) to get parameters (shotItemParams),
     - populate parameters to UI and save them in render.json database
 
-Working version
-
-TBD: Check restrictions in moveShotItems()
 '''
+
+# TODO: Check restrictions in moveShotItems()
+
 
 import hou
 import json
@@ -146,6 +146,7 @@ class BatchRender(QtWidgets.QWidget):
     def calculateFrames(self, shotItems):
         '''Calculate total frames to render'''
         framesTotal = 0
+
         for shot in shotItems:
             if shot['start'] != '':
                 framesTotal += int(shot['end']) - int(shot['start'])
@@ -223,8 +224,16 @@ class BatchRender(QtWidgets.QWidget):
 
         # Get shot frame range from database
         shotData = dna.getShotData(sequenceNumber, shotNumber, genesShots)
-        print shotData
-        shotItem['range'] = '{0:03d} - {1:03d}'.format(dna.frameStart, int(shotData['sg_cut_out']))
+        # Get end frame
+
+        frameEnd = shotData['sg_cut_out']
+        if frameEnd:
+            frameEnd = int(frameEnd)
+        else:
+            print '>> Error! Set the end frame in shot properties.'
+            return
+
+        shotItem['range'] = '{0:03d} - {1:03d}'.format(dna.frameStart, frameEnd)
 
         # Get latest render hip and latest render folder
         # Assume that in latest hip the render path set to the latest render folder
@@ -234,7 +243,7 @@ class BatchRender(QtWidgets.QWidget):
                                             sequenceNumber=sequenceNumber,
                                             shotNumber=shotNumber)
 
-        latestHIP = dna.buildPathLatestVersion(renderScenePath)
+        latestHIP = dna.buildPathNextVersionFile(renderScenePath)
         pathMapHIP = dna.analyzeFliePath(latestHIP)
 
         renderSequencePath = dna.buildFilePath('001',
@@ -292,7 +301,18 @@ class BatchRender(QtWidgets.QWidget):
         return shotItem
 
     def addShots(self, sequenceNumber=None, shotNumbers=None):
+        '''
+        Add shot to UI
+        :param sequenceNumber:
+        :param shotNumbers:
+        :return:
+        '''
 
+        # Reload genes shot
+        global genesShots
+        genesShots = dna.loadGenes(genesFileShots)
+
+        # print 'addShots [sequenceNumber, shotNumbers] = ', sequenceNumber, shotNumbers
         # Load existing shots from database
         shotItems = genesRender
         # print shotItems # [{u'hip': u'000', u'S': u'010', u'E': u'010'}, {u'hip': u'001', u'S': u'020', u'E': u'010'}]
@@ -327,7 +347,7 @@ class BatchRender(QtWidgets.QWidget):
 
             for shotNumber in shotNumbers:
                 # Check if shot exists in database
-                if dna.getShotData(sequenceNumber, shotNumber):
+                if dna.getShotData(sequenceNumber, shotNumber, genesShots):
                     # Check if shot item exists in database
                     if not self.checkExistingShot(sequenceNumber, shotNumber):
                         shotItem = {}
@@ -338,6 +358,9 @@ class BatchRender(QtWidgets.QWidget):
 
                     else:
                         print '>> Shot E{0}-S{1} already exists!'.format(sequenceNumber, shotNumber)
+
+                else:
+                    return
 
             json.dump(shotItems, open(genesFileRender, 'w'), indent=4)
 

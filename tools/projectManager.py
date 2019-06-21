@@ -86,6 +86,8 @@ def getShotDataUI(ui_shot):
     sequenceNumber = ui_shot.com_shotSequence.currentText()
     shotNumber = ui_shot.lin_shotName.text()
     frameEnd = ui_shot.lin_frameEnd.text()
+    if not frameEnd:
+        frameEnd = dna.frameStart
     description = ui_shot.lin_description.text()
     assets = createListShotAssets(ui_shot)
 
@@ -641,6 +643,10 @@ class ProjectManager(QtWidgets.QWidget):
             self.poulateShots(sequenceNumber)
 
     def delShots(self):
+        '''
+        Delete selected shots from database
+        :return:
+        '''
         selectedShots = self.ui.lis_shots.selectedItems()
         selectedSequences = self.ui.lis_seq.selectedItems()
         sequenceNumber = selectedSequences[0].text()
@@ -665,8 +671,8 @@ class ProjectManager(QtWidgets.QWidget):
 
         # Reload genes
         global genesShots
-        genesShots = dna.loadGenes(genesFileShots)
         global genesAssets
+        genesShots = dna.loadGenes(genesFileShots)
         genesAssets = dna.loadGenes(genesFileAssets)
 
         # Repopulate Shots

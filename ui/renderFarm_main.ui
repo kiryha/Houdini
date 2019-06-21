@@ -105,11 +105,17 @@
     </widget>
    </item>
    <item>
-    <widget class="QSplitter" name="buttons">
+    <widget class="QSplitter" name="splitter_2">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
      <widget class="QPushButton" name="btn_addShots">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>30</height>
+       </size>
+      </property>
       <property name="maximumSize">
        <size>
         <width>16777215</width>
@@ -121,6 +127,12 @@
       </property>
      </widget>
      <widget class="QPushButton" name="btn_delShots">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>30</height>
+       </size>
+      </property>
       <property name="maximumSize">
        <size>
         <width>16777215</width>
@@ -129,6 +141,40 @@
       </property>
       <property name="text">
        <string>Del Shots</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btn_hideShots">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>30</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>30</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Hide Shots</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btn_unhideShots">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>30</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>30</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Unhide Shots</string>
       </property>
      </widget>
      <widget class="QPushButton" name="btn_reload">

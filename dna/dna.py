@@ -145,7 +145,7 @@ sequenceTemplate = {"code": "",
                     "shots": []}
 
 shotTemplate = {"code": "",
-                "sg_cut_out": 125,
+                "sg_cut_out": "125",
                 "sg_sequence": {},
                 "assets": [],
                 "description": ""}
@@ -583,7 +583,10 @@ def getShotData(sequenceNumber, shotNumber, genesShots):
             if shot['code'] == shotCode:
                 shotData = shot
 
-    return shotData
+    if shotData:
+        return shotData
+    else:
+        print '>> Error! There is no data for shot E{0}_S{1}'.format(sequenceNumber, shotNumber)
 
 def getAssetsDataByShot(shotData, genesAssets):
     '''
