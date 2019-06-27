@@ -45,10 +45,14 @@ def getHDA():
     listPaths_MTL = os.walk('{0}/lib/MATERIALS'.format(root3D))  # Material library
     listPaths_LIT = os.walk('{0}/lib/LIGHTS'.format(root3D))  # Light library
 
+    # Global HDA library path (WIP! TBD!)
+    listPaths_LIB = os.walk('')  # Global HDA (between projects)
+
     # Combine paths to a string
     combinePaths(listPaths_HDA)
     combinePaths(listPaths_MTL)
     combinePaths(listPaths_LIT)
+    # combinePaths(listPaths_LIB)
 
     # Add Houdini standard OTLs
     global pathHDA

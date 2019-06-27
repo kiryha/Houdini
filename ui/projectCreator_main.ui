@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>291</width>
-    <height>379</height>
+    <height>397</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -75,6 +75,20 @@
        <string>Options</string>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_7">
+       <item>
+        <widget class="QPushButton" name="pushButton">
+         <property name="text">
+          <string>Set Global HDA Folder</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="lab_pathHDA">
+         <property name="text">
+          <string>C:/HDA</string>
+         </property>
+        </widget>
+       </item>
        <item>
         <widget class="QSplitter" name="splitter">
          <property name="orientation">

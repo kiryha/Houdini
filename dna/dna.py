@@ -756,6 +756,7 @@ def collectCamera(camera):
 
 def setCameraParameters(camera):
     # Set camera parameters
+    camera.parm('far').set(0.1)
     camera.parm('far').set(5000)
     camera.parm('resx').set(resolution_HR[0])
     camera.parm('resy').set(resolution_HR[1])

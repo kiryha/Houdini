@@ -10,6 +10,8 @@ Removed STATIC assets category. Now those files would be in LIBRARY
 
 '''
 
+# TODO: create Global HDA folder and set this path in wraper
+
 # Common modules import
 import os
 import shutil
@@ -35,7 +37,7 @@ filterFolders = ['.dev', '.git', '.idea', 'hips']
 filterFiles = []
 uiFile_main = '{}/ui/projectCreator_main.ui'.format(rootPipeline)
 uiFile_warning = '{}/ui/projectCreator_warning.ui'.format(rootPipeline)
-houdiniBuild = '17.0.459'
+houdiniBuild = '17.5.173'
 
 # PROJECT FOLDER STRUCTURE
 # Shots structure
@@ -161,15 +163,18 @@ class ProjectCreator(QWidget):
         self.window = QtUiTools.QUiLoader().load(ui_file)
         ui_file.close()
 
+        # SETUP WINDOW WIDGETS
         self.act_docs = self.window.findChild(QAction, 'act_docs')
         self.act_help = self.window.findChild(QAction, 'act_help')
         self.btn_setFolder = self.window.findChild(QPushButton, 'btn_setFolder')
         self.lin_name = self.window.findChild(QLineEdit, 'lin_name')
         self.lab_path = self.window.findChild(QLabel, 'lab_path')
+
+        self.lab_pathHDA = self.window.findChild(QLabel, 'lab_pathHDA')
         self.lin_options = self.window.findChild(QLineEdit, 'lin_options')
-        self.btn_create = self.window.findChild(QPushButton, 'btn_create')
         self.chb_example = self.window.findChild(QCheckBox, 'chb_example')
 
+        self.btn_create = self.window.findChild(QPushButton, 'btn_create')
 
         self.lab_path.setText('C:')
         self.lin_name.setText('MY_PROJECT')
@@ -271,7 +276,7 @@ class ProjectCreator(QWidget):
         # Create nested folder structure
         self.createFolders(rootProject, FOLDERS)
 
-        # Create Houdini launcher
+        # Create Houdini LAUNCHER
         launcherNamePY_SRC = '{}/src/runHoudini.py'.format(rootPipeline)
         launcherNamePY_DST = '{}/PREP/PIPELINE/runHoudini.py'.format(rootProject)
         launcherNameBAT_DST = '{}/PREP/PIPELINE/runHoudini.bat'.format(rootProject)
@@ -287,6 +292,10 @@ class ProjectCreator(QWidget):
                 line = "rootPipeline = '{}'\n".format(rootPipeline)
             elif line.startswith('build ='):
                 line = "build = '{}'\n".format(self.lin_options.text())
+            elif '# Global HDA (between projects)' in line:
+                # Global HDA library setup (commented off in runHoudini: # combinePaths(listPaths_LIB))
+                pathHDA = self.lab_pathHDA.text()
+                line = line.replace("os.walk('')", "os.walk('{}')".format(pathHDA))
 
             launcherPY_DST.write(line)
 

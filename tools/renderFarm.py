@@ -63,7 +63,6 @@ class HiddenShots(QtWidgets.QWidget):
         #BR.addShots(sequenceNumber, shotNumbers)
         pass
 
-
 class CreateShotItems(QtWidgets.QWidget):
     def __init__(self):
         # SETUP UI WINDOW
