@@ -32,7 +32,7 @@ import hou
 # Bump and displacement scale
 scaleBump = 0.1
 # RED network name
-nameSHOP_RED = 'materials_Redhift'
+nameSHOP_RED = 'materials_RS'
 # Dictionary with VRAY and RED material parameters correspondence (parameter_VRAY : parameter_RED)
 shaderParametersList = {'diffuse_color': 'diffuse_color',
                         'diffuse_factor': 'diffuse_weight',
@@ -82,7 +82,6 @@ def returnParameterRED(parameterVRAY):
     parameterRED = shaderParametersList[key]
     return parameterRED
 
-
 def checkParameterInList(parameter):
     '''
     Check if input parameter exist in shaderParametersList
@@ -96,11 +95,9 @@ def checkParameterInList(parameter):
     if key in shaderParametersList.keys():
         return 1
 
-
 def getAllNodeParameters(node):
     params = [param.name() for param in node.parms()]
     return params
-
 
 def checkIfTexture(parameter):
     '''
@@ -109,14 +106,12 @@ def checkIfTexture(parameter):
     if 'texture' in parameter.split('_')[-1]:
         return 1
 
-
 def checkIfBump(parameter):
     '''
     Check if input parameter is a BUMP parameter
     '''
     if 'bump' in parameter.split('_')[0]:
         return 1
-
 
 def getTexturedParameters():
     '''
@@ -140,7 +135,6 @@ def getTexturedParameters():
                         listTexturedParameters.append(texturedParameter)
     print listTexturedParameters
 
-
 def extractVrayVopsurfaceNode(listNodes_VRAY):
     '''
     Find and return Vray vopsurface node from list of VRay nodes in each material
@@ -150,7 +144,6 @@ def extractVrayVopsurfaceNode(listNodes_VRAY):
     for node_VRAY in listNodes_VRAY:
         if node_VRAY.type().name() == 'vopsurface':
             return node_VRAY
-
 
 def checkConditions():
     '''
@@ -166,10 +159,10 @@ def checkConditions():
         print '>> Redshift SHOP already exists!'
         return 0
 
-
 def copyParameters(node_VRAY, nodeMAT_RED, parameter_VRAY, material_RED, nodeRSM_RED):
     '''
     Copy parameters from VRAY material to RED nodes
+
     :param node_VRAY - VRAY node with material parameters
     :param nodeMAT_RED - RED node with material parameters
     :param parameter_VRAY - current parameter (string) from dictionary to copy data from
@@ -185,15 +178,18 @@ def copyParameters(node_VRAY, nodeMAT_RED, parameter_VRAY, material_RED, nodeRSM
         parameterValue_VRAY = parameter_VRAY.eval()
         # Get corresponding RED parameter
         parameter_RED = returnParameterRED(parameter_VRAY.name())
-        # print '>> set parameters VRAY {0} >> RED {1} = {2}'.format(parameter_VRAY.name(), parameter_RED, parameterValue_VRAY)
+
         # Set RED shader parameter
         # Process textured parameters
         if checkIfTexture(parameter_VRAY.name()):  # Check if current parameter is textured
 
-            # Process bump
+            # Get string texture path from tuple and fix slashes
+            parameterValue_VRAY = parameterValue_VRAY[0].replace('\\', '/')
+
+            # Process bump and displacement
             if checkIfBump(parameter_VRAY.name()):  # Check if current parameter is a bump
-                # check if texture name exists
-                if not str(parameterValue_VRAY) == "('',)":
+                # Check if texture name exists
+                if parameterValue_VRAY != '':
                     # Create and connect  bump node
                     bump_RED = material_RED.createNode('redshift::BumpMap')
                     nodeRSM_RED.setNamedInput('Bump Map', bump_RED, 'out')
@@ -202,7 +198,7 @@ def copyParameters(node_VRAY, nodeMAT_RED, parameter_VRAY, material_RED, nodeRSM
                     texture_RED = material_RED.createNode('redshift::TextureSampler')
                     texture_RED.setName(parameter_VRAY.name())
                     bump_RED.setNamedInput('input', texture_RED, 'outColor')
-                    textureName = '$HIP/{}'.format(str(parameterValue_VRAY).split('/')[-1].split("',)")[0])
+                    textureName = parameterValue_VRAY # Set texture name
                     texture_RED.parm('tex0').set(textureName)
                     # Create and connect displacement node
                     disp_RED = material_RED.createNode('redshift::Displacement')
@@ -210,28 +206,25 @@ def copyParameters(node_VRAY, nodeMAT_RED, parameter_VRAY, material_RED, nodeRSM
                     disp_RED.setNamedInput('texMap', texture_RED, 'outColor')
                     disp_RED.parm('scale').set(scaleBump)
 
-            # process other textures
+            # Process other textures
             else:
-                # print 'textured parameter name = ', parameter_VRAY.name()
-                # Create texture node
-                # check if texture name exists
-                # print 'textured parameter value =', str(parameterValue_VRAY)
-                if not str(parameterValue_VRAY) == "('',)":
-                    textureName = '$HIP/{}'.format(str(parameterValue_VRAY).split('/')[-1].split("',)")[0])
-                    # print textureName
+                # Check if texture name exists
+                if parameterValue_VRAY != '':
+                    textureName = parameterValue_VRAY # Set texture name
                     texture_RED = material_RED.createNode('redshift::TextureSampler')
                     texture_RED.setName(parameter_VRAY.name())
                     nodeMAT_RED.setNamedInput(parameter_RED, texture_RED, 'outColor')
                     texture_RED.parm('tex0').set(textureName)
+
         # Process other parameters
         else:
-            if parameter_VRAY.name() == 'opacity_factor':  # Invert opacity (to map refraction veight)
+            if parameter_VRAY.name() == 'opacity_factor':  # Invert opacity (to map refraction weight)
                 nodeMAT_RED.parmTuple(parameter_RED).set(tuple([1.0 - parameterValue_VRAY[0]]))
             else:
                 nodeMAT_RED.parmTuple(parameter_RED).set(parameterValue_VRAY)
-        # Layout redshift material nodes in Nwtwork View
-        material_RED.layoutChildren()
 
+        # Layout redshift material nodes in Network View
+        material_RED.layoutChildren()
 
 def buildShaderNetwork_RED(material_RED, nodeRSM_RED, node_VRAY):
     '''
@@ -256,7 +249,6 @@ def buildShaderNetwork_RED(material_RED, nodeRSM_RED, node_VRAY):
     for parameter_VRAY in parameters_VRAY:
         copyParameters(node_VRAY, nodeMAT_RED, parameter_VRAY, material_RED, nodeRSM_RED)
 
-
 def buildMaterial_RED(SHOP_RED, material_VRAY):
     '''
     Create RED Material based on VRAY material parameters
@@ -278,7 +270,6 @@ def buildMaterial_RED(SHOP_RED, material_VRAY):
 
     # Create RED shader and copy Vray parameters
     buildShaderNetwork_RED(material_RED, nodeRSM_RED, node_VRAY)
-
 
 def convertMaterials():
     '''
