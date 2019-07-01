@@ -35,8 +35,11 @@ def createFlipbook():
     # Build 001 version of flipbook file path
     flipbookPath = dna.buildFilePath('001', dna.fileTypes['flipbookSequence'], scenePath=hou.hipFile.path())
 
+    # Check FB file path of 001 version
+    # If flipbook not exists, use 001 version. If exist, ask user which version to use.
     dna.versionSolverState = None
     state = dna.versionSolver(flipbookPath, dna.fileTypes['flipbookSequence'])
+
 
     if state == 'SNV':
         # If exists and user choose save next version
@@ -56,6 +59,7 @@ def createFlipbook():
             print '>> Canceled!'
             return
 
+    # Run FB and save to a chosen file path
     runFB(flipbookPath)
 
 def run():

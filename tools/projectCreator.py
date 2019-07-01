@@ -176,8 +176,8 @@ class ProjectCreator(QWidget):
 
         self.btn_create = self.window.findChild(QPushButton, 'btn_create')
 
-        self.lab_path.setText('C:')
-        self.lin_name.setText('MY_PROJECT')
+        self.lab_path.setText('P:/PROJECTS')
+        self.lin_name.setText('eve_example')
         self.lin_options.setText(houdiniBuild)
 
         # SETUP COMMON VARIABLES
