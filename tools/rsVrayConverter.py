@@ -32,7 +32,7 @@ import hou
 # Bump and displacement scale
 scaleBump = 0.1
 # RED network name
-nameSHOP_RED = 'materials_RS'
+nameSHOP_RED = '{}_RS'
 # Dictionary with VRAY and RED material parameters correspondence (parameter_VRAY : parameter_RED)
 shaderParametersList = {'diffuse_color': 'diffuse_color',
                         'diffuse_factor': 'diffuse_weight',
@@ -65,10 +65,24 @@ OBJ = hou.node('/obj/')
 # Get VRAY SHOP network from selection
 SHOP_VRAY = hou.selectedNodes()
 
+def checkConditions():
+    '''
+    Check if environment conditions allows to run script without errors
+    '''
+    if not SHOP_VRAY:  # If user select anything
+        print '>> Nothing selected! Select SHOP network!'
+        return 0
+    elif SHOP_VRAY[0].type().name() != 'shopnet':  # If user select SHOP
+        print '>> Wrong selection type. Select SHOP network!'
+        return 0
+    elif hou.node('/obj/{0}/'.format(nameSHOP_RED.format(SHOP_VRAY[0]))):  # If there is no RED target SHOP network
+        print '>> Redshift SHOP already exists!'
+        return 0
 
 def returnParameterRED(parameterVRAY):
     '''
     Return corresponding RED parameter for input VRAY parameter
+
     Table of correspondence is shaderParametersList dictionary
     Here we cut possible indexes in input parameter string:
     diffuse_texture2 >> diffuse_texture
@@ -84,7 +98,7 @@ def returnParameterRED(parameterVRAY):
 
 def checkParameterInList(parameter):
     '''
-    Check if input parameter exist in shaderParametersList
+    Check if input parameter exists in shaderParametersList
     '''
     try:
         index = int(parameter[-1])
@@ -117,6 +131,7 @@ def getTexturedParameters():
     '''
     Search and output all parameters in selected SHOP network with textures
     '''
+
     # list of textures
     listTexturedParameters = []
     # Get list of VRAY materials
@@ -144,20 +159,6 @@ def extractVrayVopsurfaceNode(listNodes_VRAY):
     for node_VRAY in listNodes_VRAY:
         if node_VRAY.type().name() == 'vopsurface':
             return node_VRAY
-
-def checkConditions():
-    '''
-    Check if environment conditions allows to run script without errors
-    '''
-    if not SHOP_VRAY:  # If user select anything
-        print '>> Nothing selected! Select SHOP network!'
-        return 0
-    elif SHOP_VRAY[0].type().name() != 'shopnet':  # If user select SHOP
-        print '>> Wrong selection type. Select SHOP network!'
-        return 0
-    elif hou.node('/obj/{0}/'.format(nameSHOP_RED)):  # If there is no RED target SHOP network
-        print '>> Redshift SHOP already exists!'
-        return 0
 
 def copyParameters(node_VRAY, nodeMAT_RED, parameter_VRAY, material_RED, nodeRSM_RED):
     '''
@@ -278,7 +279,7 @@ def convertMaterials():
 
     # Create RED SHOP Network
     SHOP_RED = OBJ.createNode('shopnet')
-    SHOP_RED.setName(nameSHOP_RED)
+    SHOP_RED.setName(nameSHOP_RED.format(SHOP_VRAY))
 
     # Get list of VRAY materials
     listMaterials_VRAY = SHOP_VRAY.children()
