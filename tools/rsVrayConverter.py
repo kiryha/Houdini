@@ -3,27 +3,8 @@
 Vray (VRAY) to Redshift (RED) material converter in Houdini
 Select source SHOP network and run script
 
-Materials hierarchy in OBJ root context :
+Required hierarchy of materials
 SHOP VRAY >> VRAY materials containers >> VRAY material nodes
-
-
-diffuse_color > diffuse_color
-diffuse_factor > diffuse_weight
-diffuse_texture > diffuse_color
-ambinet_colorr > transl_color
-ambient_factor > transl_weight
-emissive_color > emission_color
-emissive_texture > emission_color
-reflect_color > refl_color
-reflect_factor > refl_weight
-reflect_texture > refl_color
-shininess > refl_roughness
-shininess_texture > refl_roughness
-opacity_color > refr_color
-opacity_factor > refr_weight
-specular_color > coat_color
-specular_factor > coat_weight
-specular_texture > coat_color
 '''
 
 import hou
