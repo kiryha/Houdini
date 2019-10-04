@@ -2,6 +2,8 @@
 # Houdini pipeline for VFX production
 
 # Wrapper to run Houdini with custom environment
+# Another option of setting environment variables would be via win registry: create and *.reg files
+
 import os, subprocess
 
 # DEFINE COMMON VARIABLES
