@@ -82,7 +82,7 @@ os.environ['PYTHONPATH'] = '{0}/dna;{0}/tools;&'.format(rootPipeline)
 # Setup Redshift
 # os.environ['HOUDINI_DSO_ERROR'] = '2'
 # os.environ['PATH'] += ';' + 'C:/ProgramData/Redshift/bin;$PATH'
-# os.environ['HOUDINI_PATH'] += 'C:/ProgramData/Redshift/Plugins/Houdini/{};&'.format(build)
+# os.environ['HOUDINI_PATH'] = 'C:/ProgramData/Redshift/Plugins/Houdini/{0};{1}'.format(build, os.environ['HOUDINI_PATH'])
 
 # Run Houdini
 subprocess.Popen(houdini)
