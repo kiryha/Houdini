@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ShotProperties</class>
+ <widget class="QWidget" name="ShotProperties">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>370</width>
+    <height>193</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="margin">
+    <number>0</number>
+   </property>
+   <item>
+    <layout class="QVBoxLayout" name="layoutShot"/>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item>
+    <widget class="QPushButton" name="btnUpdateShot">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>45</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>Update Shot Data</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QSplitter" name="splitter_6">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <widget class="QPushButton" name="btnCreateShot">
+      <property name="text">
+       <string>Create Render Scene</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btnOpenShot">
+      <property name="text">
+       <string>Open Render Scene</string>
+      </property>
+     </widget>
+    </widget>
+   </item>
+   <item>
+    <widget class="QSplitter" name="splitter_7">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <widget class="QPushButton" name="btnCreateShotAnim">
+      <property name="text">
+       <string>Create Animation Scene</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btnOpenShotAnim">
+      <property name="text">
+       <string>Open Animation Scene</string>
+      </property>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

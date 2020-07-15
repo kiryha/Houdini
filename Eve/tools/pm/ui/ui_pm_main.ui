@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ProjectManager</class>
+ <widget class="QMainWindow" name="ProjectManager">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>851</width>
+    <height>890</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Eve Project Manager</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <widget class="QGroupBox" name="boxProjects">
+      <property name="maximumSize">
+       <size>
+        <width>150</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="title">
+       <string>Projects</string>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <widget class="QListView" name="listProjects"/>
+       </item>
+       <item>
+        <widget class="QSplitter" name="splitter">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <widget class="QPushButton" name="btnAddProject">
+          <property name="text">
+           <string>+</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="btnDelProject">
+          <property name="text">
+           <string>-</string>
+          </property>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QGroupBox" name="groupBox">
+      <property name="maximumSize">
+       <size>
+        <width>150</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="title">
+       <string>Assets</string>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_4">
+       <item>
+        <widget class="QListView" name="listAssets"/>
+       </item>
+       <item>
+        <widget class="QSplitter" name="splitter_2">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <widget class="QPushButton" name="btnAddAsset">
+          <property name="text">
+           <string>+</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="btnDelAsset">
+          <property name="text">
+           <string>-</string>
+          </property>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QGroupBox" name="boxASS">
+      <property name="maximumSize">
+       <size>
+        <width>150</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="title">
+       <string>Sequences | Shots</string>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="QListView" name="listSequences"/>
+       </item>
+       <item>
+        <widget class="QSplitter" name="splitter_3">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <widget class="QPushButton" name="btnAddSequence">
+          <property name="text">
+           <string>+</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="btnDelSequence">
+          <property name="text">
+           <string>-</string>
+          </property>
+         </widget>
+        </widget>
+       </item>
+       <item>
+        <widget class="QListView" name="listShots"/>
+       </item>
+       <item>
+        <widget class="QSplitter" name="splitter_4">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <widget class="QPushButton" name="btnAddShot">
+          <property name="text">
+           <string>+</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="btnDelShot">
+          <property name="text">
+           <string>-</string>
+          </property>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QGroupBox" name="boxProperties">
+      <property name="title">
+       <string>Properties</string>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <item>
+        <layout class="QVBoxLayout" name="layoutProperties"/>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>851</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionEveDocs"/>
+   </widget>
+   <widget class="QMenu" name="menuEve">
+    <property name="title">
+     <string>Eve</string>
+    </property>
+    <addaction name="actionSettings"/>
+   </widget>
+   <addaction name="menuEve"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionEveDocs">
+   <property name="text">
+    <string>Eve Documentation</string>
+   </property>
+  </action>
+  <action name="actionSettings">
+   <property name="text">
+    <string>Settings</string>
+   </property>
+  </action>
+  <action name="actionCreateDatabase">
+   <property name="text">
+    <string>Create Database</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

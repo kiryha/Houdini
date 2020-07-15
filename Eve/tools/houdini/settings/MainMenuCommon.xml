@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Please see ExampleMenu.xml for examples that customise the main menu -->
+<!-- Please see menu.xsd for the menu validation schema. -->
+<mainMenu>
+  <menuBar>
+    <!-- ======================== Mother Menu ============================== -->
+    <subMenu id="mother_menu">
+    <label>EVE</label>
+
+      <scriptItem id="motherHelp">
+          <label>EVE Help</label>
+      <scriptCode><![CDATA[
+print 'https://github.com/kiryha/Houdini/wiki'
+      ]]></scriptCode>
+        </scriptItem>
+
+    </subMenu>
+
+
+
+  </menuBar>
+</mainMenu>
