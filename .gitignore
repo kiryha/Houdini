@@ -1,4 +1,6 @@
-*.pyc
-/.idea/*
-/.dev/*
-/.wiki/*
+# PyCharm IDE
+.idea
+# Database
+Eve/data
+# UI compiler
+compile_ui.bat
