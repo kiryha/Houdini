@@ -338,7 +338,11 @@ class EveFilePath:
         Build asset file path:
             <asset_root>/<asset_name>/<file_type_code>_<asset_name>_<version>.mb
 
-        asset_type = string 'character', 'prop', etc
+        :param file_type: dictionary, entities.EveFile.file_types['asset_hip']
+        :param asset_type: string 'character', 'prop', etc
+        :param asset_name:
+        :param version:
+        :return:
         """
 
         file_prefix = file_type['prefix']
@@ -347,7 +351,7 @@ class EveFilePath:
         file_path = '{0}/{1}/{2}/{3}'.format(self.asset_root, asset_folder, asset_name, file_name)
         self.type = 'path'
 
-        print 'build_path_asset_hip [file_path] = ', file_path
+        # print 'build_path_asset_hip [file_path] = ', file_path
 
         self.set_path(file_path)
 

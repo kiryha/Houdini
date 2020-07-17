@@ -36,83 +36,7 @@ def build_project_root(project_name):
     return project_root
 
 
-def build_folder_structure(ASSETS, SHOTS):
-    """
-    Create list for project folder structure
 
-    :param ASSETS: list of Asset folders ['characters', ['roma', []]]
-    :param SHOTS:  list of Sequences/Shot folders
-    :return:
-    """
-
-    # PROJECT FOLDER STRUCTURE
-
-    # # Assets structure
-    # ASSETS = []
-    # if assets:
-    #     for asset in assets:
-    #         ASSETS.append([asset.name, []])
-    #
-    # # Shots structure
-    # SHOTS = []
-    # if shots:
-    #     for shot in shots:
-    #         SHOTS.append([shot.name, []])
-
-    # Types structure
-    TYPES = [
-        ['ASSETS', ASSETS],
-        ['SHOTS', SHOTS]
-    ]
-    # Formats structure
-    FORMATS = [
-        ['ABC', []],
-        ['GEO', []],
-        ['FBX', []]
-    ]
-    # Folders structure
-    FOLDERS = [
-        ['EDIT', [
-            ['OUT', []],
-            ['PROJECT', []]
-        ]],
-        ['PREP', [
-            ['ART', []],
-            ['SRC', []],
-            ['PIPELINE', []],
-        ]],
-        ['PROD', [
-            ['2D', [
-                ['COMP', SHOTS],
-                ['RENDER', SHOTS]
-            ]],
-            ['3D', [
-                ['lib', [
-                    ['ANIMATION', []],
-                    ['MATERIALS', [
-                        ['MANTRA', []]
-                    ]]
-                ]],
-                ['fx', TYPES],
-                ['caches', TYPES],
-                ['hda', [
-                    ['ASSETS', ASSETS],
-                    ['FX', TYPES],
-                ]],
-                ['render', SHOTS],
-                ['scenes', [
-                    ['ASSETS', ASSETS],
-                    ['SHOTS', [
-                        ['ANIMATION', SHOTS],
-                        ['RENDER', SHOTS]
-                    ]]
-                ]],
-                ['textures', TYPES],
-            ]],
-        ]]
-    ]
-
-    return FOLDERS
 
 
 class Warnings(QtWidgets.QDialog, ui_pm_warning.Ui_Warning):
@@ -1128,6 +1052,67 @@ class ProjectManager(QtWidgets.QMainWindow,  ui_pm_main.Ui_ProjectManager):
                                      script=script,
                                      id=id)
 
+    def build_folder_structure(self, ASSETS, SHOTS):
+        """
+        Create list for project folder structure
+
+        :param ASSETS: list of Asset folders ['characters', ['roma', []]]
+        :param SHOTS:  list of Sequences/Shot folders
+        :return:
+        """
+
+        # PROJECT FOLDER STRUCTURE
+
+        # Types structure
+        TYPES = [
+            ['ASSETS', ASSETS],
+            ['SHOTS', SHOTS]
+        ]
+
+        # Folders structure
+        FOLDERS = [
+            ['EDIT', [
+                ['OUT', []],
+                ['PROJECT', []]
+            ]],
+            ['PREP', [
+                ['ART', []],
+                ['SRC', []],
+                ['PIPELINE', []],
+            ]],
+            ['PROD', [
+                ['2D', [
+                    ['COMP', SHOTS],
+                    ['RENDER', SHOTS]
+                ]],
+                ['3D', [
+                    ['lib', [
+                        ['ANIMATION', []],
+                        ['MATERIALS', [
+                            ['MANTRA', []]
+                        ]]
+                    ]],
+                    ['fx', TYPES],
+                    ['caches', TYPES],
+                    ['hda', [
+                        ['ASSETS', ASSETS],
+                        ['FX', TYPES],
+                    ]],
+                    ['render', SHOTS],
+                    ['scenes', [
+                        ['ASSETS', ASSETS],
+                        ['SHOTS', [
+                            ['ANIMATION', SHOTS],
+                            ['RENDER', SHOTS]
+                        ]]
+                    ]],
+                    ['textures', TYPES],
+                ]],
+            ]]
+        ]
+
+        return FOLDERS
+
     def build_asset_folders(self, project_assets):
 
         ASSETS = []
@@ -1138,7 +1123,7 @@ class ProjectManager(QtWidgets.QMainWindow,  ui_pm_main.Ui_ProjectManager):
 
         return ASSETS
 
-    def build_shot_folders(self):
+    def build_shot_folders(self, project):
         """
         Build sequences/shots folder structure list
         :return:
@@ -1146,6 +1131,20 @@ class ProjectManager(QtWidgets.QMainWindow,  ui_pm_main.Ui_ProjectManager):
 
         SHOTS = []
 
+        # Get sequences
+        self.eve_data.get_project_sequences(project)
+
+        for sequence in self.eve_data.project_sequences:
+
+            # Get shots
+            self.eve_data.get_sequence_shots(sequence.id)
+            if self.eve_data.sequence_shots:
+                for shot in self.eve_data.sequence_shots:
+                    folder = [sequence.name, [[shot.name, []]]]
+                    SHOTS.append(folder)
+            else:
+                # If there is no shots in the sequence
+                SHOTS.append([sequence.name, []])
 
         return SHOTS
 
@@ -1174,15 +1173,23 @@ class ProjectManager(QtWidgets.QMainWindow,  ui_pm_main.Ui_ProjectManager):
                 self.create_folders(path, folder[1])
 
     def create_folder_structure(self, project):
-
-        # Create folder structure on HDD
-        # TODO: Create sequence/shots structure
+        """
+        Create folder structure on HDD
+        :param project: project object
+        :return:
+        """
 
         project_root = build_project_root(project.name)
         self.eve_data.get_project_assets(project)
+
+        # Build lists for assets and sequences/shots
         asset_folders = self.build_asset_folders(self.eve_data.project_assets)
-        shot_folders = self.build_shot_folders()
-        folders = build_folder_structure(asset_folders, shot_folders)
+        shot_folders = self.build_shot_folders(project)
+
+        # Build folders list
+        folders = self.build_folder_structure(asset_folders, shot_folders)
+
+        # Create folders on HDD
         self.create_folders(project_root, folders)
 
     def create_project(self, project_name):
