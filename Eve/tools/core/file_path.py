@@ -338,11 +338,11 @@ class EveFilePath:
         Build asset file path:
             <asset_root>/<asset_name>/<file_type_code>_<asset_name>_<version>.mb
 
-        asset_type = {'description': 'Character asset', 'id': 1, 'name': 'character'}
+        asset_type = string 'character', 'prop', etc
         """
 
         file_prefix = file_type['prefix']
-        asset_folder = '{0}S'.format(asset_type).upper()
+        asset_folder = '{0}s'.format(asset_type)
         file_name = self.file_name_template.format(file_prefix, asset_name, version, settings.HIP)
         file_path = '{0}/{1}/{2}/{3}'.format(self.asset_root, asset_folder, asset_name, file_name)
         self.type = 'path'

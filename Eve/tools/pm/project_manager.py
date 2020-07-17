@@ -36,34 +36,29 @@ def build_project_root(project_name):
     return project_root
 
 
-def build_folder_structure():
+def build_folder_structure(ASSETS, SHOTS):
     """
     Create list for project folder structure
 
-    TODO: build assets, sequences and shots folders based on EVE data
-    assets=None, shots=None
-
-    :param assets: list of Asset objects, assets of current project
-    :param shots:  list of Shot objects, shots of current project
+    :param ASSETS: list of Asset folders ['characters', ['roma', []]]
+    :param SHOTS:  list of Sequences/Shot folders
     :return:
     """
 
     # PROJECT FOLDER STRUCTURE
-    # Shots structure
-    SHOTS = [
-        ['010', [
-            ['SHOT_010', []],
-            ['SHOT_020', []]
-        ]]
-    ]
-    # Assets structure
-    ASSETS = [
-        ['CHARACTERS', []],
-        ['ENVIRONMENTS', []],
-        ['PROPS', []],
-        ['STATICS', []],
-        ['FX', []]
-    ]
+
+    # # Assets structure
+    # ASSETS = []
+    # if assets:
+    #     for asset in assets:
+    #         ASSETS.append([asset.name, []])
+    #
+    # # Shots structure
+    # SHOTS = []
+    # if shots:
+    #     for shot in shots:
+    #         SHOTS.append([shot.name, []])
+
     # Types structure
     TYPES = [
         ['ASSETS', ASSETS],
@@ -84,9 +79,7 @@ def build_folder_structure():
         ['PREP', [
             ['ART', []],
             ['SRC', []],
-            ['PIPELINE', [
-                ['genes', []]
-            ]],
+            ['PIPELINE', []],
         ]],
         ['PROD', [
             ['2D', [
@@ -111,7 +104,6 @@ def build_folder_structure():
                     ['ASSETS', ASSETS],
                     ['SHOTS', [
                         ['ANIMATION', SHOTS],
-                        ['LAYOUT', SHOTS],
                         ['RENDER', SHOTS]
                     ]]
                 ]],
@@ -1035,8 +1027,7 @@ class ProjectManager(QtWidgets.QMainWindow,  ui_pm_main.Ui_ProjectManager):
         self.eve_data.update_project(project)
 
         # Update folder structure on HDD
-        # FOLDERS = build_folder_structure()
-        # self.create_folders(build_project_root(project_name), FOLDERS)
+        self.create_folder_structure(project)
 
         print '>> Project {0} updated!'.format(project.name)
 
@@ -1137,6 +1128,27 @@ class ProjectManager(QtWidgets.QMainWindow,  ui_pm_main.Ui_ProjectManager):
                                      script=script,
                                      id=id)
 
+    def build_asset_folders(self, project_assets):
+
+        ASSETS = []
+
+        for asset in project_assets:
+            folder = ['{0}s'.format(asset.get_type()), [[asset.name, []]]]
+            ASSETS.append(folder)
+
+        return ASSETS
+
+    def build_shot_folders(self):
+        """
+        Build sequences/shots folder structure list
+        :return:
+        """
+
+        SHOTS = []
+
+
+        return SHOTS
+
     def create_folder(self, path):
         """
         Create folder at input path
@@ -1161,6 +1173,18 @@ class ProjectManager(QtWidgets.QMainWindow,  ui_pm_main.Ui_ProjectManager):
                 self.create_folder(path)
                 self.create_folders(path, folder[1])
 
+    def create_folder_structure(self, project):
+
+        # Create folder structure on HDD
+        # TODO: Create sequence/shots structure
+
+        project_root = build_project_root(project.name)
+        self.eve_data.get_project_assets(project)
+        asset_folders = self.build_asset_folders(self.eve_data.project_assets)
+        shot_folders = self.build_shot_folders()
+        folders = build_folder_structure(asset_folders, shot_folders)
+        self.create_folders(project_root, folders)
+
     def create_project(self, project_name):
         """
         Create project structure with necessary data on HDD
@@ -1168,17 +1192,14 @@ class ProjectManager(QtWidgets.QMainWindow,  ui_pm_main.Ui_ProjectManager):
         :return:
         """
 
-        # Build project root folder string
-        project_root = build_project_root(project_name)
-        # Get project data from projects DB
+        # Get project data from DB
         project = self.eve_data.get_project_by_name(project_name)
 
         # Create folder structure on HDD
-        folders = build_folder_structure()  # assets=project.assets, shots=project.shots
-        self.create_folders(project_root, folders)
+        self.create_folder_structure(project)
 
         # Open project folder
-        subprocess.Popen('explorer "{}"'.format(project_root.replace('/', '\\')))
+        subprocess.Popen('explorer "{}"'.format(build_project_root(project_name).replace('/', '\\')))
 
     def run_create_project(self):
         """

@@ -47,6 +47,13 @@ class Asset:
         self.type = None
         self.description = ''
 
+    def get_type(self):
+
+        # Detect asset type, return type string ('character')
+        for asset_type in Asset.asset_types:
+            if Asset.asset_types[asset_type]['id'] == self.type:
+                return Asset.asset_types[asset_type]['name']
+
 
 class Sequence:
     def __init__(self, sequence_name, project_id):

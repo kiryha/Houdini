@@ -29,7 +29,7 @@ class AssetData:
 
         # Data attributes
         self.asset = None
-        self.asset_type_dic = None  # entities.Asset.asset_types dict
+        self.asset_type = None
 
         self.init_asset()
 
@@ -37,11 +37,7 @@ class AssetData:
 
         # Get Asset from the database
         self.asset = self.get_asset(self.asset_id)
-
-        # Detect asset type
-        for asset_type in entities.Asset.asset_types:
-            if entities.Asset.asset_types[asset_type]['id'] == self.asset.type:
-                self.asset_type_dic = entities.Asset.asset_types[asset_type]
+        self.asset_type = self.asset.get_type()
 
     def get_asset(self, asset_id):
         connection = sqlite3.connect(self.SQL_FILE_PATH)

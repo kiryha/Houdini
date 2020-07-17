@@ -67,8 +67,7 @@ class AssetManager(QtWidgets.QDialog, ui_asset_manager.Ui_AssetManager):
         # Create file path string
         asset_file_path = file_path.EveFilePath()
         file_type = entities.EveFile.file_types['asset_hip']
-        asset_type = self.asset_data.asset_type_dic['name']
-        asset_file_path.build_path_asset_hip(file_type, asset_type, self.asset_data.asset.name, '001')
+        asset_file_path.build_path_asset_hip(file_type, self.asset_data.asset_type, self.asset_data.asset.name, '001')
         scene_path = asset_file_path.version_control()
 
         # Save file
@@ -84,8 +83,7 @@ class AssetManager(QtWidgets.QDialog, ui_asset_manager.Ui_AssetManager):
 
         asset_file_path = file_path.EveFilePath()
         file_type = entities.EveFile.file_types['asset_hip']
-        asset_type = self.asset_data.asset_type_dic['name']
-        asset_file_path.build_path_asset_hip(file_type, asset_type, self.asset_data.asset.name, '001')
+        asset_file_path.build_path_asset_hip(file_type, self.asset_data.asset_type, self.asset_data.asset.name, '001')
         asset_file_path.build_last_file_version()
 
         hou.hipFile.load(asset_file_path.path)

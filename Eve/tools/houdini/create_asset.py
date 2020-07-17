@@ -17,8 +17,7 @@ asset_data = asset_data.AssetData(settings.SQL_FILE_PATH.format(eve_root), asset
 # Create EveFilePath
 file_type = entities.EveFile.file_types['asset_hip']
 file_path_asset = file_path.EveFilePath()
-asset_type = asset_data.asset_type_dic['name']
-file_path_asset.build_path_asset_hip(file_type, asset_type, asset_data.asset.name, '001')
+file_path_asset.build_path_asset_hip(file_type, asset_data.asset_type, asset_data.asset.name, '001')
 scene_path = file_path_asset.version_control()
 
 # Save file
