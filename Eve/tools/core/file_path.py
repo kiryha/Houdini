@@ -35,7 +35,7 @@ from PySide2 import QtWidgets, QtCore
 
 
 class SNV(QtWidgets.QDialog):
-    def __init__(self, file_name, version_latest, parent=None):
+    def __init__(self, file_name, parent=None):
         super(SNV, self).__init__(parent=parent)
         # Keep window on top of Maya UI
         self.parent = parent
@@ -47,7 +47,7 @@ class SNV(QtWidgets.QDialog):
         self.lab = QtWidgets.QLabel(file_name)
         self.lab.setAlignment(QtCore.Qt.AlignHCenter)
         self.btnOVR = QtWidgets.QPushButton("Overwrite")
-        self.btnSNV = QtWidgets.QPushButton(" Save {} Version ".format(version_latest))
+        self.btnSNV = QtWidgets.QPushButton(" Save Next Version ")
         self.btnCancel = QtWidgets.QPushButton("Cancel")
         # Create layout and add widgets
         layout_main = QtWidgets.QVBoxLayout()
@@ -265,6 +265,7 @@ class EveFilePath:
             self.folder_version = self.file_version
 
         self.rebuild_path()
+        self.analyze_file_path()
 
     def calculate_last_version(self):
         '''
@@ -321,6 +322,7 @@ class EveFilePath:
             self.folder_version = self.file_version
 
         self.rebuild_path()
+        self.analyze_file_path()
 
     def build_last_file_version(self):
         """
@@ -330,7 +332,9 @@ class EveFilePath:
 
         latest_version = self.calculate_last_version()
         self.file_version = '{0:03d}'.format(latest_version)
+
         self.rebuild_path()
+        self.analyze_file_path()
 
     # Build string paths for database.EveFile.file_types
     def build_path_asset_hip(self, file_type, asset_type, asset_name, version):
@@ -377,21 +381,26 @@ class EveFilePath:
         '''
 
         if not os.path.exists(self.path):
+            print '>> File saved to a new version: {}'.format(self.name)
             return self.path
         else:
-            original_path = self.path
-            self.build_latest_file_version()
+            self.build_last_file_version()
 
             # Ask user which version to save
             if self.type == 'path' or self.type == 'sequence':
-                message = original_path.split('/')[-1]
+                file_name = self.name
             else:
-                message = original_path
+                file_name = self.path
 
-            answer = SNV(message, self.file_version).exec_()
+            answer = SNV(file_name).exec_()
+
+            if not answer:
+                return
 
             if answer == 2:  # Overwrite
-                self.set_path(original_path)
-                return original_path
+                print '>> File overwritten: {}'.format(self.name)
             if answer == 3:  # Save latest version
-                return self.path
+                self.build_latest_file_version()
+                print '>> File saved to a new version: {}'.format(self.name)
+
+            return self.path
