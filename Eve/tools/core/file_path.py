@@ -376,11 +376,11 @@ class EveFilePath:
 
     # File version solver
     def version_control(self):
-        '''
+        """
         Check if provided FILE (FOLDER) path exists.
             If not - return the same path.
             If exists - ask user save next version or overwrite. Return new path based on user decision
-        '''
+        """
 
         if not os.path.exists(self.path):
             print '>> File saved to a new version: {}'.format(self.name)
