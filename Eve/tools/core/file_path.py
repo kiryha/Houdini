@@ -332,6 +332,8 @@ class EveFilePath:
 
         latest_version = self.calculate_last_version()
         self.file_version = '{0:03d}'.format(latest_version)
+        if self.folder_version:
+            self.folder_version = self.file_version
 
         self.rebuild_path()
         self.analyze_file_path()
