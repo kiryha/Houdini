@@ -8,43 +8,42 @@ def get_hda_path(root_3d):
     Used by Houdini to search for HDA (Houdini Digital Assets)
     """
 
-    filterFolders = ['backup']
+    filter_folders = ['backup']
 
-
-    def combinePaths(listPaths):
+    def combine_paths(list_paths):
         """
         Combine paths string from list of paths
-        :param listPaths: list of subfolders in processed folder
+        :param listPaths: list of sub folders in processed folder
         """
 
-        pathHDA = ''
+        path_HDA = ''
 
-        for folder in listPaths:
+        for folder in list_paths:
             path = folder[0].replace('\\', '/')
             # Filter unnecessary folders
-            if not path.split('/')[-1] in filterFolders:
-                pathHDA += '{};'.format(folder[0].replace('\\', '/'))
+            if not path.split('/')[-1] in filter_folders:
+                path_HDA += '{};'.format(folder[0].replace('\\', '/'))
 
-        return pathHDA
+        return path_HDA
 
     # Get list of sub folders
-    listPaths_HDA = os.walk('{0}/hda'.format(root_3d))  # HDA
-    # listPaths_MTL = os.walk('{0}/lib/MATERIALS'.format(root3D))  # Material library
-    # listPaths_LIT = os.walk('{0}/lib/LIGHTS'.format(root3D))  # Light library
+    list_paths_HDA = os.walk('{0}/hda'.format(root_3d))  # HDA
+    # list_paths_MTL = os.walk('{0}/lib/MATERIALS'.format(root3D))  # Material library
+    # list_paths_LIT = os.walk('{0}/lib/LIGHTS'.format(root3D))  # Light library
 
     # Global HDA library path (WIP! TBD!)
-    listPaths_LIB = os.walk('')  # Global HDA (between projects)
+    list_paths_LIB = os.walk('')  # Global HDA (between projects)
 
     # Combine paths to a string
-    pathHDA = combinePaths(listPaths_HDA)
-    # combinePaths(listPaths_MTL)
-    # combinePaths(listPaths_LIT)
-    # combinePaths(listPaths_LIB)
+    path_HDA = combine_paths(list_paths_HDA)
+    # combine_paths(list_paths_MTL)
+    # combine_paths(list_paths_LIT)
+    # combine_paths(list_paths_LIB)
 
     # Add Houdini standard OTLs
-    pathHDA = pathHDA + '&'
+    path_HDA = path_HDA + '&'
 
-    return pathHDA
+    return path_HDA
 
 def run_houdini(eve_root, projects_root, HOUDINI, project_name, script=None, id=None):
     """
@@ -63,8 +62,8 @@ def run_houdini(eve_root, projects_root, HOUDINI, project_name, script=None, id=
 
     # SETUP PROJECT ENVIRONMENT
     # ACES (Download from imageworks github OpenColorIO-Confih repo)
-    #os.environ['OCIO'] = '{}/OCIO/Aces1.0.3/config.ocio'.format(eve_root)
-    os.environ['OCIO'] = "E:/256/DEV/Eve_OLD_hou_git_repo/src/settings/OpenColorIO/aces_1.0.3/config.ocio"
+    # os.environ['OCIO'] = '{}/OCIO/Aces1.0.3/config.ocio'.format(eve_root)
+    os.environ['OCIO'] = "E:/256/DEV/Eve_materials/Eve_backups/github_houdini_before_restructure/src/settings/OpenColorIO/aces_1.0.3/config.ocio"
 
     root_3d = '{0}/{1}/PROD/3D'.format(projects_root, project_name)
     project_root = '{0}/{1}'.format(projects_root, project_name)
@@ -78,7 +77,7 @@ def run_houdini(eve_root, projects_root, HOUDINI, project_name, script=None, id=
     os.environ['JOB'] = root_3d
 
     # Houdini digital assets folder including sub folders
-    # os.environ['HOUDINI_OTLSCAN_PATH'] = get_hda_path(root_3d)
+    os.environ['HOUDINI_OTLSCAN_PATH'] = get_hda_path(root_3d)
     # Houdini path
     os.environ['HOUDINI_PATH'] = '{0}/tools/houdini/settings;&'.format(eve_root)
     # Custom vex modules

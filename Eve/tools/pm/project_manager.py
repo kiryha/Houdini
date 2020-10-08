@@ -36,9 +36,6 @@ def build_project_root(project_name):
     return project_root
 
 
-
-
-
 class Warnings(QtWidgets.QDialog, ui_pm_warning.Ui_Warning):
     def __init__(self, name):
         # SETUP UI WINDOW

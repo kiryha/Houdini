@@ -35,3 +35,31 @@ node create_node(int point_number){
 
     return item;
 }
+
+// VEX Hash Table implementation for {string:float} pairs
+struct hash_table{
+    int array_len;  // Limit array size
+    float data[];  // Init data
+
+    int build_index(string key){
+        // Build and return index for array from string
+        int index = random_shash(key) % this.array_len*10;
+
+        return index;
+    }
+
+    void add_item(string key; float value){
+        // Place item value in array at index position
+        int index = this -> build_index(key);
+        this.data[index] = value;
+    }
+
+    float get_item(string key){
+        // Get item from array by position
+        int index = this -> build_index(key);
+        float value = this.data[index];
+
+        return value;
+    }
+}
+
