@@ -1,6 +1,9 @@
 # PyCharm IDE
 .idea
 
+# PYC
+.pyc
+
 # Database
 Eve/data
 Eve/tools/houdini/vex/rmannotes.h
