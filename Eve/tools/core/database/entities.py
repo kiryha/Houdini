@@ -8,8 +8,8 @@ class Project:
         self.id = None
         self.name = project_name
         self.houdini_build = ''
-        self.width = ''
-        self.height = ''
+        self.width = None
+        self.height = None
         self.description = ''
 
 

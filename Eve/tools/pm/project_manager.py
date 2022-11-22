@@ -608,7 +608,9 @@ class ProjectManager(QtWidgets.QMainWindow,  ui_pm_main.Ui_ProjectManager):
         """
 
         project = entities.Project(project_name)
-        project.houdini_build = '{0}'.format(settings.HOUDINI)
+        project.houdini_build = '{0}'.format(settings.default_build)
+        project.width = 1920
+        project.height = 1080
         project.description = 'Eve default project for documentation and tutorials.'
 
         connection = sqlite3.connect(SQL_FILE_PATH)
@@ -619,11 +621,15 @@ class ProjectManager(QtWidgets.QMainWindow,  ui_pm_main.Ui_ProjectManager):
                        ":id,"
                        ":name,"
                        ":houdini_build,"
+                       ":width,"
+                       ":height,"
                        ":description)",
 
                        {'id': cursor.lastrowid,
                         'name': project.name,
                         'houdini_build': project.houdini_build,
+                        'width': project.width,
+                        'height': project.height,
                         'description': project.description})
 
         connection.commit()

@@ -1,6 +1,7 @@
 import os
 import subprocess
 
+
 def get_hda_path(root_3d):
     """
     Build HOUDINI_OTLSCAN_PATH env variable value:
@@ -44,6 +45,7 @@ def get_hda_path(root_3d):
     path_HDA = path_HDA + '&'
 
     return path_HDA
+
 
 def run_houdini(eve_root, projects_root, HOUDINI, project_name, script=None, id=None):
     """
