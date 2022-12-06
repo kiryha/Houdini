@@ -28,6 +28,8 @@ from core import models
 
 import houdini_launcher
 
+# TODO: remove asset_types and file_types database tables, use Asset.asset_types and EveFile.file_types instead
+
 
 def build_project_root(project_name):
     """Build project root folder string"""
@@ -452,17 +454,17 @@ class ProjectManager(QtWidgets.QMainWindow,  ui_pm_main.Ui_ProjectManager):
         """
 
         # TYPES
-        cursor.execute('''CREATE TABLE asset_types (
-                        id integer primary key autoincrement,
-                        name text,
-                        description text
-                        )''')
-
-        cursor.execute('''CREATE TABLE file_types (
-                        id integer primary key autoincrement,
-                        name text,
-                        description text
-                        )''')
+        # cursor.execute('''CREATE TABLE asset_types (
+        #                 id integer primary key autoincrement,
+        #                 name text,
+        #                 description text
+        #                 )''')
+        #
+        # cursor.execute('''CREATE TABLE file_types (
+        #                 id integer primary key autoincrement,
+        #                 name text,
+        #                 description text
+        #                 )''')
 
         # MAIN ITEMS
         cursor.execute('''CREATE TABLE projects (
@@ -667,8 +669,8 @@ class ProjectManager(QtWidgets.QMainWindow,  ui_pm_main.Ui_ProjectManager):
         cursor = connection.cursor()
 
         self.init_database(connection, cursor)
-        self.init_asset_types(connection, cursor)
-        self.init_file_types(connection, cursor)
+        # self.init_asset_types(connection, cursor)
+        # self.init_file_types(connection, cursor)
         self.init_default_project(self.SQL_FILE_PATH, 'eve_example')
 
         connection.close()

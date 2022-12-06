@@ -268,16 +268,24 @@ class EveData:
 
     def get_asset_types(self):
 
-        connection = sqlite3.connect(self.SQL_FILE_PATH)
-        cursor = connection.cursor()
+        # connection = sqlite3.connect(self.SQL_FILE_PATH)
+        # cursor = connection.cursor()
+        #
+        # cursor.execute("SELECT * FROM asset_types")
+        # asset_types_tuples = cursor.fetchall()
+        # asset_types_objects = entities.Converter.convert_to_asset_types(asset_types_tuples)
+        #
+        # connection.close()
+        #
+        # self.asset_types.extend(asset_types_objects)
 
-        cursor.execute("SELECT * FROM asset_types")
-        asset_types_tuples = cursor.fetchall()
-        asset_types_objects = entities.Converter.convert_to_asset_types(asset_types_tuples)
+        for asset_type_name, asset_type_data in entities.Asset.asset_types.iteritems():
 
-        connection.close()
+            asset_type = entities.AssetType(asset_type_data['id'],
+                                            asset_type_data['name'],
+                                            asset_type_data['description'])
 
-        self.asset_types.extend(asset_types_objects)
+            self.asset_types.append(asset_type)
 
     def get_asset_type_string(self, asset_type_id):
         """

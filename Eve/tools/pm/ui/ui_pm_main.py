@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'E:\Eve\Eve\tools\pm\ui\ui_pm_main.ui',
-# licensing of 'E:\Eve\Eve\tools\pm\ui\ui_pm_main.ui' applies.
+# Form implementation generated from reading ui file 'H:\@transfer_vdi_pc\_EVE\ui_pm_main.ui',
+# licensing of 'H:\@transfer_vdi_pc\_EVE\ui_pm_main.ui' applies.
 #
-# Created: Thu Feb 06 09:03:08 2020
+# Created: Tue Nov 22 18:33:14 2022
 #      by: pyside2-uic  running on PySide2 5.9.0a1.dev1528389443
 #
 # WARNING! All changes made in this file will be lost!
@@ -13,7 +13,7 @@ from PySide2 import QtCore, QtGui, QtWidgets
 class Ui_ProjectManager(object):
     def setupUi(self, ProjectManager):
         ProjectManager.setObjectName("ProjectManager")
-        ProjectManager.resize(851, 890)
+        ProjectManager.resize(1107, 890)
         self.centralwidget = QtWidgets.QWidget(ProjectManager)
         self.centralwidget.setObjectName("centralwidget")
         self.horizontalLayout = QtWidgets.QHBoxLayout(self.centralwidget)
@@ -81,6 +81,8 @@ class Ui_ProjectManager(object):
         self.verticalLayout_2.addWidget(self.splitter_4)
         self.horizontalLayout.addWidget(self.boxASS)
         self.boxProperties = QtWidgets.QGroupBox(self.centralwidget)
+        self.boxProperties.setMinimumSize(QtCore.QSize(500, 0))
+        self.boxProperties.setMaximumSize(QtCore.QSize(500, 16777215))
         self.boxProperties.setObjectName("boxProperties")
         self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.boxProperties)
         self.verticalLayout_3.setObjectName("verticalLayout_3")
@@ -88,9 +90,11 @@ class Ui_ProjectManager(object):
         self.layoutProperties.setObjectName("layoutProperties")
         self.verticalLayout_3.addLayout(self.layoutProperties)
         self.horizontalLayout.addWidget(self.boxProperties)
+        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout.addItem(spacerItem)
         ProjectManager.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(ProjectManager)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 851, 21))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1107, 21))
         self.menubar.setObjectName("menubar")
         self.menuHelp = QtWidgets.QMenu(self.menubar)
         self.menuHelp.setObjectName("menuHelp")
