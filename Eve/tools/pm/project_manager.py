@@ -1,8 +1,14 @@
 import os
+import sys
 import sqlite3
 import subprocess
 import webbrowser
 from PySide2 import QtCore, QtWidgets
+
+# Set environment to run this file without launcher
+eve_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(f'{eve_root}/tools')
+os.environ['EVE_ROOT'] = eve_root
 
 # Import UI
 from ui import ui_pm_warning
@@ -559,7 +565,7 @@ class ProjectManager(QtWidgets.QMainWindow,  ui_pm_main.Ui_ProjectManager):
         :return:
         """
 
-        for name, data in entities.Asset.asset_types.iteritems():
+        for name, data in entities.Asset.asset_types.items():
             cursor.execute("INSERT INTO asset_types VALUES ("
                            ":id,"
                            ":name,"
@@ -590,7 +596,7 @@ class ProjectManager(QtWidgets.QMainWindow,  ui_pm_main.Ui_ProjectManager):
         :return:
         """
 
-        for name, data in entities.EveFile.file_types.iteritems():
+        for name, data in entities.EveFile.file_types.items():
             cursor.execute("INSERT INTO file_types VALUES ("
                            ":id,"
                            ":name,"
@@ -942,7 +948,7 @@ class ProjectManager(QtWidgets.QMainWindow,  ui_pm_main.Ui_ProjectManager):
         Update project data in the DB
         """
 
-        print '>> Updating project...'
+        print('>> Updating project...')
 
         # Load athena data
         project = self.selected_project
@@ -958,14 +964,14 @@ class ProjectManager(QtWidgets.QMainWindow,  ui_pm_main.Ui_ProjectManager):
         # Update folder structure on HDD
         self.create_folder_structure(project)
 
-        print '>> Project {0} updated!'.format(project.name)
+        print('>> Project {0} updated!'.format(project.name))
 
     def update_asset(self):
         """
         Update asset data in DB according to Asset Properties widget.
         """
 
-        print '>> Updating asset...'
+        print('>> Updating asset...')
 
         # Get asset
         asset = self.selected_asset
@@ -981,7 +987,7 @@ class ProjectManager(QtWidgets.QMainWindow,  ui_pm_main.Ui_ProjectManager):
         # Save asset data
         self.eve_data.update_asset(asset)
 
-        print '>> Asset "{}" updated!'.format(asset.name)
+        print('>> Asset "{}" updated!'.format(asset.name))
 
     def update_sequence(self):
         """
@@ -989,7 +995,7 @@ class ProjectManager(QtWidgets.QMainWindow,  ui_pm_main.Ui_ProjectManager):
 
         """
 
-        print '>> Updating sequence...'
+        print('>> Updating sequence...')
 
         # Get sequence
         sequence = self.selected_sequence
@@ -1000,14 +1006,14 @@ class ProjectManager(QtWidgets.QMainWindow,  ui_pm_main.Ui_ProjectManager):
         # Save sequence data
         self.eve_data.update_sequence(sequence)
 
-        print '>> Sequence "{}" updated!'.format(sequence.name)
+        print('>> Sequence "{}" updated!'.format(sequence.name))
 
     def update_shot(self):
         """
         Update sequence data in DB according to Sequence Properties widget.
         """
 
-        print '>> Updating shot...'
+        print('>> Updating shot...')
 
         # Get shot
         shot = self.selected_shot
@@ -1022,7 +1028,7 @@ class ProjectManager(QtWidgets.QMainWindow,  ui_pm_main.Ui_ProjectManager):
         # Save shot data
         self.eve_data.update_shot(shot)
 
-        print '>> Shot "{}" updated!'.format(shot.name)
+        print('>> Shot "{}" updated!'.format(shot.name))
 
     def link_assets(self, model_indexes, shot):
 
@@ -1034,15 +1040,15 @@ class ProjectManager(QtWidgets.QMainWindow,  ui_pm_main.Ui_ProjectManager):
                 self.eve_data.get_shot_assets(shot.id)
                 self.model_shot_assets.layoutChanged.emit()
 
-                print '>> Asset {0} linked to shot {1}'.format(model_index.data(QtCore.Qt.UserRole + 2), shot.name)
+                print('>> Asset {0} linked to shot {1}'.format(model_index.data(QtCore.Qt.UserRole + 2), shot.name))
             else:
-                print '>> Asset {0} already linked to shot {1}'.format(model_index.data(QtCore.Qt.UserRole + 2), shot.name)
+                print('>> Asset {0} already linked to shot {1}'.format(model_index.data(QtCore.Qt.UserRole + 2), shot.name))
 
     def unlink_assets(self, list_assets, shot):
 
         for asset in list_assets:
             self.eve_data.unlink_asset(asset.id, shot.id)
-            print '>> Asset {0} unlinked from shot {1}'.format(asset.name, shot.name)
+            print('>> Asset {0} unlinked from shot {1}'.format(asset.name, shot.name))
 
     # MAIN FUNCTIONS
     def launch_houdini(self, script=None, id=None):
@@ -1225,10 +1231,10 @@ class ProjectManager(QtWidgets.QMainWindow,  ui_pm_main.Ui_ProjectManager):
         if self.project_properties_ui.btnCreateProject.text() == self.btn_project_update:
             self.update_project()
         else:
-            print '>> Creating project...'
+            print('>> Creating project...')
             # Create project
             self.create_project(project_name)
-            print '>> Project creation complete!'
+            print('>> Project creation complete!')
 
     def run_add_asset(self):
         """
@@ -1237,7 +1243,7 @@ class ProjectManager(QtWidgets.QMainWindow,  ui_pm_main.Ui_ProjectManager):
 
         # Check if project selected in UI
         if not self.listProjects.selectedIndexes():
-            print 'Select Project to create assets!'
+            print('Select Project to create assets!')
 
         else:
             self.AA.project = self.selected_project
@@ -1248,7 +1254,7 @@ class ProjectManager(QtWidgets.QMainWindow,  ui_pm_main.Ui_ProjectManager):
 
         # Check if project selected in UI
         if not self.listProjects.selectedIndexes():
-            print 'Select Project to create sequence!'
+            print('>> Select Project to create sequence!')
 
         else:
             self.AE.project = self.selected_project
@@ -1258,7 +1264,7 @@ class ProjectManager(QtWidgets.QMainWindow,  ui_pm_main.Ui_ProjectManager):
 
         # Check if project selected in UI
         if not self.listSequences.selectedIndexes():
-            print 'Select Sequence to create shot!'
+            print('>> Select Sequence to create shot!')
 
         else:
             self.AS.project = self.selected_project
@@ -1288,8 +1294,10 @@ class ProjectManager(QtWidgets.QMainWindow,  ui_pm_main.Ui_ProjectManager):
         script = '{0}/tools/houdini/create_asset.py'.format(self.eve_root)
         self.launch_houdini(script, self.selected_asset.id)
 
+
 # Run Project Manager
 if __name__ == "__main__":
+
     app = QtWidgets.QApplication([])
     PM = ProjectManager()
     PM.show()

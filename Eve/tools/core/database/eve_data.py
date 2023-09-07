@@ -4,7 +4,7 @@ Project Manager entities CRUD: materials, projects, assets, shots
 
 
 import sqlite3
-import entities
+from . import entities
 
 
 class EveData:
@@ -279,7 +279,7 @@ class EveData:
         #
         # self.asset_types.extend(asset_types_objects)
 
-        for asset_type_name, asset_type_data in entities.Asset.asset_types.iteritems():
+        for asset_type_name, asset_type_data in entities.Asset.asset_types.items():
 
             asset_type = entities.AssetType(asset_type_data['id'],
                                             asset_type_data['name'],
@@ -293,7 +293,7 @@ class EveData:
         :return:
         """
 
-        for name, data in entities.Asset.asset_types.iteritems():
+        for name, data in entities.Asset.asset_types.items():
             if data['id'] == asset_type_id:
                 return name
 
