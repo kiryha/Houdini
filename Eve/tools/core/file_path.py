@@ -30,8 +30,8 @@ Eve can generate/analyze 3 types of path:
 
 import os
 import glob
-import settings
 from PySide2 import QtWidgets, QtCore
+from . import settings
 
 
 class SNV(QtWidgets.QDialog):
@@ -124,16 +124,16 @@ class EveFilePath:
 
     def print_file_path(self):
 
-        print 'EveFilePath.type = ', self.type
-        print 'EveFilePath.path = ', self.path
-        print 'EveFilePath.name = ', self.name
-        print 'EveFilePath.location = ', self.location
-        print 'EveFilePath.prefix = ', self.prefix
-        print 'EveFilePath.file_version = ', self.file_version
-        print 'EveFilePath.folder_version = ', self.folder_version
-        print 'EveFilePath.code = ', self.code
-        print 'EveFilePath.base = ', self.base
-        print 'EveFilePath.extension = ', self.extension
+        print('EveFilePath.type = ', self.type)
+        print('EveFilePath.path = ', self.path)
+        print('EveFilePath.name = ', self.name)
+        print('EveFilePath.location = ', self.location)
+        print('EveFilePath.prefix = ', self.prefix)
+        print('EveFilePath.file_version = ', self.file_version)
+        print('EveFilePath.folder_version = ', self.folder_version)
+        print('EveFilePath.code = ', self.code)
+        print('EveFilePath.base = ', self.base)
+        print('EveFilePath.extension = ', self.extension)
 
     def detect_path_type(self):
         """
@@ -154,7 +154,7 @@ class EveFilePath:
         elif part_length == 3:
             self.type = 'sequence'
         else:
-            print '>> ERROR! Can`t detect the file type of the path = {}'.format(self.path)
+            print('>> ERROR! Can`t detect the file type of the path = {}'.format(self.path))
 
     def rebuild_path(self):
         '''
@@ -252,7 +252,7 @@ class EveFilePath:
             self.folder_version = self.path.split('/')[-1]
 
         else:
-            print '>>>> ERROR! Unknown path type for path = {}'.format(self.path)
+            print('>> ERROR! Unknown path type for path = {}'.format(self.path))
 
     def build_next_file_version(self):
         '''
@@ -309,7 +309,7 @@ class EveFilePath:
         if last_version:
             return last_version
         else:
-            print '>> ERROR! Calculating last version fails.'
+            print('>> ERROR! Calculating last version fails.')
 
     def build_latest_file_version(self):
         '''
@@ -357,7 +357,7 @@ class EveFilePath:
         file_path = '{0}/{1}/{2}/{3}'.format(self.asset_root, asset_folder, asset_name, file_name)
         self.type = 'path'
 
-        # print 'build_path_asset_hip [file_path] = ', file_path
+        # print('build_path_asset_hip [file_path] = ', file_path)
 
         self.set_path(file_path)
 
@@ -370,7 +370,7 @@ class EveFilePath:
         file_path = '{0}/RENDER/{1}/{2}/{3}'.format(self.shot_root, sequence_name, shot_name, file_name)
         self.type = 'path'
 
-        print 'build_shot_render [file_path] = ', file_path
+        print('build_shot_render [file_path] = ', file_path)
 
         self.set_path(file_path)
 
@@ -383,7 +383,7 @@ class EveFilePath:
         """
 
         if not os.path.exists(self.path):
-            print '>> File saved to a new version: {}'.format(self.name)
+            print('>> File saved to a new version: {}'.format(self.name))
             return self.path
         else:
             self.build_last_file_version()
@@ -400,9 +400,9 @@ class EveFilePath:
                 return
 
             if answer == 2:  # Overwrite
-                print '>> File overwritten: {}'.format(self.name)
+                print('>> File overwritten: {}'.format(self.name))
             if answer == 3:  # Save latest version
                 self.build_latest_file_version()
-                print '>> File saved to a new version: {}'.format(self.name)
+                print('>> File saved to a new version: {}'.format(self.name))
 
             return self.path

@@ -1,7 +1,7 @@
 import hou
 import os
 from PySide2 import QtCore, QtWidgets
-from ui import ui_asset_manager
+from houdini.ui import ui_asset_manager
 
 from core import settings
 from core.database import entities
@@ -9,9 +9,6 @@ from core.database import eve_data
 from core.database import asset_data
 from core import models
 from core import file_path
-
-
-reload(file_path)
 
 
 class AssetManager(QtWidgets.QDialog, ui_asset_manager.Ui_AssetManager):

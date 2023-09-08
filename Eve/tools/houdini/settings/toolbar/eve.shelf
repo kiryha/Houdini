@@ -13,21 +13,18 @@
 
   <tool name="snv" label="SNV" icon="PLASMA_App">
     <script scriptType="python"><![CDATA[from houdini import save_next_version
-reload(save_next_version)
 save_next_version.save_next_version()
         ]]></script>
   </tool>
 
   <tool name="asm" label="ASM" icon="PLASMA_App">
     <script scriptType="python"><![CDATA[from houdini import asset_manager
-reload(asset_manager)
 asset_manager.run_asset_manager()
         ]]></script>
   </tool>
 
   <tool name="shm" label="SHM" icon="PLASMA_App">
     <script scriptType="python"><![CDATA[from houdini import shot_manager
-reload(shot_manager)
 shot_manager.run_shot_manager()
         ]]></script>
   </tool>

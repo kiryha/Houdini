@@ -1,16 +1,13 @@
 import hou
 import os
 from PySide2 import QtCore, QtWidgets
-from ui import ui_shot_manager
+from houdini.ui import ui_shot_manager
 
 from core import settings
 from core.database import entities
 from core.database import eve_data
 from core import models
 from core import file_path
-
-
-reload(file_path)
 
 
 class ShotManager(QtWidgets.QDialog, ui_shot_manager.Ui_ShotManager):

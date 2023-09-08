@@ -18,7 +18,7 @@ Asset configuration:
 # TODO: design asset configuration
 
 import sqlite3
-import entities
+from . import entities
 
 
 class AssetData:

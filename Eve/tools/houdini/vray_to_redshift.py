@@ -51,14 +51,15 @@ def checkConditions():
     Check if environment conditions allows to run script without errors
     '''
     if not SHOP_VRAY:  # If user select anything
-        print '>> Nothing selected! Select SHOP network!'
+        print('>> Nothing selected! Select SHOP network!')
         return 0
     elif SHOP_VRAY[0].type().name() != 'shopnet':  # If user select SHOP
-        print '>> Wrong selection type. Select SHOP network!'
+        print('>> Wrong selection type. Select SHOP network!')
         return 0
     elif hou.node('/obj/{0}/'.format(nameSHOP_RED.format(SHOP_VRAY[0]))):  # If there is no RED target SHOP network
-        print '>> Redshift SHOP already exists!'
+        print('>> Redshift SHOP already exists!')
         return 0
+
 
 def returnParameterRED(parameterVRAY):
     '''
@@ -129,7 +130,8 @@ def getTexturedParameters():
                     if not texturedParameter in listTexturedParameters:
                         print '>> ADDED PARAMETER: {0} FROM MAT: {1}'.format(texturedParameter, material_VRAY)
                         listTexturedParameters.append(texturedParameter)
-    print listTexturedParameters
+    print(listTexturedParameters)
+
 
 def extractVrayVopsurfaceNode(listNodes_VRAY):
     '''
@@ -137,6 +139,7 @@ def extractVrayVopsurfaceNode(listNodes_VRAY):
     :param listNodes_VRAY - List of nodes in each material container
     :return: node_VRAY - Vray vopsurface node with VRAY material parameters
     '''
+
     for node_VRAY in listNodes_VRAY:
         if node_VRAY.type().name() == 'vopsurface':
             return node_VRAY
@@ -237,7 +240,7 @@ def buildMaterial_RED(SHOP_RED, material_VRAY):
     :param SHOP_RED - SHOP network for RED materials
     :param material_VRAY - source VRAY material
     '''
-    print '>> Current material = {}'.format(material_VRAY.name())
+    print('>> Current material = {}'.format(material_VRAY.name()))
 
     # Create RED material container
     material_RED = SHOP_RED.createNode('redshift_vopnet')  # Create RED Material container with redshift_material1 node
@@ -275,8 +278,8 @@ def convertMaterials():
 # RUN SCRIPT
 # Check if conditions are fine and run conversion
 if checkConditions() != 0:
-    print '>> CONVERTING MATERIALS...'
+    print('>> CONVERTING MATERIALS...')
     SHOP_VRAY = SHOP_VRAY[0]  # Get VRAY SHOP Network object from tuple
     convertMaterials()  # Run conversion procedure
     # getTexturedParameters() # List of parameters with textures, uncomment to print it
-    print '>> CONVERSION DONE!'
+    print('>> CONVERSION DONE!')

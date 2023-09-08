@@ -6,7 +6,6 @@ Save next version of input file
 from core import file_path
 import hou
 
-reload(file_path)
 
 def save_next_version():
 
@@ -20,4 +19,4 @@ def save_next_version():
         if scene_path:
             hou.hipFile.save(scene_path)
     else:
-        print '>> Houdini file is not saved yet. Save scene first!'
+        print('>> Houdini file is not saved yet. Save scene first!')
