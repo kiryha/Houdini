@@ -65,7 +65,7 @@ def run_houdini(eve_root, projects_root, HOUDINI, project_name, script=None, id=
     # SETUP PROJECT ENVIRONMENT
     # ACES (Download from imageworks github OpenColorIO-Confih repo)
     # os.environ['OCIO'] = '{}/OCIO/Aces1.0.3/config.ocio'.format(eve_root)
-    os.environ['OCIO'] = "E:/256/DEV/Eve_materials/Eve_backups/github_houdini_before_restructure/src/settings/OpenColorIO/aces_1.0.3/config.ocio"
+    # os.environ['OCIO'] = "E:/256/DEV/Eve_materials/Eve_backups/github_houdini_before_restructure/src/settings/OpenColorIO/aces_1.0.3/config.ocio"
 
     root_3d = '{0}/{1}/PROD/3D'.format(projects_root, project_name)
     project_root = '{0}/{1}'.format(projects_root, project_name)

@@ -9,9 +9,7 @@
     <memberToolshelf name="eve"/>
     <memberToolshelf name="create"/>
     <memberToolshelf name="hairtools"/>
-    <memberToolshelf name="hairbrushes"/>
     <memberToolshelf name="groomtools"/>
-    <memberToolshelf name="grooming"/>
     <memberToolshelf name="guidemodify"/>
   </shelfSet>
 </shelfDocument>
