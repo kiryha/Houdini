@@ -954,7 +954,7 @@ class ProjectManager(QtWidgets.QMainWindow,  ui_pm_main.Ui_ProjectManager):
         project = self.selected_project
 
         # Update project data
-        project.maya = self.project_properties_ui.project_ui.linHoudini.text()
+        project.houdini_build = self.project_properties_ui.project_ui.linHoudini.text()
         project.width = self.project_properties_ui.project_ui.linProjectWidth.text()
         project.height = self.project_properties_ui.project_ui.linProjectHeight.text()
         project.description = self.project_properties_ui.project_ui.txtDescription.toPlainText()
