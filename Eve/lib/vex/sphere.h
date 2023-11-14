@@ -73,11 +73,11 @@ for (int v_index = 0; v_index < v_resolution; v_index++) {
             lower_left = bottom_pole_index;
             lower_right = lower_left;
 
-        // Mdle rows
+        // Middle rows
         } else {
             lower_left = 1 + (v_index - 1) * h_resolution + h_index;
             lower_right = lower_left + 1;
-            if (h_index == h_resolution - 1) { // Wrap around to the start of the circle
+            if (h_index == h_resolution - 1) {
                 lower_right = 1 + (v_index - 1) * h_resolution;
             }
             upper_left = lower_left + h_resolution;
