@@ -1,3 +1,7 @@
+"""
+Export geometry from Maya scene to USD file
+"""
+
 import os
 import random
 from pxr import Usd, UsdGeom
@@ -9,42 +13,32 @@ usd_file_path = f'D:/maya_geometry_{random.randint(1, 1000)}.usda'
 if os.path.exists(usd_file_path):
     os.remove(usd_file_path)
 
+# Create USD stage and root object
 stage = Usd.Stage.CreateNew(usd_file_path)
+root_xform = UsdGeom.Xform.Define(stage, '/')
 
-# Create a root Xform to hold the USD Mesh objects
-root_xform = UsdGeom.Xform.Define(stage, '/root')
+for mesh in pm.ls(type='mesh'):
 
-# Process scene geometry
-scene_geometry = pm.ls(type='mesh')
-
-for mesh in scene_geometry:
-
-    # Create a USD Mesh primitive for the object
-    usd_mesh = UsdGeom.Mesh.Define(stage, root_xform.GetPath().AppendChild(mesh.getParent().name()))
-
-    # Initialize lists to collect vertex positions, normals, and face information
+    # Initialize geometry data
     vertex_positions = []
-    normals = []
     face_vertex_counts = []
     face_vertex_indices = []
 
-    # Get mesh vertices and iterate over them
-    for vtx in mesh.vtx:
-        point = vtx.getPosition()
-        vertex_positions.append((point[0], point[1], point[2]))
+    # Create a USD Mesh primitive for the mesh object
+    usd_mesh = UsdGeom.Mesh.Define(stage, root_xform.GetPath().AppendChild(mesh.getParent().name()))
 
-        # You can calculate or obtain normals as well and append them to the 'normals' list
-        # For example, if your mesh has per-vertex normals:
-        # normal = vtx.getNormal(space='world')  # Adjust the space as needed
-        # normals.append((normal[0], normal[1], normal[2]))
-
-    # Define face vertex counts and indices for a single triangle
-    face_vertex_counts.append(3)  # For a triangle
-    face_vertex_indices.extend([0, 1, 2])  # Vertex indices for the triangle
+    # Iterate over the faces/vertices and collect geometry data
+    for face in mesh.faces:
+        vertex_indexes = face.getVertices()
+        face_vertex_counts.append(len(vertex_indexes))
+        for vertex_index in vertex_indexes:
+            vertex = mesh.vtx[vertex_index]
+            vertex_position = vertex.getPosition()
+            vertex_positions.append((vertex_position[0], vertex_position[1], vertex_position[2]))
+            face_vertex_indices.append(vertex_index)
 
     # Set the collected attributes for the USD Mesh
     usd_mesh.GetPointsAttr().Set(vertex_positions)
-    usd_mesh.GetNormalsAttr().Set(normals)  # Set normals if available
     usd_mesh.GetFaceVertexCountsAttr().Set(face_vertex_counts)
     usd_mesh.GetFaceVertexIndicesAttr().Set(face_vertex_indices)
 
