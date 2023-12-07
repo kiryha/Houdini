@@ -32,10 +32,17 @@ for mesh in pm.ls(type='mesh'):
             vertex_positions.append(position)
 
     # Iterate over the faces and collect indices
-    # Alternative: face_vertex_counts, face_vertex_indices = mesh.getVertices()
     for face in mesh.faces:
-        vertex_indexes = [unique_vertex_positions[tuple(mesh.vtx[i].getPosition(space='world'))] for i in
-                          face.getVertices()]
+
+        vertex_indexes = []
+        for vertex in face.getVertices():
+            position = tuple(mesh.vtx[vertex].getPosition(space='world'))
+
+            # Retrieve the index of this unique position from the dictionary
+            # The index represents where this vertex is in the list of unique vertices
+            vertex_index = unique_vertex_positions[position]
+            vertex_indexes.append(vertex_index)
+
         face_vertex_counts.append(len(vertex_indexes))
         face_vertex_indices.extend(vertex_indexes)
 
