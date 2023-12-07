@@ -19,29 +19,21 @@ for mesh in pm.ls(type='mesh'):
     vertex_positions = []  # point3f[] points
     face_vertex_counts = []  # int[] faceVertexCounts
     face_vertex_indices = []  # int[] faceVertexIndices
-    unique_vertex_positions = {}
 
     # Create a USD Mesh primitive for the mesh object
     usd_mesh = UsdGeom.Mesh.Define(stage, root_xform.GetPath().AppendChild(mesh.getParent().name()))
 
-    # Iterate over the vertices and collect unique positions
-    for vertex in mesh.vtx:
-        position = tuple(vertex.getPosition(space='world'))
-        if position not in unique_vertex_positions:
-            unique_vertex_positions[position] = len(unique_vertex_positions)
-            vertex_positions.append(position)
-
-    # Iterate over the faces and collect indices
+    # Iterate over the faces and collect vertices and indices
+    vertex_index = 0
     for face in mesh.faces:
-
         vertex_indexes = []
         for vertex in face.getVertices():
             position = tuple(mesh.vtx[vertex].getPosition(space='world'))
 
-            # Retrieve the index of this unique position from the dictionary
-            # The index represents where this vertex is in the list of unique vertices
-            vertex_index = unique_vertex_positions[position]
+            # Add the vertex position to the list and its index to the face's vertex indexes
+            vertex_positions.append(position)
             vertex_indexes.append(vertex_index)
+            vertex_index += 1
 
         face_vertex_counts.append(len(vertex_indexes))
         face_vertex_indices.extend(vertex_indexes)
