@@ -1,21 +1,3 @@
-"""
-Pixar USD Python API
-
-Requirements: get compiled Python API: pip install usd-core
-"""
-
-from pxr import Usd, UsdGeom, UsdShade
-
-stage = Usd.Stage.CreateNew('C:/Users/kko8/OneDrive/projects/houdini_snippets/PROD/3D/caches/ASSETS/python.usda')
-
-xformPrim = UsdGeom.Xform.Define(stage, '/hello')
-sphere = UsdGeom.Sphere.Define(stage, '/hello/world')
-sphere.GetRadiusAttr().Set(2.0)
-# material = UsdShade.Material.Define(stage, '/myMaterial')
-# shader = UsdShade.Shader.Define(stage, '/myMaterial/myShader')
-
-stage.GetRootLayer().Save()
-
 import os
 import random
 from pxr import Usd, UsdGeom
@@ -42,6 +24,7 @@ for mesh in scene_geometry:
 
     # Initialize lists to collect vertex positions, normals, and face information
     vertex_positions = []
+    normals = []
     face_vertex_counts = []
     face_vertex_indices = []
 
@@ -50,12 +33,18 @@ for mesh in scene_geometry:
         point = vtx.getPosition()
         vertex_positions.append((point[0], point[1], point[2]))
 
+        # You can calculate or obtain normals as well and append them to the 'normals' list
+        # For example, if your mesh has per-vertex normals:
+        # normal = vtx.getNormal(space='world')  # Adjust the space as needed
+        # normals.append((normal[0], normal[1], normal[2]))
+
     # Define face vertex counts and indices for a single triangle
     face_vertex_counts.append(3)  # For a triangle
     face_vertex_indices.extend([0, 1, 2])  # Vertex indices for the triangle
 
     # Set the collected attributes for the USD Mesh
     usd_mesh.GetPointsAttr().Set(vertex_positions)
+    usd_mesh.GetNormalsAttr().Set(normals)  # Set normals if available
     usd_mesh.GetFaceVertexCountsAttr().Set(face_vertex_counts)
     usd_mesh.GetFaceVertexIndicesAttr().Set(face_vertex_indices)
 
