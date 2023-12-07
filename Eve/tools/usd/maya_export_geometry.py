@@ -2,16 +2,12 @@
 Export geometry from Maya scene to USD file
 """
 
-import os
 import random
 from pxr import Usd, UsdGeom
 import pymel.core as pm
 
 # Create USD stage
 usd_file_path = f'D:/maya_geometry_{random.randint(1, 1000)}.usda'
-
-if os.path.exists(usd_file_path):
-    os.remove(usd_file_path)
 
 # Create USD stage and root object
 stage = Usd.Stage.CreateNew(usd_file_path)
@@ -20,22 +16,28 @@ root_xform = UsdGeom.Xform.Define(stage, '/')
 for mesh in pm.ls(type='mesh'):
 
     # Initialize geometry data
-    vertex_positions = []
-    face_vertex_counts = []
-    face_vertex_indices = []
+    vertex_positions = []  # point3f[] points
+    face_vertex_counts = []  # int[] faceVertexCounts
+    face_vertex_indices = []  # int[] faceVertexIndices
+    unique_vertex_positions = {}
 
     # Create a USD Mesh primitive for the mesh object
     usd_mesh = UsdGeom.Mesh.Define(stage, root_xform.GetPath().AppendChild(mesh.getParent().name()))
 
-    # Iterate over the faces/vertices and collect geometry data
+    # Iterate over the vertices and collect unique positions
+    for vertex in mesh.vtx:
+        position = tuple(vertex.getPosition(space='world'))
+        if position not in unique_vertex_positions:
+            unique_vertex_positions[position] = len(unique_vertex_positions)
+            vertex_positions.append(position)
+
+    # Iterate over the faces and collect indices
+    # Alternative: face_vertex_counts, face_vertex_indices = mesh.getVertices()
     for face in mesh.faces:
-        vertex_indexes = face.getVertices()
+        vertex_indexes = [unique_vertex_positions[tuple(mesh.vtx[i].getPosition(space='world'))] for i in
+                          face.getVertices()]
         face_vertex_counts.append(len(vertex_indexes))
-        for vertex_index in vertex_indexes:
-            vertex = mesh.vtx[vertex_index]
-            vertex_position = vertex.getPosition()
-            vertex_positions.append((vertex_position[0], vertex_position[1], vertex_position[2]))
-            face_vertex_indices.append(vertex_index)
+        face_vertex_indices.extend(vertex_indexes)
 
     # Set the collected attributes for the USD Mesh
     usd_mesh.GetPointsAttr().Set(vertex_positions)
