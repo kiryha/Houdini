@@ -2,6 +2,7 @@
 Export geometry from Houdini geometry context.
 
 Create Python node in Geometry context and connect your geometry to the first input.
+Material export will work if you assign material to geometry in SOP context (use principledshader material)
 """
 
 import random
@@ -18,7 +19,7 @@ def create_usd_material(stage, material_path, material_properties):
     base_color = Gf.Vec3f(material_properties['basecolorr'],
                           material_properties['basecolorg'],
                           material_properties['basecolorb'])
-    
+
     # Create a material
     usd_material = UsdShade.Material.Define(stage, material_path)
 
@@ -27,7 +28,8 @@ def create_usd_material(stage, material_path, material_properties):
     shader.CreateIdAttr('UsdPreviewSurface')
 
     # Set diffuseColor
-    shader.CreateInput('inputs:diffuseColor', Sdf.ValueTypeNames.Color3f).Set(base_color)
+    # shader.CreateInput('inputs:diffuseColor', Sdf.ValueTypeNames.Color3f).Set(base_color)
+    shader.CreateInput('diffuseColor', Sdf.ValueTypeNames.Color3f).Set(base_color)
 
     # Connect the shader's surface output to the material's surface output
     surface_output = shader.CreateOutput('surface', Sdf.ValueTypeNames.Token)
@@ -136,8 +138,13 @@ def export_geometry():
     material_path = get_material_path(geometry)
     material = hou.node(material_path)
     material_properties = get_material_properties(material)
-    usd_material_path = f'/Root/Materials/{material_path.split("/")[-1]}'
+    usd_material_path = f'/Root/Looks/{material.name()}'
     create_usd_material(stage, usd_material_path, material_properties)
+
+    # Bind material to mesh
+    material_prim = stage.GetPrimAtPath(usd_material_path)
+    material = UsdShade.Material(material_prim)
+    UsdShade.MaterialBindingAPI(mesh).Bind(material)
 
     # Save the stage
     stage.GetRootLayer().Save()
