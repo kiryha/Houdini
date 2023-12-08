@@ -39,13 +39,11 @@ def process_geometry(stage, root_xform):
 
     for mesh in pm.ls(type='mesh'):
 
-        # Create a USD Mesh primitive for the mesh object
-        usd_mesh = UsdGeom.Mesh.Define(stage, root_xform.GetPath().AppendChild(mesh.getParent().name()))
-
         # Get geometry data
         points, face_vertex_counts, face_vertex_indices = get_geometry_data(mesh)
 
-        # Set the collected attributes for the USD Mesh
+        # Create USD Mesh and record mesh data
+        usd_mesh = UsdGeom.Mesh.Define(stage, root_xform.GetPath().AppendChild(mesh.getParent().name()))
         usd_mesh.GetPointsAttr().Set(points)
         usd_mesh.GetFaceVertexCountsAttr().Set(face_vertex_counts)
         usd_mesh.GetFaceVertexIndicesAttr().Set(face_vertex_indices)
