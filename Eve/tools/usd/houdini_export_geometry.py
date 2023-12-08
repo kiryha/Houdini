@@ -5,8 +5,60 @@ Create Python node in Geometry context and connect your geometry to the first in
 """
 
 import random
-from pxr import Usd, UsdGeom, Gf
+from pxr import Usd, UsdGeom, UsdShade, Gf, Sdf
 import hou
+
+
+def create_usd_material(stage, material_path, material_properties):
+    """
+    Create a USD material with diffuseColor from Houdini material properties.
+    """
+
+    # Get properties
+    base_color = Gf.Vec3f(material_properties['basecolorr'],
+                          material_properties['basecolorg'],
+                          material_properties['basecolorb'])
+    
+    # Create a material
+    usd_material = UsdShade.Material.Define(stage, material_path)
+
+    # Create a UsdPreviewSurface Shader and set its parameters
+    shader = UsdShade.Shader.Define(stage, f'{material_path}/usdPreviewSurface')
+    shader.CreateIdAttr('UsdPreviewSurface')
+
+    # Set diffuseColor
+    shader.CreateInput('inputs:diffuseColor', Sdf.ValueTypeNames.Color3f).Set(base_color)
+
+    # Connect the shader's surface output to the material's surface output
+    surface_output = shader.CreateOutput('surface', Sdf.ValueTypeNames.Token)
+    usd_material_output = usd_material.CreateSurfaceOutput()
+    usd_material_output.ConnectToSource(surface_output)
+
+    return usd_material
+
+
+def get_material_properties(material):
+    """
+    Extract properties from the Houdini material node.
+    """
+
+    properties = {}
+    for parameter in material.parms():
+        properties[parameter.name()] = parameter.eval()
+
+    return properties
+
+
+def get_material_path(geometry):
+    """
+    Get path to assigned material node from geometry object
+    """
+
+    if geometry.findPrimAttrib("shop_materialpath"):
+        primitive = geometry.prims()[0]
+        material_path = primitive.attribValue("shop_materialpath")
+
+        return material_path
 
 
 def setup_mesh(mesh, points, normals, face_vertex_counts, face_vertex_indices):
@@ -77,8 +129,15 @@ def export_geometry():
     points, normals, face_vertex_counts, face_vertex_indices = get_geometry_data(geometry)
 
     # Create a USD Mesh primitive and set properties
-    mesh = UsdGeom.Mesh.Define(stage, f'/Root/{input_node_name}')
-    setup_mesh(mesh, points, normals, face_vertex_counts, face_vertex_indices )
+    mesh = UsdGeom.Mesh.Define(stage, f'/Root/Geometry/{input_node_name}')
+    setup_mesh(mesh, points, normals, face_vertex_counts, face_vertex_indices)
+
+    # Get assigned material data and create USD material
+    material_path = get_material_path(geometry)
+    material = hou.node(material_path)
+    material_properties = get_material_properties(material)
+    usd_material_path = f'/Root/Materials/{material_path.split("/")[-1]}'
+    create_usd_material(stage, usd_material_path, material_properties)
 
     # Save the stage
     stage.GetRootLayer().Save()

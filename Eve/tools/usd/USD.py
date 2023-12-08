@@ -11,7 +11,7 @@ stage = Usd.Stage.CreateNew('C:/Users/kko8/OneDrive/projects/houdini_snippets/PR
 xformPrim = UsdGeom.Xform.Define(stage, '/hello')
 sphere = UsdGeom.Sphere.Define(stage, '/hello/world')
 sphere.GetRadiusAttr().Set(2.0)
-# material = UsdShade.Material.Define(stage, '/myMaterial')
-# shader = UsdShade.Shader.Define(stage, '/myMaterial/myShader')
+material = UsdShade.Material.Define(stage, '/myMaterial')
+shader = UsdShade.Shader.Define(stage, '/myMaterial/myShader')
 
 stage.GetRootLayer().Save()
