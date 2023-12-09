@@ -28,7 +28,6 @@ def create_usd_material(stage, material_path, material_properties):
     shader.CreateIdAttr('UsdPreviewSurface')
 
     # Set diffuseColor
-    # shader.CreateInput('inputs:diffuseColor', Sdf.ValueTypeNames.Color3f).Set(base_color)
     shader.CreateInput('diffuseColor', Sdf.ValueTypeNames.Color3f).Set(base_color)
 
     # Connect the shader's surface output to the material's surface output
@@ -112,27 +111,7 @@ def get_geometry_data(geometry):
     return points, normals, face_vertex_counts, face_vertex_indices
 
 
-def export_geometry():
-    """
-    Create and save a USD file with geometry and normals from the first input.
-    """
-
-    # Create a new USD stage
-    usd_file_path = f'E:/houdini_export_{random.randint(1, 100)}.usda'
-    stage = Usd.Stage.CreateNew(usd_file_path)
-
-    # Access the input geometry
-    node = hou.pwd()
-    geometry = node.geometry()
-    input_node = node.inputs()[0]
-    input_node_name = input_node.name()
-
-    # Get Geometry data
-    points, normals, face_vertex_counts, face_vertex_indices = get_geometry_data(geometry)
-
-    # Create a USD Mesh primitive and set properties
-    mesh = UsdGeom.Mesh.Define(stage, f'/Root/Geometry/{input_node_name}')
-    setup_mesh(mesh, points, normals, face_vertex_counts, face_vertex_indices)
+def export_materials(stage, geometry, mesh):
 
     # Get assigned material data and create USD material
     material_path = get_material_path(geometry)
@@ -146,9 +125,42 @@ def export_geometry():
     material = UsdShade.Material(material_prim)
     UsdShade.MaterialBindingAPI(mesh).Bind(material)
 
+
+def export_geometry(stage, geometry, input_node_name):
+
+    # Get Geometry data
+    points, normals, face_vertex_counts, face_vertex_indices = get_geometry_data(geometry)
+
+    # Create a USD Mesh primitive and set properties
+    mesh = UsdGeom.Mesh.Define(stage, f'/Root/Geometry/{input_node_name}')
+    setup_mesh(mesh, points, normals, face_vertex_counts, face_vertex_indices)
+
+    return mesh
+
+
+def export_usd():
+    """
+    Create and save a USD file with geometry and normals from the first input.
+    """
+
+    # Create a new USD stage
+    usd_file_path = f'E:/houdini_export_{random.randint(1, 100)}.usda'
+    stage = Usd.Stage.CreateNew(usd_file_path)
+
+    # Access the input geometry
+    node = hou.pwd()
+    geometry = node.geometry()
+    input_node_name = node.inputs()[0].name()
+
+    # Geometry
+    mesh = export_geometry(stage, geometry, input_node_name)
+
+    # Materials
+    # export_materials(stage, geometry, mesh)
+
     # Save the stage
     stage.GetRootLayer().Save()
     print(f'>> {usd_file_path}')
 
 
-export_geometry()
+export_usd()
