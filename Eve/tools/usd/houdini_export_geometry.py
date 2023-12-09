@@ -130,6 +130,7 @@ def export_geometry(stage, geometry, input_node_name):
 
     # Get Geometry data
     points, normals, face_vertex_counts, face_vertex_indices = get_geometry_data(geometry)
+    # print(f'{points}, {normals}, {face_vertex_counts}, {face_vertex_indices}')
 
     # Create a USD Mesh primitive and set properties
     mesh = UsdGeom.Mesh.Define(stage, f'/Root/Geometry/{input_node_name}')
@@ -156,7 +157,7 @@ def export_usd():
     mesh = export_geometry(stage, geometry, input_node_name)
 
     # Materials
-    # export_materials(stage, geometry, mesh)
+    export_materials(stage, geometry, mesh)
 
     # Save the stage
     stage.GetRootLayer().Save()
