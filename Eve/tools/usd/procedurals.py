@@ -14,11 +14,21 @@ def plane(rows, columns):
     face_vertex_counts = []  # List of vertex count per face
     face_vertex_indices = []  # List of vertex indices
 
+    # Plane dimensions (corner coordinates)
+    dimensions = [(-0.5, 0, 0.5), (0.5, 0, 0.5), (0.5, 0, -0.5), (-0.5, 0, -0.5)]
+
     face_number = 0
     for row in range(rows):
         for column in range(columns):
+            print(f'prim number = {face_number}, r:{row}, c:{column}')
 
-            print(f'prim number = {face_number}')
+            # Add 4 points
+            for point_number in range(0, 4):
+                print(f'point {point_number}')
+                points.append(dimensions[point_number])
+                face_vertex_indices.append(point_number)
+
+            face_vertex_counts.append(4)
 
             face_number += 1
 
@@ -27,6 +37,3 @@ def plane(rows, columns):
                   'face_vertex_indices': face_vertex_indices}
 
     return plane_data
-
-
-plane(1, 1)
