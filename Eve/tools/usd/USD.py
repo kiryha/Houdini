@@ -16,7 +16,7 @@ Hello World:
 from pxr import Usd, UsdGeom, Sdf, UsdShade
 import procedurals
 
-stage = Usd.Stage.CreateNew('C:/Users/kko8/OneDrive/projects/houdini_snippets/PROD/3D/caches/ASSETS/python.usda')
+stage = Usd.Stage.CreateNew('C:/Users/kko8/OneDrive/projects/houdini_snippets/PROD/3D/caches/ASSETS/super_plane.usda')
 
 # Build mesh object
 root_xform = UsdGeom.Xform.Define(stage, '/Root')

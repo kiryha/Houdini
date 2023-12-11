@@ -17,6 +17,10 @@ def plane(rows, columns):
     # Plane dimensions (corner coordinates)
     dimensions = [(-1, 0, 1), (1, 0, 1), (1, 0, -1), (-1, 0, -1)]
 
+    in_rows = rows - 1
+    in_columns = columns - 1
+    # print(f'in_rows:{in_rows}, in_columns:{in_columns}')
+
     face_number = 0
     for row in range(rows):
         for column in range(columns):
@@ -25,6 +29,8 @@ def plane(rows, columns):
             # Add 4 points
             for point_number in range(0, 4):
                 print(f'point {point_number}')
+                x = 0
+                y = 0
                 points.append(dimensions[point_number])
                 face_vertex_indices.append(point_number)
 
@@ -37,3 +43,6 @@ def plane(rows, columns):
                   'face_vertex_indices': face_vertex_indices}
 
     return plane_data
+
+
+plane(2, 2)
