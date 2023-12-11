@@ -24,7 +24,7 @@ mesh_path = Sdf.Path(root_xform.GetPath()).AppendChild('super_plane')
 mesh = UsdGeom.Mesh.Define(stage, mesh_path)
 
 # Build mesh geometry
-plane_data = procedurals.plane(1, 1)
+plane_data = procedurals.plane(2, 2)
 mesh.GetPointsAttr().Set(plane_data['points'])
 mesh.GetFaceVertexCountsAttr().Set(plane_data['face_vertex_counts'])
 mesh.GetFaceVertexIndicesAttr().Set(plane_data['face_vertex_indices'])
