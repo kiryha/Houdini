@@ -3,7 +3,7 @@ Procedural geometry
 """
 
 
-def plane(rows, columns):
+def plane(row_points, col_points):
     """
     int[] faceVertexCounts =  [4]
     int[] faceVertexIndices = [0, 1, 2, 3]
@@ -17,33 +17,31 @@ def plane(rows, columns):
     # Spacing between points
     width = 2
     height = 2
-    row_spacing = height / rows
-    col_spacing = width / columns
+    row_spacing = height / (row_points - 1)
+    col_spacing = width / (col_points - 1)
 
-    point_index = 0
-    for row in range(rows):
-        for column in range(columns):
+    # Generate points for the grid
+    for row_point in range(row_points):
+        for column_point in range(col_points):
+            x = column_point * col_spacing - width / 2
+            z = row_point * row_spacing - height / 2
+            points.append((x, 0, z))
 
-            # Calculate the corner positions of the current cell
-            x0 = column * col_spacing - width / 2
-            x1 = x0 + col_spacing
-            z0 = row * row_spacing - height / 2
-            z1 = z0 + row_spacing
-
-            # Define the 4 corners of the cell
-            points.append((x0, 0, z0))
-            points.append((x1, 0, z0))
-            points.append((x1, 0, z1))
-            points.append((x0, 0, z1))
+    # Define faces using the indices of the grid points
+    for row_point in range(row_points - 1):
+        for column_point in range(col_points - 1):
+            # Calculate the indices of the corners of the cell
+            top_left = row_point * col_points + column_point
+            top_right = top_left + 1
+            bottom_left = top_left + col_points
+            bottom_right = bottom_left + 1
 
             # Define the face using the indices of the 4 corners
-            face_vertex_indices.extend([point_index, point_index + 1, point_index + 2, point_index + 3])
+            face_vertex_indices.extend([top_left, top_right, bottom_right, bottom_left])
             face_vertex_counts.append(4)
-            point_index += 4
 
     plane_data = {'points': points,
                   'face_vertex_counts': face_vertex_counts,
                   'face_vertex_indices': face_vertex_indices}
 
-    print(plane_data)
     return plane_data
