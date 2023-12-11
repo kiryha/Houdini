@@ -15,7 +15,7 @@ def plane(rows, columns):
     face_vertex_indices = []  # List of vertex indices
 
     # Plane dimensions (corner coordinates)
-    dimensions = [(-0.5, 0, 0.5), (0.5, 0, 0.5), (0.5, 0, -0.5), (-0.5, 0, -0.5)]
+    dimensions = [(-1, 0, 1), (1, 0, 1), (1, 0, -1), (-1, 0, -1)]
 
     face_number = 0
     for row in range(rows):
