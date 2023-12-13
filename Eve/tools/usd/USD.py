@@ -17,9 +17,13 @@ from pxr import Usd, UsdGeom, Sdf, UsdShade
 import procedurals
 
 
-def save_usd():
-    stage = Usd.Stage.CreateNew(
-        'C:/Users/kko8/OneDrive/projects/houdini_snippets/PROD/3D/caches/ASSETS/super_plane.usda')
+def crate_geometry():
+    """
+    Procedurally create geometry and save it to the USDA file
+    """
+
+    root_for_export = 'C:/Users/kko8/OneDrive/projects/houdini_snippets/PROD/3D/caches/ASSETS'
+    stage = Usd.Stage.CreateNew(f'{root_for_export}/super_sphere.usda')
 
     # Build mesh object
     root_xform = UsdGeom.Xform.Define(stage, '/Root')
@@ -27,10 +31,11 @@ def save_usd():
     mesh = UsdGeom.Mesh.Define(stage, mesh_path)
 
     # Build mesh geometry
-    plane_data = procedurals.plane(6, 6)
-    mesh.GetPointsAttr().Set(plane_data['points'])
-    mesh.GetFaceVertexCountsAttr().Set(plane_data['face_vertex_counts'])
-    mesh.GetFaceVertexIndicesAttr().Set(plane_data['face_vertex_indices'])
+    # geometry_data = procedurals.plane(6, 6)
+    geometry_data = procedurals.sphere(8, 6)
+    mesh.GetPointsAttr().Set(geometry_data['points'])
+    mesh.GetFaceVertexCountsAttr().Set(geometry_data['face_vertex_counts'])
+    mesh.GetFaceVertexIndicesAttr().Set(geometry_data['face_vertex_indices'])
 
     # Set orientation and subdivisionScheme
     mesh.CreateOrientationAttr().Set(UsdGeom.Tokens.leftHanded)
@@ -39,4 +44,4 @@ def save_usd():
     stage.GetRootLayer().Save()
 
 
-save_usd()
+crate_geometry()

@@ -5,8 +5,11 @@ import math
 
 
 def get_cartesian_position(h_angle, v_angle):
+    """
+    Convert polar to cartesian coordinates
+    """
 
-    position = [math.sin(v_angle) * math.cos(h_angle), math.sin(v_angle) * math.sin(h_angle), math.cos(v_angle)]
+    position = (math.sin(v_angle) * math.cos(h_angle), math.sin(v_angle) * math.sin(h_angle), math.cos(v_angle))
 
     return position
 
@@ -67,16 +70,31 @@ def sphere(h_points, v_points):
     face_vertex_indices = []  # List of vertex indices
 
     # Crate sphere points
-    for v_point in range(v_points):
-        v_angle = v_point * (3.14 / v_points)
+    points.append((0, 0, 1))  # Top pole
 
-        # Handle poles
-        if v_point == 0 or v_point == v_points-1:
-            continue
+    for v_point in range(1, v_points - 1):  # Range excludes poles
+        v_angle = v_point * 3.14 / (v_points - 1)
 
         for h_point in range(h_points):
-            h_angle = h_point * (2 * 3.14 / h_points)
+            h_angle = 2 * h_point * 3.14 / h_points
+
             position = get_cartesian_position(h_angle, v_angle)
+            points.append(position)
+
+    points.append((0, 0, -1))  # Bottom pole
+
+    # Create sphere faces
+    # Main body faces (quads)
+    for v_point in range(1, v_points - 2):
+        row_start = 1 + (v_point - 1) * h_points
+        next_row_start = row_start + h_points
+        for h_point in range(h_points):
+            next_point = (h_point + 1) % h_points
+            face_vertex_indices.extend([row_start + h_point,
+                                        row_start + next_point,
+                                        next_row_start + next_point,
+                                        next_row_start + h_point])
+            face_vertex_counts.append(4)
 
     geometry_data = {'points': points,
                      'face_vertex_counts': face_vertex_counts,
