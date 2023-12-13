@@ -84,6 +84,14 @@ def sphere(h_points, v_points):
     points.append((0, 0, -1))  # Bottom pole
 
     # Create sphere faces
+    # Top pole faces
+    top_pole_index = 0
+    first_row_start = 1
+    for h_point in range(h_points):
+        next_point = (h_point + 1) % h_points
+        face_vertex_indices.extend([top_pole_index, first_row_start + next_point, first_row_start + h_point])
+        face_vertex_counts.append(3)
+
     # Main body faces (quads)
     for v_point in range(1, v_points - 2):
         row_start = 1 + (v_point - 1) * h_points
@@ -95,6 +103,14 @@ def sphere(h_points, v_points):
                                         next_row_start + next_point,
                                         next_row_start + h_point])
             face_vertex_counts.append(4)
+
+    # Bottom pole faces
+    bottom_pole_index = len(points) - 1
+    last_row_start = 1 + (v_points - 3) * h_points
+    for h_point in range(h_points):
+        next_point = (h_point + 1) % h_points
+        face_vertex_indices.extend([bottom_pole_index, last_row_start + h_point, last_row_start + next_point])
+        face_vertex_counts.append(3)
 
     geometry_data = {'points': points,
                      'face_vertex_counts': face_vertex_counts,
