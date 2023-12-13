@@ -16,22 +16,27 @@ Hello World:
 from pxr import Usd, UsdGeom, Sdf, UsdShade
 import procedurals
 
-stage = Usd.Stage.CreateNew('C:/Users/kko8/OneDrive/projects/houdini_snippets/PROD/3D/caches/ASSETS/super_plane.usda')
 
-# Build mesh object
-root_xform = UsdGeom.Xform.Define(stage, '/Root')
-mesh_path = Sdf.Path(root_xform.GetPath()).AppendChild('super_plane')
-mesh = UsdGeom.Mesh.Define(stage, mesh_path)
+def save_usd():
+    stage = Usd.Stage.CreateNew(
+        'C:/Users/kko8/OneDrive/projects/houdini_snippets/PROD/3D/caches/ASSETS/super_plane.usda')
 
-# Build mesh geometry
-plane_data = procedurals.plane(3, 3)
-mesh.GetPointsAttr().Set(plane_data['points'])
-mesh.GetFaceVertexCountsAttr().Set(plane_data['face_vertex_counts'])
-mesh.GetFaceVertexIndicesAttr().Set(plane_data['face_vertex_indices'])
+    # Build mesh object
+    root_xform = UsdGeom.Xform.Define(stage, '/Root')
+    mesh_path = Sdf.Path(root_xform.GetPath()).AppendChild('super_plane')
+    mesh = UsdGeom.Mesh.Define(stage, mesh_path)
+
+    # Build mesh geometry
+    plane_data = procedurals.plane(6, 6)
+    mesh.GetPointsAttr().Set(plane_data['points'])
+    mesh.GetFaceVertexCountsAttr().Set(plane_data['face_vertex_counts'])
+    mesh.GetFaceVertexIndicesAttr().Set(plane_data['face_vertex_indices'])
+
+    # Set orientation and subdivisionScheme
+    mesh.CreateOrientationAttr().Set(UsdGeom.Tokens.leftHanded)
+    mesh.CreateSubdivisionSchemeAttr().Set("none")
+
+    stage.GetRootLayer().Save()
 
 
-# Set orientation and subdivisionScheme
-mesh.CreateOrientationAttr().Set(UsdGeom.Tokens.leftHanded)
-mesh.CreateSubdivisionSchemeAttr().Set("none")
-
-stage.GetRootLayer().Save()
+save_usd()
