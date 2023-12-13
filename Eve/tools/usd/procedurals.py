@@ -9,7 +9,7 @@ def get_cartesian_position(h_angle, v_angle):
     Convert polar to cartesian coordinates
     """
 
-    position = (math.sin(v_angle) * math.cos(h_angle), math.sin(v_angle) * math.sin(h_angle), math.cos(v_angle))
+    position = (math.sin(v_angle) * math.cos(h_angle), math.cos(v_angle), math.sin(v_angle) * math.sin(h_angle))
 
     return position
 
@@ -70,7 +70,9 @@ def sphere(h_points, v_points):
     face_vertex_indices = []  # List of vertex indices
 
     # Crate sphere points
-    points.append((0, 0, 1))  # Top pole
+    # Top pole
+    top_pole_position = get_cartesian_position(0, 0)
+    points.append(top_pole_position)
 
     for v_point in range(1, v_points - 1):  # Range excludes poles
         v_angle = v_point * 3.14 / (v_points - 1)
@@ -81,7 +83,9 @@ def sphere(h_points, v_points):
             position = get_cartesian_position(h_angle, v_angle)
             points.append(position)
 
-    points.append((0, 0, -1))  # Bottom pole
+    # Bottom pole
+    bottom_pole_position = get_cartesian_position(0, 3.142)
+    points.append(bottom_pole_position)
 
     # Create sphere faces
     # Top pole faces
