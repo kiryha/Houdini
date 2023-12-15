@@ -28,8 +28,8 @@ def plane(row_points, column_points):
     face_vertex_indices = []  # List of vertex indices
 
     # Spacing between points
-    width = 2
-    height = 2
+    width = 1
+    height = 1
     row_spacing = height / (row_points - 1)
     col_spacing = width / (column_points - 1)
 
@@ -102,10 +102,7 @@ def sphere(h_points, v_points):
         next_row_start = row_start + h_points
         for h_point in range(h_points):
             next_point = (h_point + 1) % h_points
-            face_vertex_indices.extend([next_row_start + h_point,
-                                        next_row_start + next_point,
-                                        row_start + next_point,
-                                        row_start + h_point])
+            face_vertex_indices.extend([next_row_start + h_point, next_row_start + next_point, row_start + next_point, row_start + h_point])
             face_vertex_counts.append(4)
 
     # Bottom pole faces
