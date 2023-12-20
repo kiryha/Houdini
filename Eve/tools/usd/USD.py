@@ -23,7 +23,7 @@ def crate_geometry():
     """
 
     root_for_export = 'C:/Users/kko8/OneDrive/projects/houdini_snippets/PROD/3D/caches/ASSETS'
-    stage = Usd.Stage.CreateNew(f'{root_for_export}/super_sphere.usda')
+    stage = Usd.Stage.CreateNew(f'{root_for_export}/super_torus.usda')
 
     # Build mesh object
     root_xform = UsdGeom.Xform.Define(stage, '/Root')
@@ -32,7 +32,8 @@ def crate_geometry():
 
     # Build mesh geometry
     # geometry_data = procedurals.plane(6, 6)
-    geometry_data = procedurals.sphere(8, 6)
+    # geometry_data = procedurals.sphere(8, 6)
+    geometry_data = procedurals.torus(8, 12, 1, 0.5)
     mesh.GetPointsAttr().Set(geometry_data['points'])
     mesh.GetFaceVertexCountsAttr().Set(geometry_data['face_vertex_counts'])
     mesh.GetFaceVertexIndicesAttr().Set(geometry_data['face_vertex_indices'])

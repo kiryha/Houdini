@@ -118,3 +118,46 @@ def sphere(h_points, v_points):
                      'face_vertex_indices': face_vertex_indices}
 
     return geometry_data
+
+
+def torus(h_points, v_points, radius, thickness):
+    """
+    Create poly donut
+    """
+
+    points = []  # List of point positions
+    face_vertex_counts = []  # List of vertex count per face
+    face_vertex_indices = []  # List of vertex indices
+
+    # Create torus points
+    for h_point in range(h_points):
+        for v_point in range(v_points):
+            u = (v_point * 2 * math.pi) / v_points  # Angle around the ring
+            v = (h_point * 2 * math.pi) / h_points  # Angle around the tube
+
+            x = (radius + thickness * math.cos(v)) * math.cos(u)
+            y = (radius + thickness * math.cos(v)) * math.sin(u)
+            z = thickness * math.sin(v)
+
+            position = (x, y, z)
+            points.append(position)
+
+    # Create torus faces
+    for h_point in range(h_points):
+        h_next = (h_point + 1) % h_points
+        for v_point in range(v_points):
+            v_next = (v_point + 1) % v_points
+
+            top_left = h_point * v_points + v_point
+            top_right = h_point * v_points + v_next
+            bottom_left = h_next * v_points + v_next
+            bottom_right = h_next * v_points + v_point
+
+            face_vertex_indices.extend([top_left, top_right, bottom_left, bottom_right])
+            face_vertex_counts.append(4)
+
+    geometry_data = {'points': points,
+                     'face_vertex_counts': face_vertex_counts,
+                     'face_vertex_indices': face_vertex_indices}
+
+    return geometry_data
