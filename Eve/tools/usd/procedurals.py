@@ -161,3 +161,43 @@ def torus(h_points, v_points, radius, thickness):
                      'face_vertex_indices': face_vertex_indices}
 
     return geometry_data
+
+
+def cone(resolution):
+    """
+    Create poly cone
+    """
+
+    points = []  # List of point positions
+    face_vertex_counts = []  # List of vertex count per face
+    face_vertex_indices = []  # List of vertex indices
+
+    # Create cone points
+    for point in range(resolution):
+        angle = 2.0 * 3.14 * (point / resolution)
+
+        x = math.cos(angle)
+        z = math.sin(angle)
+        points.append((x, 0, z))
+
+    # Add tip
+    points.append((0, 2, 0))
+
+    # Crete cone faces
+    for point in range(resolution):
+        a = point
+        b = (point + 1) % resolution
+
+        face_vertex_indices.extend([a, b, resolution])
+        face_vertex_counts.append(3)
+
+    # Bottom face
+    for point in range(resolution):
+        face_vertex_indices.append(point)
+    face_vertex_counts.append(resolution)
+
+    geometry_data = {'points': points,
+                     'face_vertex_counts': face_vertex_counts,
+                     'face_vertex_indices': face_vertex_indices}
+
+    return geometry_data
