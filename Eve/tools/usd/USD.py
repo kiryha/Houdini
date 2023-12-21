@@ -47,35 +47,4 @@ def crate_geometry():
     stage.GetRootLayer().Save()
 
 
-def crate_geometry():
-    """
-    Procedurally create geometry and save it to the USDA file
-    """
-
-    # Create USD
-    stage = Usd.Stage.CreateNew('E:/primitive.usda')
-
-    # Build mesh object
-    root_xform = UsdGeom.Xform.Define(stage, '/Root')
-    mesh_path = Sdf.Path(root_xform.GetPath()).AppendChild('primitive')
-    mesh = UsdGeom.Mesh.Define(stage, mesh_path)
-
-    # Build mesh geometry. Here polygon creation magic should happens
-    geometry_data = {'points': [],
-                     'face_vertex_counts': [],
-                     'face_vertex_indices': []}
-
-    # Set mesh attributes
-    mesh.GetPointsAttr().Set(geometry_data['points'])
-    mesh.GetFaceVertexCountsAttr().Set(geometry_data['face_vertex_counts'])
-    mesh.GetFaceVertexIndicesAttr().Set(geometry_data['face_vertex_indices'])
-
-    # Set orientation and subdivisionScheme
-    mesh.CreateOrientationAttr().Set(UsdGeom.Tokens.leftHanded)
-    mesh.CreateSubdivisionSchemeAttr().Set("none")
-
-    # Save USD
-    stage.GetRootLayer().Save()
-
-
 crate_geometry()
