@@ -1,6 +1,13 @@
 """
-Procedural geometry
+Write procedural geometry to USD file
+
+USD plane:
+int[] faceVertexCounts =  [4]
+int[] faceVertexIndices = [0, 1, 2, 3]
+point3f[] points =        [(-5, 0, -5), (5, 0, -5), (5, 0, 5), (-5, 0, 5)]
 """
+
+
 import math
 
 
@@ -16,11 +23,7 @@ def get_cartesian_position(h_angle, v_angle):
 
 def plane(row_points, column_points):
     """
-    Create polygonal grid (size 2x2 units)
-
-    int[] faceVertexCounts =  [4]
-    int[] faceVertexIndices = [0, 1, 2, 3]
-    point3f[] points =        [(-5, 0, -5), (5, 0, -5), (5, 0, 5), (-5, 0, 5)]
+    Create polygonal grid
     """
 
     points = []  # List of point positions
@@ -174,7 +177,7 @@ def cone(resolution):
 
     # Create cone points
     for point in range(resolution):
-        angle = 2.0 * 3.14 * (point / resolution)
+        angle = 2.0 * 3.14 * point / resolution
 
         x = math.cos(angle)
         z = math.sin(angle)
@@ -185,10 +188,8 @@ def cone(resolution):
 
     # Crete cone faces
     for point in range(resolution):
-        a = point
-        b = (point + 1) % resolution
-
-        face_vertex_indices.extend([a, b, resolution])
+        triangle = [point, point + 1, resolution]
+        face_vertex_indices.extend(triangle)
         face_vertex_counts.append(3)
 
     # Bottom face
