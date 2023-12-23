@@ -11,6 +11,9 @@ Hello World:
 # shader = UsdShade.Shader.Define(stage, '/myMaterial/myShader')
 
 # mesh = UsdGeom.Mesh.Define(stage, '/Root/super_plane')
+
+# mesh_path = Sdf.Path(root_xform.GetPath()).AppendChild('super_plane')
+# mesh = UsdGeom.Mesh.Define(stage, mesh_path)
 """
 
 from pxr import Usd, UsdGeom, Sdf, UsdShade
@@ -26,9 +29,8 @@ def crate_geometry():
     stage = Usd.Stage.CreateNew(f'{root_for_export}/super_cone.usda')
 
     # Build mesh object
-    root_xform = UsdGeom.Xform.Define(stage, '/Root')
-    mesh_path = Sdf.Path(root_xform.GetPath()).AppendChild('super_plane')
-    mesh = UsdGeom.Mesh.Define(stage, mesh_path)
+    UsdGeom.Xform.Define(stage, '/Root')
+    mesh = UsdGeom.Mesh.Define(stage, '/Root/super_plane')
 
     # Build mesh geometry
     # geometry_data = procedurals.plane(6, 6)
