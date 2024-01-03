@@ -25,12 +25,13 @@ def crate_geometry():
     Procedurally create geometry and save it to the USDA file
     """
 
+    shape = 'super_cone'
     root_for_export = 'C:/Users/kko8/OneDrive/projects/houdini_snippets/PROD/3D/caches/ASSETS'
-    stage = Usd.Stage.CreateNew(f'{root_for_export}/super_cone.usda')
+    stage = Usd.Stage.CreateNew(f'{root_for_export}/{shape}.usda')
 
     # Build mesh object
     UsdGeom.Xform.Define(stage, '/Root')
-    mesh = UsdGeom.Mesh.Define(stage, '/Root/super_plane')
+    mesh = UsdGeom.Mesh.Define(stage, f'/Root/{shape}')
 
     # Build mesh geometry
     # geometry_data = procedurals.plane(6, 6)
@@ -49,4 +50,40 @@ def crate_geometry():
     stage.GetRootLayer().Save()
 
 
-crate_geometry()
+def build_references():
+    """
+    Create USD hierarchy:
+    "shot.usd" references "asset_a.usd" and "asset_b.usd"
+    """
+
+    root_for_export = 'C:/Users/kko8/OneDrive/projects/houdini_snippets/PROD/3D/caches/ASSETS'
+
+    # Asset A
+    stage_a = Usd.Stage.CreateNew(f'{root_for_export}/asset_a.usda')
+    UsdGeom.Xform.Define(stage_a, '/Root_A')
+    UsdGeom.Xform.Define(stage_a, '/Root_A/object_A')
+    stage_a.SetDefaultPrim(stage_a.GetPrimAtPath('/Root_A'))
+    stage_a.GetRootLayer().Save()
+
+    # Asset B
+    stage_b = Usd.Stage.CreateNew(f'{root_for_export}/asset_b.usda')
+    UsdGeom.Xform.Define(stage_b, '/Root_B')
+    UsdGeom.Xform.Define(stage_b, '/Root_B/object_B')
+    stage_b.SetDefaultPrim(stage_b.GetPrimAtPath('/Root_B'))
+    stage_b.GetRootLayer().Save()
+
+    # Shot
+    stage = Usd.Stage.CreateNew(f'{root_for_export}/shot.usda')
+    UsdGeom.Xform.Define(stage, '/Root_Shot')
+    reference_a = stage.OverridePrim('/Root_Shot/reference_a')
+    reference_b = stage.OverridePrim('/Root_Shot/reference_b')
+
+    reference_a.GetReferences().AddReference('./asset_a.usda')
+    reference_b.GetReferences().AddReference('./asset_b.usda')
+
+    stage.GetRootLayer().Save()
+
+
+# crate_geometry()
+build_references()
+
