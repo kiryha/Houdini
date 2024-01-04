@@ -62,7 +62,7 @@ def build_references():
     stage_a = Usd.Stage.CreateNew(f'{root_for_export}/asset_a.usda')
     UsdGeom.Xform.Define(stage_a, '/Root_A')
     UsdGeom.Xform.Define(stage_a, '/Root_A/object_A')
-    stage_a.SetDefaultPrim(stage_a.GetPrimAtPath('/Root_A'))
+    stage_a.SetDefaultPrim(stage_a.GetPrimAtPath('/Root_A'))  # Set name of the root prim that will be referenced
     stage_a.GetRootLayer().Save()
 
     # Asset B
@@ -75,12 +75,10 @@ def build_references():
     # Shot
     stage = Usd.Stage.CreateNew(f'{root_for_export}/shot.usda')
     UsdGeom.Xform.Define(stage, '/Root_Shot')
-    reference_a = stage.OverridePrim('/Root_Shot/reference_a')
+    reference_a = stage.OverridePrim('/Root_Shot/reference_a')  # Define "over" prim that will be replaced
     reference_b = stage.OverridePrim('/Root_Shot/reference_b')
-
     reference_a.GetReferences().AddReference('./asset_a.usda')
     reference_b.GetReferences().AddReference('./asset_b.usda')
-
     stage.GetRootLayer().Save()
 
 
