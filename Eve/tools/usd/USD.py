@@ -25,7 +25,7 @@ def crate_geometry():
     Procedurally create geometry and save it to the USDA file
     """
 
-    shape = 'super_cone'
+    shape = 'super_polygon'
     root_for_export = 'C:/Users/kko8/OneDrive/projects/houdini_snippets/PROD/3D/caches/ASSETS'
     stage = Usd.Stage.CreateNew(f'{root_for_export}/{shape}.usda')
 
@@ -37,7 +37,7 @@ def crate_geometry():
     # geometry_data = procedurals.plane(6, 6)
     # geometry_data = procedurals.sphere(8, 6)
     # geometry_data = procedurals.torus(8, 12, 1, 0.5)
-    geometry_data = procedurals.cone(12)
+    geometry_data = procedurals.polygon([(-1, 0, 1), (1, 0, 1), (1, 0, -1), (-1, 0, -1)])
 
     mesh.GetPointsAttr().Set(geometry_data['points'])
     mesh.GetFaceVertexCountsAttr().Set(geometry_data['face_vertex_counts'])
@@ -82,6 +82,6 @@ def build_references():
     stage.GetRootLayer().Save()
 
 
-# crate_geometry()
-build_references()
+crate_geometry()
+# build_references()
 

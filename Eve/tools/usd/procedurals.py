@@ -202,3 +202,15 @@ def cone(resolution):
                      'face_vertex_indices': face_vertex_indices}
 
     return geometry_data
+
+
+def polygon(points):
+    """
+    Create single polygon from input list of point positions
+    """
+
+    geometry_data = {'points': points,
+                     'face_vertex_counts': [len(points)],
+                     'face_vertex_indices': [index for index in range(len(points))]}
+
+    return geometry_data
