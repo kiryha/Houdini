@@ -34,14 +34,16 @@ def crate_geometry():
     mesh = UsdGeom.Mesh.Define(stage, f'/Root/{shape}')
 
     # Build mesh geometry
-    # geometry_data = procedurals.plane(6, 6)
-    # geometry_data = procedurals.sphere(8, 6)
-    # geometry_data = procedurals.torus(8, 12, 1, 0.5)
-    geometry_data = procedurals.polygon([(-1, 0, 1), (1, 0, 1), (1, 0, -1), (-1, 0, -1)])
+    # mesh_data = procedurals.plane(6, 6)
+    # mesh_data = procedurals.sphere(8, 6)
+    # mesh_data = procedurals.torus(8, 12, 1, 0.5)
+    # mesh_data = procedurals.cone(12)
+    lot = [(1, 0, -1), (1, 0, 1), (0.6, 0, 1), (0.6, 0, 1.2), (0.2, 0, 1.2), (0.2, 0, 0.8), (0, 0, 0.8), (0, 0, -0.2), (0.4, 0, -0.2), (0.4, 0, -1)]
+    mesh_data = procedurals.polygon(lot)
 
-    mesh.GetPointsAttr().Set(geometry_data['points'])
-    mesh.GetFaceVertexCountsAttr().Set(geometry_data['face_vertex_counts'])
-    mesh.GetFaceVertexIndicesAttr().Set(geometry_data['face_vertex_indices'])
+    mesh.GetPointsAttr().Set(mesh_data.points)
+    mesh.GetFaceVertexCountsAttr().Set(mesh_data.face_vertex_counts)
+    mesh.GetFaceVertexIndicesAttr().Set(mesh_data.face_vertex_indices)
 
     # Set orientation and subdivisionScheme
     mesh.CreateOrientationAttr().Set(UsdGeom.Tokens.leftHanded)
