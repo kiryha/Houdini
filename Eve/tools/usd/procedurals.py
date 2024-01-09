@@ -9,15 +9,16 @@ point3f[] points =        [(-5, 0, -5), (5, 0, -5), (5, 0, 5), (-5, 0, 5)]
 
 
 import math
+import copy
 
 
-# Geometry data class
+# Geometry manipulation classes
 class MeshData:
     """
     Geometry container: define points, polygons etc
 
     self.points: List of point positions
-    self.face_vertex_counts: List of vertex count per face
+    self.face_vertex_counts: List of vertex count per face (each element is a face)
     self.face_vertex_indices: List of vertex indices
     """
 
@@ -46,6 +47,42 @@ class MeshData:
 
         self.face_vertex_counts.append(face_vertex_counts)
         self.face_vertex_indices.extend(face_vertex_indices)
+
+
+class EditMesh:
+    """
+    Geometry manipulation: edit geometry container data
+    """
+
+    def __init__(self, mesh_data):
+        self.source_mesh = mesh_data
+        self.modified_mesh = copy.deepcopy(mesh_data)
+
+    def extrude_face(self, extrude_distance):
+        """
+        Extrude a single 4 points XZ polygon
+        """
+
+        # Loop face points and extend points with new extruded points
+        for point in self.source_mesh.points:
+            extruded_point = (point[0], point[1] + extrude_distance, point[2])
+            self.modified_mesh.add_point(extruded_point)
+
+        # Add face for each pair of old/new points (edges)
+        source_points = len(self.source_mesh.points)
+        for index in range(source_points):
+            lower_left = index
+            lower_right = (index + 1) % source_points
+            upper_right = ((index + 1) % source_points) + source_points
+            upper_left = index + source_points
+
+            quad = [upper_left, upper_right, lower_right, lower_left]
+            self.modified_mesh.add_face(4, quad)
+
+        # Add top face
+        self.modified_mesh.add_face(4, [7, 6, 5, 4])
+
+        return self.modified_mesh
 
 
 # Math
@@ -208,7 +245,6 @@ def cone(resolution):
     # Create cone points
     for point in range(resolution):
         angle = 2.0 * 3.14 * point / resolution
-
         x = math.cos(angle)
         z = math.sin(angle)
         mesh_data.add_point((x, 0, z))
