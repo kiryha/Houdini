@@ -44,7 +44,7 @@ def crate_geometry():
     # mesh_data = procedurals.polygon(lot)
 
     # Extrude Face
-    mesh_data = procedurals.EditMesh(procedurals.polygon()).extrude_face(2)
+    mesh_data = procedurals.EditMesh(procedurals.polygon()).extrude_face(4)
 
     mesh.GetPointsAttr().Set(mesh_data.points)
     mesh.GetFaceVertexCountsAttr().Set(mesh_data.face_vertex_counts)

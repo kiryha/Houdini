@@ -80,7 +80,12 @@ class EditMesh:
             self.modified_mesh.add_face(4, quad)
 
         # Add top face
-        self.modified_mesh.add_face(4, [7, 6, 5, 4])
+        # self.modified_mesh.add_face(4, [7, 6, 5, 4])
+        top_face_indices = []
+        for i in range(source_points, 2 * source_points):
+            top_face_indices.append(i)
+
+        self.modified_mesh.add_face(4, top_face_indices[::-1])
 
         return self.modified_mesh
 
