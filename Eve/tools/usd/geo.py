@@ -139,6 +139,8 @@ class EditMesh:
 
         self.modified_mesh.add_face(polygon_points_number, top_face_indices)
 
+        # TODO! Delete source face
+
         return self.modified_mesh
 
 
