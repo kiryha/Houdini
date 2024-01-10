@@ -10,6 +10,7 @@ point3f[] points =        [(-5, 0, -5), (5, 0, -5), (5, 0, 5), (-5, 0, 5)]
 
 import math
 import copy
+import numpy as np
 
 
 # Geometry manipulation classes
@@ -69,6 +70,25 @@ class MeshData:
 
         return face_data
 
+    def get_normal(self, face_number):
+        """
+        Calculate normal of a face
+        """
+
+        face_data = self.get_face(face_number)
+
+        # Get first 3 points from face
+        point_1 = np.array(face_data.points[0])
+        point_2 = np.array(face_data.points[1])
+        point_3 = np.array(face_data.points[2])
+
+        # Calculate the normalized normal
+        normal = np.cross(point_2 - point_1, point_3 - point_1)
+        normal = normal / np.linalg.norm(normal)
+        normal = normal.tolist()
+
+        return normal
+
 
 class EditMesh:
     """
@@ -104,9 +124,12 @@ class EditMesh:
 
         # Get selected face data
         face_data = self.source_mesh.get_face(face_number)
-        print(face_data.points)
-        print(face_data.face_vertex_counts)
-        print(face_data.face_vertex_indices)
+        # print(face_data.points)
+        # print(face_data.face_vertex_counts)
+        # print(face_data.face_vertex_indices)
+
+        face_normal = face_data.get_normal(0)
+        print(f'face_normal = {face_normal}')
 
         # # Loop face points and extend points with new extruded points
         # for point in self.source_mesh.points:
