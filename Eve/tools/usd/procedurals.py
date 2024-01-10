@@ -35,12 +35,6 @@ class MeshData:
         """
         self.points.append(point)
 
-    def add_points(self, points):
-        """
-        Add list of points to the mesh.
-        """
-        self.points.extend(points)
-
     def add_face(self, face_vertex_counts, face_vertex_indices):
         """
         Add a single face to the mesh.
@@ -82,7 +76,7 @@ class MeshData:
         point_2 = np.array(face_data.points[1])
         point_3 = np.array(face_data.points[2])
 
-        # Calculate the normalized normal
+        # Calculate the normalized normal as a list
         normal = np.cross(point_2 - point_1, point_3 - point_1)
         normal = normal / np.linalg.norm(normal)
         normal = normal.tolist()
@@ -99,22 +93,21 @@ class EditMesh:
         self.source_mesh = mesh_data
         self.modified_mesh = copy.deepcopy(mesh_data)
 
+    def shift_point(self, point, vector, length):
+        """
+        Shift point along vector
+        """
+
+        point = np.array(point)
+        vector = np.array(vector)
+        shifted_point = point + vector * length
+        shifted_point = shifted_point.tolist()
+
+        return shifted_point
+
     def extrude_face(self, face_number, extrude_distance):
         """
         Extrude a single 4 points XZ polygon
-
-        Algorithm Steps
-        For each vertex V of the original polygon:
-
-        Calculate V' = V + normal * extrusion_length, where normal is the Y-axis unit vector and extrusion_length is the length of the extrusion.
-        For each edge of the polygon:
-
-        Consider an edge formed by vertices V1 and V2.
-        Find the corresponding new vertices V1' and V2'.
-        Create a new face (quad) using vertices [V1, V2, V2', V1'].
-        Create the top face (cap):
-
-        Use all the new vertices V' to create a face that is parallel to the original face.
         """
 
         # TODO! Make extrusion work for any selected face along normals
@@ -124,18 +117,20 @@ class EditMesh:
 
         # Get selected face data
         face_data = self.source_mesh.get_face(face_number)
-        # print(face_data.points)
-        # print(face_data.face_vertex_counts)
-        # print(face_data.face_vertex_indices)
+        print(face_data.points)
+        print(face_data.face_vertex_counts)
+        print(face_data.face_vertex_indices)
 
         face_normal = face_data.get_normal(0)
         print(f'face_normal = {face_normal}')
 
-        # # Loop face points and extend points with new extruded points
-        # for point in self.source_mesh.points:
-        #     extruded_point = (point[0], point[1] + extrude_distance, point[2])
-        #     self.modified_mesh.add_point(extruded_point)
-        #
+        # Loop face points and extend points with new extruded points
+        for point in self.source_mesh.points:
+
+            extruded_point = self.shift_point(point, face_normal, extrude_distance)
+            print(f'extruded_point = {extruded_point}')
+            self.modified_mesh.add_point(extruded_point)
+
         # # Add face for each pair of old/new points (edges)
         # source_points = len(self.source_mesh.points)
         # for index in range(source_points):
@@ -180,7 +175,12 @@ def polygon(points=None):
         points = [(-1, 0, 1), (1, 0, 1), (1, 0, -1), (-1, 0, -1)]
 
     mesh_data = MeshData()
-    mesh_data.add_points(points)
+
+    # Add points
+    for point in points:
+        mesh_data.add_point(point)
+
+    # Add faces
     mesh_data.add_face(len(points), [i for i in range(len(points))])
 
     return mesh_data
