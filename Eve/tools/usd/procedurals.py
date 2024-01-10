@@ -48,21 +48,18 @@ class MeshData:
         Get and return data for current face
         """
 
-        # Get the indices of the vertices that make up the face
-        start_index = sum(self.face_vertex_counts[:face_number])
-        end_index = start_index + self.face_vertex_counts[face_number]
-        # print(f's|e index: {start_index} {end_index}')
-        vertex_indices = self.face_vertex_indices[start_index:end_index]
-        # print(f'vertex_indices = {vertex_indices}')
-
-        # Record and return face data
         face_data = MeshData()
+
+        # Get the indices of the vertices that make up the face
+        start = sum(self.face_vertex_counts[:face_number])
+        end = start + self.face_vertex_counts[face_number]
+        vertex_indices = self.face_vertex_indices[start:end]
+
         # Get point positions
         for index in vertex_indices:
             face_data.add_point(self.points[index])
 
-        # Reconstruct face data for current face
-        # face_data.add_face(len(vertex_indices), list(range(len(vertex_indices))))
+        # Record face data
         face_data.add_face(len(vertex_indices), vertex_indices)
 
         return face_data
@@ -71,8 +68,6 @@ class MeshData:
         """
         Calculate normal of a face
         """
-
-        # face_data = self.get_face(face_number)
 
         # Get first 3 points from face
         point_1 = np.array(face_data.points[0])
@@ -98,7 +93,7 @@ class EditMesh:
 
     def shift_point(self, point, vector, length):
         """
-        Shift point along vector
+        Move point along vector, return new point coordinates as a list
         """
 
         point = np.array(point)
