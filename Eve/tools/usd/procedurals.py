@@ -51,7 +51,9 @@ class MeshData:
         # Get the indices of the vertices that make up the face
         start_index = sum(self.face_vertex_counts[:face_number])
         end_index = start_index + self.face_vertex_counts[face_number]
+        # print(f's|e index: {start_index} {end_index}')
         vertex_indices = self.face_vertex_indices[start_index:end_index]
+        # print(f'vertex_indices = {vertex_indices}')
 
         # Record and return face data
         face_data = MeshData()
@@ -60,16 +62,17 @@ class MeshData:
             face_data.add_point(self.points[index])
 
         # Reconstruct face data for current face
-        face_data.add_face(len(vertex_indices), list(range(len(vertex_indices))))
+        # face_data.add_face(len(vertex_indices), list(range(len(vertex_indices))))
+        face_data.add_face(len(vertex_indices), vertex_indices)
 
         return face_data
 
-    def get_normal(self, face_number):
+    def get_normal(self, face_data):
         """
         Calculate normal of a face
         """
 
-        face_data = self.get_face(face_number)
+        # face_data = self.get_face(face_number)
 
         # Get first 3 points from face
         point_1 = np.array(face_data.points[0])
@@ -107,13 +110,14 @@ class EditMesh:
 
     def extrude_face(self, face_number, extrude_distance):
         """
-        Extrude a single 4 points XZ polygon
+        Extrude polygon along normal
         """
 
         # Get selected face data
         face_data = self.source_mesh.get_face(face_number)
-        face_normal = face_data.get_normal(0)
-        offset = len(self.modified_mesh.points)
+        face_normal = face_data.get_normal(face_data)
+        number_of_points_source = len(self.modified_mesh.points)
+        polygon_points_number = len(face_data.points)
 
         # Loop face points and extend points with new extruded points
         for point in face_data.points:
@@ -121,22 +125,24 @@ class EditMesh:
             self.modified_mesh.add_point(extruded_point)
 
         # Add face for each pair of old/new points (edges)
-        source_points = len(face_data.points)
-        for index in range(source_points):
-            lower_left = index  # Original point
-            lower_right = (index + 1) % source_points  # Next original point
-            upper_left = offset + index  # Corresponding extruded point
-            upper_right = offset + (index + 1) % source_points  # Next extruded point
+        for index in range(polygon_points_number):
+            global_index = face_data.face_vertex_indices[index]
+            next_global_index = face_data.face_vertex_indices[(index + 1) % polygon_points_number]
+
+            lower_left = global_index
+            lower_right = next_global_index
+            upper_left = number_of_points_source + index
+            upper_right = number_of_points_source + (index + 1) % polygon_points_number
 
             quad = [lower_left, lower_right, upper_right, upper_left]
             self.modified_mesh.add_face(4, quad)
 
-        # # Add top face
-        # top_face_indices = []
-        # for i in range(source_points, 2 * source_points):
-        #     top_face_indices.append(i)
-        #
-        # self.modified_mesh.add_face(4, top_face_indices[::-1])
+        # Add top face to close the extrusion
+        top_face_indices = []
+        for i in range(number_of_points_source, number_of_points_source + polygon_points_number):
+            top_face_indices.append(i)
+
+        self.modified_mesh.add_face(polygon_points_number, top_face_indices)
 
         return self.modified_mesh
 
