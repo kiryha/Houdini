@@ -110,47 +110,35 @@ class EditMesh:
         Extrude a single 4 points XZ polygon
         """
 
-        # TODO! Make extrusion work for any selected face along normals
-
-        # I have extrusion of 4 point unit plane implemented, now I need to extend it to any face (any points,
-        # any face orientation).
-
         # Get selected face data
         face_data = self.source_mesh.get_face(face_number)
-        print(face_data.points)
-        print(face_data.face_vertex_counts)
-        print(face_data.face_vertex_indices)
-
         face_normal = face_data.get_normal(0)
-        print(f'face_normal = {face_normal}')
+        offset = len(self.modified_mesh.points)
 
         # Loop face points and extend points with new extruded points
-        for point in self.source_mesh.points:
-
+        for point in face_data.points:
             extruded_point = self.shift_point(point, face_normal, extrude_distance)
-            print(f'extruded_point = {extruded_point}')
             self.modified_mesh.add_point(extruded_point)
 
-        # # Add face for each pair of old/new points (edges)
-        # source_points = len(self.source_mesh.points)
-        # for index in range(source_points):
-        #     lower_left = index
-        #     lower_right = (index + 1) % source_points
-        #     upper_right = ((index + 1) % source_points) + source_points
-        #     upper_left = index + source_points
-        #
-        #     quad = [upper_left, upper_right, lower_right, lower_left]
-        #     self.modified_mesh.add_face(4, quad)
-        #
+        # Add face for each pair of old/new points (edges)
+        source_points = len(face_data.points)
+        for index in range(source_points):
+            lower_left = index  # Original point
+            lower_right = (index + 1) % source_points  # Next original point
+            upper_left = offset + index  # Corresponding extruded point
+            upper_right = offset + (index + 1) % source_points  # Next extruded point
+
+            quad = [lower_left, lower_right, upper_right, upper_left]
+            self.modified_mesh.add_face(4, quad)
+
         # # Add top face
-        # # self.modified_mesh.add_face(4, [7, 6, 5, 4])
         # top_face_indices = []
         # for i in range(source_points, 2 * source_points):
         #     top_face_indices.append(i)
         #
         # self.modified_mesh.add_face(4, top_face_indices[::-1])
-        #
-        # return self.modified_mesh
+
+        return self.modified_mesh
 
 
 # Math

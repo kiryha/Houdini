@@ -44,18 +44,18 @@ def crate_geometry():
     # mesh_data = procedurals.polygon(lot)
 
     # Extrude Face
-    mesh_data = procedurals.EditMesh(procedurals.polygon()).extrude_face(0, 4)
-    # mesh_data = procedurals.EditMesh(procedurals.torus(8, 12, 1, 0.5)).extrude_face(5, 4)
+    # mesh_data = procedurals.EditMesh(procedurals.polygon()).extrude_face(0, 4)
+    mesh_data = procedurals.EditMesh(procedurals.torus(8, 12, 1, 0.5)).extrude_face(5, 1)
 
-    # mesh.GetPointsAttr().Set(mesh_data.points)
-    # mesh.GetFaceVertexCountsAttr().Set(mesh_data.face_vertex_counts)
-    # mesh.GetFaceVertexIndicesAttr().Set(mesh_data.face_vertex_indices)
-    #
-    # # Set orientation and subdivisionScheme
-    # mesh.CreateOrientationAttr().Set(UsdGeom.Tokens.leftHanded)
-    # mesh.CreateSubdivisionSchemeAttr().Set("none")
-    #
-    # stage.GetRootLayer().Save()
+    mesh.GetPointsAttr().Set(mesh_data.points)
+    mesh.GetFaceVertexCountsAttr().Set(mesh_data.face_vertex_counts)
+    mesh.GetFaceVertexIndicesAttr().Set(mesh_data.face_vertex_indices)
+
+    # Set orientation and subdivisionScheme
+    mesh.CreateOrientationAttr().Set(UsdGeom.Tokens.leftHanded)
+    mesh.CreateSubdivisionSchemeAttr().Set("none")
+
+    stage.GetRootLayer().Save()
 
 
 def build_references():
