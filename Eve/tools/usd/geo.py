@@ -103,6 +103,19 @@ class EditMesh:
 
         return shifted_point
 
+    def delete_face(self, face_number):
+        """
+        Delete face
+        """
+
+        # Calculate face index range
+        start = sum(self.modified_mesh.face_vertex_counts[:face_number])
+        end = start + self.modified_mesh.face_vertex_counts[face_number]
+
+        # Remove faces
+        del self.modified_mesh.face_vertex_counts[face_number]
+        del self.modified_mesh.face_vertex_indices[start:end]
+
     def extrude_face(self, face_number, extrude_distance):
         """
         Extrude polygon along normal
@@ -139,7 +152,7 @@ class EditMesh:
 
         self.modified_mesh.add_face(polygon_points_number, top_face_indices)
 
-        # TODO! Delete source face
+        self.delete_face(face_number)
 
         return self.modified_mesh
 

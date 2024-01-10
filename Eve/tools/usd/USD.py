@@ -37,26 +37,28 @@ def crate_geometry():
     mesh = UsdGeom.Mesh.Define(stage, f'/Root/{shape}')
 
     # Build mesh geometry
-    # mesh_data = procedurals.plane(6, 6)
-    # mesh_data = procedurals.sphere(8, 6)
-    # mesh_data = procedurals.torus(8, 12, 1, 0.5)
-    # mesh_data = procedurals.cone(12)
-    # mesh_data = procedurals.polygon(lot)
+    # mesh_data = geo.plane(6, 6)
+    # mesh_data = geo.sphere(8, 6)
+    # mesh_data = geo.torus(8, 12, 1, 0.5)
+    # mesh_data = geo.cone(12)
+    # mesh_data = geo.polygon(lot)
 
     # Extrude Face
-    # mesh_data = procedurals.EditMesh(procedurals.polygon()).extrude_face(0, 4)
-    # mesh_data = procedurals.EditMesh(procedurals.torus(8, 12, 1, 0.5)).extrude_face(5, 0.3)
-    # mesh_data = procedurals.EditMesh(procedurals.polygon(lot)).extrude_face(0, -5)
+    # mesh_data = geo.EditMesh(geo.polygon()).extrude_face(0, 4)
+    # mesh_data = geo.EditMesh(geo.torus(8, 12, 1, 0.5)).extrude_face(5, 0.3)
+    # mesh_data = geo.EditMesh(geo.polygon(lot)).extrude_face(0, -5)
 
-    mesh_data = geo.torus(8, 12, 1, 0.5)
+    # Create torus and extrude every third face
+    mesh_data = geo.torus(12, 36, 2, 0.5)
     edit_mesh = geo.EditMesh(mesh_data)
 
-    for i in range(8*12):
+    for i in reversed(range(36*12)):
         if not i % 3:
             edit_mesh.extrude_face(i, 0.3)
 
     mesh_data = edit_mesh.modified_mesh
 
+    # Set mesh attributes
     mesh.GetPointsAttr().Set(mesh_data.points)
     mesh.GetFaceVertexCountsAttr().Set(mesh_data.face_vertex_counts)
     mesh.GetFaceVertexIndicesAttr().Set(mesh_data.face_vertex_indices)
