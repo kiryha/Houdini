@@ -3,7 +3,7 @@ import sys
 import sqlite3
 import subprocess
 import webbrowser
-from PySide2 import QtCore, QtWidgets
+from PySide2 import QtCore, QtWidgets, QtGui
 
 # Set environment to run this file without launcher
 eve_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -1300,5 +1300,6 @@ if __name__ == "__main__":
 
     app = QtWidgets.QApplication([])
     PM = ProjectManager()
+    PM.setWindowIcon(QtGui.QIcon(f'{eve_root}/tools/pm/icons/icon_PM_A.ico'))
     PM.show()
     app.exec_()
