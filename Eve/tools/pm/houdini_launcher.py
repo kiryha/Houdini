@@ -87,6 +87,11 @@ def run_houdini(eve_root, projects_root, HOUDINI, project_name, script=None, id=
     # Path to custom python tools
     os.environ['PYTHONPATH'] = '{0}/tools'.format(eve_root)  # from houdini import create_asset
 
+    # Rebelway ML course
+    py3_libs = 'C:/Users/kko8/AppData/Local/Programs/Python/Python310/Lib/site-packages'
+    ubuntu_libs = "//wsl.localhost/Ubuntu/home/kiryha/miniconda3/envs/houdini/lib/python3.10/site-packages"
+    os.environ['PYTHONPATH'] = os.pathsep.join([os.environ['PYTHONPATH'], py3_libs])
+
     # Icons
     # os.environ['HOUDINI_UI_ICON_PATH'] = '{}/EVE/icons'.format(rootPipeline)
     # Houdini current user pref folder in MyDocuments (win)
