@@ -55,37 +55,11 @@ def run_houdini(eve_root, projects_root, HOUDINI, project_name, script=None, id=
     :param projects_root: (E:/256/PROJECTS)
     :param HOUDINI: (C:/Program Files/Side Effects Software/Houdini 18.0.460/bin/houdinifx.exe)
     :param project_name: (Inception)
-    :param script:
-    :param id:
-    :return:
-    """
 
-    # print eve_root, projects_root, HOUDINI, project_name
-
-    # SETUP PROJECT ENVIRONMENT
+    Rem
     # ACES (Download from imageworks github OpenColorIO-Confih repo)
     # os.environ['OCIO'] = '{}/OCIO/Aces1.0.3/config.ocio'.format(eve_root)
-    # os.environ['OCIO'] = "E:/256/DEV/Eve_materials/Eve_backups/github_houdini_before_restructure/src/settings/OpenColorIO/aces_1.0.3/config.ocio"
-
-    root_3d = '{0}/{1}/PROD/3D'.format(projects_root, project_name)
-    project_root = '{0}/{1}'.format(projects_root, project_name)
-    # Eve location ('E:/Eve')
-    os.environ['EVE_ROOT'] = '{0}'.format(eve_root)
-    # Project Root folder ('E:/projects/<project_name>')
-    os.environ['EVE_PROJECT'] = project_root
-    # Project Name
-    os.environ['EVE_PROJECT_NAME'] = '{0}'.format(project_name)
-    # Root of houdini project
-    os.environ['JOB'] = root_3d
-
-    # Houdini digital assets folder including sub folders
-    os.environ['HOUDINI_OTLSCAN_PATH'] = get_hda_path(root_3d)
-    # Houdini path
-    os.environ['HOUDINI_PATH'] = '{0}/tools/houdini/settings;&'.format(eve_root)
-    # Custom vex modules
-    os.environ['HOUDINI_VEX_PATH'] = '{0}/tools/houdini/vex;&'.format(eve_root)
-    # Path to custom python tools
-    os.environ['PYTHONPATH'] = '{0}/tools'.format(eve_root)  # from houdini import create_asset
+    # os.environ['OCIO'] = "D:/256/OpenColorIO/aces_1.0.3/config.ocio"
 
     # Rebelway ML course
     py3_libs = 'C:/Users/kko8/AppData/Local/Programs/Python/Python310/Lib/site-packages'
@@ -100,7 +74,29 @@ def run_houdini(eve_root, projects_root, HOUDINI, project_name, script=None, id=
     # Setup Redshift
     # os.environ['HOUDINI_DSO_ERROR'] = '2'
     # os.environ['PATH'] += ';' + 'C:/ProgramData/Redshift/bin;$PATH'
-    # os.environ['HOUDINI_PATH'] = 'C:/ProgramData/Redshift/Plugins/Houdini/{0};{1}'.format(build, os.environ['HOUDINI_PATH'])
+    path = 'C:/ProgramData/Redshift/Plugins/Houdini/{0};{1}'.format(build, os.environ['HOUDINI_PATH']
+    # os.environ['HOUDINI_PATH'] = path)
+    """
+
+    # SETUP PROJECT ENVIRONMENT
+    root_3d = '{0}/{1}/PROD/3D'.format(projects_root, project_name)
+    project_root = '{0}/{1}'.format(projects_root, project_name)
+    # Eve location ('E:/Eve')
+    os.environ['EVE_ROOT'] = '{0}'.format(eve_root)
+    # Project Root folder ('E:/projects/<project_name>')
+    os.environ['EVE_PROJECT'] = project_root
+    # Project Name
+    os.environ['EVE_PROJECT_NAME'] = '{0}'.format(project_name)
+    # Root of houdini project
+    os.environ['JOB'] = root_3d
+    # Houdini digital assets folder including sub folders
+    os.environ['HOUDINI_OTLSCAN_PATH'] = get_hda_path(root_3d)
+    # Houdini path
+    os.environ['HOUDINI_PATH'] = '{0}/tools/houdini/settings;&'.format(eve_root)
+    # Custom vex modules
+    os.environ['HOUDINI_VEX_PATH'] = '{0}/tools/houdini/vex;&'.format(eve_root)
+    # Path to custom python tools
+    os.environ['PYTHONPATH'] = '{0}/tools'.format(eve_root)  # from houdini import create_asset
 
     if script:
         # command = ['C:/temp/asset.hipnc'], ['C:/temp/script.py'], 'AAA', 'BBB'
