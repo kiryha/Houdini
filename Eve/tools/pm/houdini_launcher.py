@@ -81,6 +81,7 @@ def run_houdini(eve_root, projects_root, HOUDINI, project_name, script=None, id=
     # SETUP PROJECT ENVIRONMENT
     root_3d = '{0}/{1}/PROD/3D'.format(projects_root, project_name)
     project_root = '{0}/{1}'.format(projects_root, project_name)
+
     # Eve location ('E:/Eve')
     os.environ['EVE_ROOT'] = '{0}'.format(eve_root)
     # Project Root folder ('E:/projects/<project_name>')
@@ -97,6 +98,8 @@ def run_houdini(eve_root, projects_root, HOUDINI, project_name, script=None, id=
     os.environ['HOUDINI_VEX_PATH'] = '{0}/tools/houdini/vex;&'.format(eve_root)
     # Path to custom python tools
     os.environ['PYTHONPATH'] = '{0}/tools'.format(eve_root)  # from houdini import create_asset
+    # ACES
+    os.environ['OCIO'] = "C:/Users/kko8/OneDrive/projects/aces_1.0.3/config.ocio"
 
     if script:
         # command = ['C:/temp/asset.hipnc'], ['C:/temp/script.py'], 'AAA', 'BBB'

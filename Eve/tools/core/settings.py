@@ -8,7 +8,7 @@ SQL_FILE_PATH = '{0}/data/eve.db'
 PROJECTS = 'C:/Users/kko8/OneDrive/projects'
 # Houdini bin
 default_build = '19.5.368'
-HOUDINI = 'E:/Programs/Houdini {0}/bin/houdinifx.exe'
+HOUDINI = 'E:/Programs/Houdini {0}/bin/houdini.exe'
 # File formats
 HIP = 'hipnc'
 # Eve documentation
