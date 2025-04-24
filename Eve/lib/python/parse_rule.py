@@ -1,4 +1,3 @@
-# save as shape_grammar.py and import in your Python SOP
 import hou
 import re
 import json
@@ -41,7 +40,7 @@ def evaluate_bucket(bucket, evaluated_buckets):
             evaluated_buckets.append({ "type":"module", "parts":[key], "star": False, "max_rep":1})
 
 
-def evaluate_shape_grammar(level_index, facade_rule_token, P0, P1, split_axis):
+def evaluate_shape_grammar(level_index, facade_rule_token, P0, P1):
     """
     Parse a single floor shape grammar rule string ("C|(W)|C") and
     return a list of world space split positions (Vector3).
@@ -50,18 +49,17 @@ def evaluate_shape_grammar(level_index, facade_rule_token, P0, P1, split_axis):
     facade_rule_token: facade orientation + facade sacale factor (F0, S0, F1, etc) - comes from mass model
     P0: Facade start point
     P1: Facade end point
-    split_axis: Facade local X axis
 
-    # Data example
+    # Data examples
     floor_rule = "(A)"
     modules_data = {"A": {"width": 1.0}}
+    module_placements = {'1': {'0': {'module_code': 'A', 'cursor': 0.0, 'module_width': 2.0}}}
 
-    AST for "C|(W)|C" ([]):
-
+    
+    evaluated_buckets for "C|(W)|C" ([]):
         {"type":"module", "parts":["C"], "star":False, "max_rep":1},
         {"type":"macro",  "parts":["W"], "star":False, "max_rep":None},
         {"type":"module", "parts":["C"], "star":False, "max_rep":1}
-
     """
 
     levels_data = read_bdf_data()['levels']
@@ -71,7 +69,8 @@ def evaluate_shape_grammar(level_index, facade_rule_token, P0, P1, split_axis):
     floor_rule = levels_data[str(level_index)]['floor_rule'][facade_rule_token][rule_varialtion]
 
     facade_length = (P1 - P0).length()
-    print(f'split_axis: {split_axis}, facade_length: {facade_length}')
+    split_axis = (P1 - P0).normalized()  # Facade local X axis
+    # print(f'split_axis: {split_axis}))  #  facade_length: {facade_length}'
 
     # Tokenize buckets (tokens)
     buckets = floor_rule.split("|")
@@ -81,10 +80,10 @@ def evaluate_shape_grammar(level_index, facade_rule_token, P0, P1, split_axis):
     for bucket in buckets:
         evaluate_bucket(bucket, evaluated_buckets)
 
-    print(f'evaluated_buckets: {evaluated_buckets}')
+    # print(f'evaluated_buckets: {evaluated_buckets}')
 
     # First pass: place mandatory copies and collect loop-macros
-    module_placements = {}  # [(module_code, cursor, module_width)]
+    module_placements = {}  # (module_code, cursor, module_width) data. To set prim attributes later in Houdini
     loopers    = []  # macros that can repeat indefinitely
     cursor     = 0.0 # cursor: module X position on facade in local facade coordinates
     module_index = 0 # Iteration of module placement
@@ -101,12 +100,12 @@ def evaluate_shape_grammar(level_index, facade_rule_token, P0, P1, split_axis):
         if bucket["type"]=="macro" and bucket["max_rep"] is None:
             loopers.append(bucket)
 
-    print(f'module_placements 1: {module_placements}')
-    print(f'loopers: {loopers}')
+    # print(f'module_placements 1: {module_placements}')
+    # print(f'loopers: {loopers}')
 
     # Loop-append phase
     remaining = facade_length - cursor
-    print(f'remaining: {remaining}')
+    # print(f'remaining: {remaining}')
     for bucket in loopers:
         macro_width = sum(modules_data[module_code]['width'] for module_code in bucket["parts"])
         full_copies = int( remaining // macro_width )  # how many full copies fit?
@@ -114,7 +113,7 @@ def evaluate_shape_grammar(level_index, facade_rule_token, P0, P1, split_axis):
         if bucket["max_rep"] is not None: # cap if fixed max_rep
             full_copies = min(full_copies, bucket["max_rep"])
             
-        for i in range(full_copies+1):
+        for i in range(full_copies + 1):
             for module_code in bucket["parts"]:
                 module_width = modules_data[module_code]['width']
                 placement = {"module_code": module_code, "cursor": cursor, "module_width": module_width}
@@ -125,7 +124,7 @@ def evaluate_shape_grammar(level_index, facade_rule_token, P0, P1, split_axis):
            
             remaining -= macro_width
 
-    # print(f'module_placements: {module_placements}')
+    print(f'module_placements: {module_placements}')
     
     # (optional) star-scale last macro to absorb final slack
     # if ast and ast[-1]["star"]:
@@ -139,11 +138,11 @@ def evaluate_shape_grammar(level_index, facade_rule_token, P0, P1, split_axis):
     #             placements.append((module_code, cursor, w0))
     #             cursor += w0
 
-    # # Build world-space points
-    # split_positions = []
-    # for key, cursor, width in placements:
-    #     pt = P0 + split_axis * cursor
-    #     split_positions.append(pt)
-    #     # split_positions.append([x0, 0.0, 0.0])
+    # Build world-space points from local cursor positions
+    placement_positions = []
+    for module_placement in module_placements.values():
+        cursor = module_placement['cursor']
+        world_position = P0 + split_axis * cursor
+        placement_positions.append(world_position)
 
-    return module_placements
+    return module_placements, placement_positions
