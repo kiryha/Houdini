@@ -1,0 +1,48 @@
+{
+  "levels": {
+    "0": {
+      "level_index": 0,
+      "floor_height": 5.0,
+      "floor_repeat": 1,
+      "floor_rule": {
+        "F0": [
+          "(A)"
+        ]
+      }
+    },
+    "1": {
+      "level_index": 1,
+      "floor_height": 2.5,
+      "floor_repeat": 4,
+      "floor_rule": {
+        "F0": [
+          "(W)"
+        ]
+      }
+    },
+    "2": {
+      "level_index": 2,
+      "floor_height": 0.5,
+      "floor_repeat": 1,
+      "floor_rule": {
+        "F0": [
+          "(R)"
+        ]
+      }
+    }
+  },
+  "modules": {
+    "C": {
+      "width": 0.5
+    },
+    "A": {
+      "width": 2.0
+    },
+    "W": {
+      "width": 3.5
+    },
+    "R": {
+      "width": 0.5
+    }
+  }
+}
