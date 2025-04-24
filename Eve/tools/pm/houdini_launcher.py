@@ -98,6 +98,7 @@ def run_houdini(eve_root, projects_root, HOUDINI, project_name, script=None, id=
     os.environ['HOUDINI_VEX_PATH'] = '{0}/tools/houdini/vex;&'.format(eve_root)
     # Path to custom python tools
     os.environ['PYTHONPATH'] = '{0}/tools'.format(eve_root)  # from houdini import create_asset
+    os.environ['PYTHONPATH'] = os.pathsep.join([os.environ['PYTHONPATH'], f'{project_root}/prod/3d/lib/python/'])  # Shape Grammar
     # ACES
     os.environ['OCIO'] = "C:/Users/kko8/OneDrive/projects/aces_1.0.3/config.ocio"
 
