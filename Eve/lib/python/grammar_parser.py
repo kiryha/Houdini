@@ -75,6 +75,7 @@ def get_floor_coordinates(bdf_data):
 
 # Rule Parsinhg
 def expand_frool_rule(level_index, facade_rule_token, P0, P1, X):
+    # sp_x, sp_y, sp_z = grammar_parser.expand_frool_rule(level_index, facade_rule_token, P0, P1, X)
 
     levels_data = read_bdf_data()['levels']
     modules_data = read_bdf_data()['modules']
@@ -120,12 +121,7 @@ def get_floors_data(bdf_data, facade_rule_token):
 
 
 # Interface 
-def init_data():
-    
-    # Get scene globals
-    geo = hou.pwd().geometry()
-    grammar_parser_node = hou.pwd()
-    
+def init_data():  
 
     bdf_data = read_bdf_data()
 
@@ -139,12 +135,4 @@ def init_data():
     # Get horizontal segmentation data
     floors_data = get_floors_data(bdf_data, facade_rule_token)
 
-    # Populate attributes
-    geo.addAttrib(hou.attribType.Global, "number_of_levels", number_of_levels)
-    geo.addAttrib(hou.attribType.Global, "number_of_floors", number_of_floors)
-
-    geo.addArrayAttrib(hou.attribType.Global, "floor_coordinates", hou.attribData.Float)
-    geo.setGlobalAttribValue("floor_coordinates", floor_coordinates)
-
-    geo.addAttrib(hou.attribType.Global, "floors_data", {})
-    geo.setGlobalAttribValue("floors_data", floors_data) 
+    return number_of_levels, number_of_floors, floor_coordinates, floors_data
