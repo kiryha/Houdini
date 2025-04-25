@@ -143,7 +143,7 @@ def evaluate_shape_grammar(level_index, facade_rule_token, P0, P1):
         {"type":"macro",  "parts":["W"], "star":False, "max_rep":None},
         {"type":"module", "parts":["C"], "star":False, "max_rep":1}
     """
-    print(f'level_index: {level_index}, facade_rule_token: {facade_rule_token}, P0: {P0}, P1: {P1}')
+    
     levels_data = read_bdf_data()['levels']
     modules_data = read_bdf_data()['modules']
 
@@ -167,17 +167,10 @@ def evaluate_shape_grammar(level_index, facade_rule_token, P0, P1):
     # First pass: place mandatory copies and collect loop-macros
     module_placements = {}  # (module_code, cursor, module_width) data. To set prim attributes later in Houdini
     loopers    = []  # macros that can repeat indefinitely
-    star_buckets = []  # macros that can be stretched
     cursor     = 0.0 # cursor: module X position on facade in local facade coordinates
     module_index = 0 # Iteration of module placement
 
     for bucket in evaluated_buckets:
-        if bucket["type"] == "macro" and bucket["star"]:
-            # Save starred buckets for later processing
-            star_buckets.append(bucket)
-            continue
-            
-        # Add one copy of each non-star module/macro
         for module_code in bucket["parts"]:
             module_width = modules_data[module_code]['width']
             placement = {"module_code": module_code, "cursor": cursor, "module_width": module_width}
@@ -186,21 +179,23 @@ def evaluate_shape_grammar(level_index, facade_rule_token, P0, P1):
             cursor += module_width
             module_index += 1
 
-        # Collect repeatable macros for the second pass
-        if bucket["type"] == "macro" and bucket["max_rep"] is None and not bucket["star"]:
+        if bucket["type"]=="macro" and bucket["max_rep"] is None:
             loopers.append(bucket)
 
-    # Loop-append phase for repeatable macros
+    # print(f'module_placements 1: {module_placements}')
+    # print(f'loopers: {loopers}')
+
+    # Loop-append phase
     remaining = facade_length - cursor
-    
+    # print(f'remaining: {remaining}')
     for bucket in loopers:
         macro_width = sum(modules_data[module_code]['width'] for module_code in bucket["parts"])
-        full_copies = int(remaining // macro_width)  # how many full copies fit?
+        full_copies = int( remaining // macro_width )  # how many full copies fit?
         
         if bucket["max_rep"] is not None: # cap if fixed max_rep
             full_copies = min(full_copies, bucket["max_rep"])
             
-        for i in range(full_copies):  # Changed to not add the extra copy
+        for i in range(full_copies + 1):
             for module_code in bucket["parts"]:
                 module_width = modules_data[module_code]['width']
                 placement = {"module_code": module_code, "cursor": cursor, "module_width": module_width}
@@ -211,28 +206,38 @@ def evaluate_shape_grammar(level_index, facade_rule_token, P0, P1):
            
             remaining -= macro_width
 
-    # Star-scale phase: handle starred macros to fill the remaining space
-    if star_buckets and remaining > 1e-6:
-        # For simplicity, we'll just use the first starred bucket
-        star_bucket = star_buckets[0]
-        
-        # Calculate total nominal width of starred parts
-        parts = star_bucket["parts"]
-        total_nominal_width = sum(modules_data[p]['width'] for p in parts)
-        
-        # Calculate scaling ratio to fill remaining space
-        scaling_ratio = (remaining / total_nominal_width)
-        
-        # Place the scaled modules
-        for module_code in parts:
-            original_width = modules_data[module_code]['width']
-            scaled_width = original_width * scaling_ratio
-            
-            placement = {"module_code": module_code, "cursor": cursor, "module_width": scaled_width}
-            module_placements[str(module_index)] = placement
-            
-            cursor += scaled_width
-            module_index += 1
+    # print(f'module_placements: {module_placements}')
+    
+    # # tar-scale last macro to absorb final slack
+    # if evaluated_buckets and evaluated_buckets[-1]["star"]:
+    #     slack = facade_length - cursor          # positive gap still empty
+    #     if slack > 1e-6:
+    #         parts = evaluated_buckets[-1]["parts"]
+    #         total_nom = sum(modules_data[p]['width'] for p in parts)
+    #         ratio = (slack + total_nom) / total_nom
+
+    #         # find the last |parts| placements we just wrote
+    #         for i, part in enumerate(parts[::-1], 1):
+    #             idx = str(module_index - i)     # last entries in dict
+    #             new_w = modules_data[part]['width'] * ratio
+    #             module_placements[idx]["module_width"] = new_w
+
+    # 7) STAR-BUCKET SCALING: if the last bucket was marked star, 
+    #    stretch ALL of its placements to fill exactly facade_length.
+    if evaluated_buckets and evaluated_buckets[-1]["star"]:
+        total_used = cursor                                  # current total span
+        if total_used > 1e-6:
+            # print(f'total_used: {total_used}')
+            scale_ratio = facade_length / total_used         # how much to stretch
+            # Stretch every placement of THAT bucket
+            last_parts = set(evaluated_buckets[-1]["parts"]) # e.g. {'A'}
+            for key, placement in module_placements.items():
+                if placement["module_code"] in last_parts:
+                    # resize each A by the same ratio:
+                    placement["module_width"] *= scale_ratio
+
+            # (Optional) Recompute cursor = facade_length if you need it later
+            cursor = facade_length
 
     # Build world-space points from local cursor positions
     placement_positions = []
