@@ -22,23 +22,6 @@ def read_bdf_data(building_style):
     return bdf_data 
 
 
-def get_facade_attributes():
-    """
-    Get attributes from current Mass Model
-    """
-    
-    # Read current Mass Model data
-    out_mass_model = hou.node("../out_mass_model")  
-    mass_model_geo = out_mass_model.geometry()
-    prim = mass_model_geo.prim(0)
-    # Facade orientation (F, S, ...) + facade scale factor (0, 1, ...) = facade rule token (F0, S0)
-    facade_orientation = prim.attribValue("facade_orientation")
-    facade_scale = prim.attribValue("facade_scale")
-    facade_rule_token = f'{facade_orientation}{facade_scale}'   
-
-    return facade_rule_token
-
-
 def get_mass_model_attributes(mass_model_node_name, facade_index):
     """
     Get attributes from current Mass Model.
@@ -55,9 +38,6 @@ def get_mass_model_attributes(mass_model_node_name, facade_index):
     facade_prim = mass_model_geo.prim(facade_index)
 
     building_style = facade_prim.attribValue("building_style")
-    # facade_orientation = facade_prim.attribValue("facade_orientation")
-    # facade_scale = facade_prim.attribValue("facade_scale")
-    # facade_rule_token = f'{facade_orientation}{facade_scale}'   
 
     return building_style
 
@@ -80,135 +60,8 @@ def populate_floor_data(floor_data):
     geo.addAttrib(hou.attribType.Global, "floor_data", {})
     geo.setGlobalAttribValue("floor_data", floor_data)
 
-    
 
-def get_floors_data(bdf_data, facade_rule_token):
-    """
-    {floor_index: {level_index: 0, split_positions: [0.1, 0.6, 0.9, 1.5, 2]}}
-    """
-    
-    floors_data = {}
-    floor_index = 0
-    rule_varialtion = 0
-    
-    for level_index, level_data in bdf_data['levels'].items():
-        for repeat_index in range(level_data['floor_repeat']):
-            
-            floor_data = {}
-            
-            floor_data['level_index'] = level_index
-            floors_data[str(floor_index)] = floor_data
-            
-            floor_index += 1
-
-    return floors_data
-
-
-def get_number_of_floors(bdf_data):
-    """
-    Return number of levels and floors in facade
-    """
-
-    levels_data = bdf_data['levels']
-
-    number_of_levels = len(levels_data.keys())
-    number_of_floors = 0
-    
-    for floor_data in levels_data.values():
-        floors = int(floor_data['floor_repeat'])
-        number_of_floors += floors
-        
-    return number_of_levels, number_of_floors
-    
-
-def get_floor_coordinates(bdf_data):
-    """
-    Calculate Y coordinate of each floor of the facade
-    """
-
-    levels_data = bdf_data['levels']
-    
-    floor_coordinates = [0.0]  # 0.0 - first floor coordinate
-    
-    for floor_data in levels_data.values():
-        for floor in range(floor_data['floor_repeat']):
-            floor_height = floor_data['floor_height']
-            floor_coordinate = floor_height + floor_coordinates[-1] 
-            floor_coordinates.append(floor_coordinate)
-            
-    # Remove last coord cos we don't copy assets there
-    building_height = floor_coordinates.pop()
-    
-    return floor_coordinates, building_height
-
-
-# Rule Parsinhg
-def evaluate_levels_data(mass_model_node_name, facade_index):
-    """
-    Evaluate levels data for Vertical split building into floors
-
-    levels_data = {floor_index: {level_index: 0, floor_index: 0, position: (0.0, 0.0, 0.0)}}
-    """
-
-    # Get facade attributes
-    building_style = get_mass_model_attributes(mass_model_node_name, facade_index)
-    
-    bdf_data = read_bdf_data(building_style)
-    levels_data = bdf_data['levels']
-
-    floor_index = 0
-    floor_coordinates = [0.0]  # List to store floor coordinates
-    expanded_levels_data = {}
-
-    for level_index, floor_data in levels_data.items():
-        for floor in range(floor_data['floor_repeat']):
-            floor_height = floor_data['floor_height']
-
-            # Store expanded floor data
-            expanded_floor_data = {"level_index": level_index, "floor_index": floor_index, "floor_coordinate": floor_coordinates[-1]}
-            expanded_levels_data[str(floor_index)] = expanded_floor_data
-
-            # Update counters
-            floor_coordinate = floor_height + floor_coordinates[-1]
-            floor_coordinates.append(floor_coordinate)
-            floor_index += 1            
-    
-    return expanded_levels_data
-
-
-def evaluate_floor_data(input_node_name):
-    """
-    Evaluate floors data: how we place modules based of floor rule
-
-    floor_data = {module_index: {module_name: "A", position: 0.0, module_width: 2.0, module_scale: 1.0}}
-    """
-    
-    floor_data = {
-        "0": {"module_name": "A", "x": 1.0, "y": 0.0, "z": 0.0, "module_width": 2.0, "module_scale": 1.0},
-        "1": {"module_name": "B", "x": 3.0, "y": 0.0, "z": 0.0, "module_width": 4.0, "module_scale": 1.0}
-    }
-
-    level_index = hou.node(f"../{input_node_name}").geometry().prim(0).attribValue("level_index")
-    P0 = hou.Vector3(hou.node(f"../{input_node_name}").geometry().prim(0).attribValue("P0"))
-    P1 = hou.Vector3(hou.node(f"../{input_node_name}").geometry().prim(0).attribValue("P1"))
-    X = hou.Vector3(hou.node(f"../{input_node_name}").geometry().prim(0).attribValue("X"))
-    facade_orientation = hou.node(f"../{input_node_name}").geometry().prim(0).attribValue("facade_orientation")
-    facade_scale = hou.node(f"../{input_node_name}").geometry().prim(0).attribValue("facade_scale")
-    facade_rule_token = f'{facade_orientation}{facade_scale}'
-
-    # print(f'level_index: {level_index}')
-    # print(f'P0: {P0}')
-    # print(f'P1: {P1}')
-    # print(f'X: {X}')
-    # print(f'facade_orientation: {facade_orientation}')
-    # print(f'facade_scale: {facade_scale}')
-    # print(f'facade_rule_token: {facade_rule_token}')
-    
-    # evaluate_shape_grammar(level_index, facade_rule_token, P0, P1)
-
-    return floor_data
-
-
+# Rule Parsing
 def evaluate_bucket(bucket, evaluated_buckets):
     """
     Build an abstract syntax tree (AST) from a bucket (inside | |).
@@ -361,21 +214,63 @@ def evaluate_shape_grammar(level_index, facade_rule_token, P0, P1):
     print(f'module_placements: {module_placements}')
 
     return module_placements, placement_positions
-    
-    
-# Load Initial data 
-def get_grammar_data():  
 
-    bdf_data = read_bdf_data()
+
+# Houdini Calls
+def evaluate_levels_data(mass_model_node_name, facade_index):
+    """
+    Evaluate levels data for Vertical split building into floors
+
+    levels_data = {floor_index: {level_index: 0, floor_index: 0, position: (0.0, 0.0, 0.0)}}
+    """
 
     # Get facade attributes
-    facade_rule_token = get_facade_attributes()  # F0
+    building_style = get_mass_model_attributes(mass_model_node_name, facade_index)
+    
+    bdf_data = read_bdf_data(building_style)
+    levels_data = bdf_data['levels']
 
-    # Get vertical segmentation data
-    number_of_levels, number_of_floors = get_number_of_floors(bdf_data)
-    floor_coordinates, building_height = get_floor_coordinates(bdf_data)
+    floor_index = 0
+    floor_coordinates = [0.0]  # List to store floor coordinates
+    expanded_levels_data = {}
 
-    # Get horizontal segmentation data
-    floors_data = get_floors_data(bdf_data, facade_rule_token)
+    for level_index, floor_data in levels_data.items():
+        for floor in range(floor_data['floor_repeat']):
+            floor_height = floor_data['floor_height']
 
-    return number_of_levels, number_of_floors, floor_coordinates, floors_data
+            # Store expanded floor data
+            expanded_floor_data = {"level_index": level_index, "floor_index": floor_index, "floor_coordinate": floor_coordinates[-1]}
+            expanded_levels_data[str(floor_index)] = expanded_floor_data
+
+            # Update counters
+            floor_coordinate = floor_height + floor_coordinates[-1]
+            floor_coordinates.append(floor_coordinate)
+            floor_index += 1            
+    
+    return expanded_levels_data
+
+
+def evaluate_floor_data(input_node_name):
+    """
+    Evaluate floors data: how we place modules based of floor rule
+
+    floor_data = {module_index: {module_name: "A", position: 0.0, module_width: 2.0, module_scale: 1.0}}
+    """
+    
+    floor_data = {
+        "0": {"module_name": "A", "x": 1.0, "y": 0.0, "z": 0.0, "module_width": 2.0, "module_scale": 1.0},
+        "1": {"module_name": "B", "x": 3.0, "y": 0.0, "z": 0.0, "module_width": 4.0, "module_scale": 1.0}
+    }
+
+    level_index = hou.node(f"../{input_node_name}").geometry().prim(0).attribValue("level_index")
+    P0 = hou.Vector3(hou.node(f"../{input_node_name}").geometry().prim(0).attribValue("P0"))
+    P1 = hou.Vector3(hou.node(f"../{input_node_name}").geometry().prim(0).attribValue("P1"))
+    X = hou.Vector3(hou.node(f"../{input_node_name}").geometry().prim(0).attribValue("X"))
+    facade_orientation = hou.node(f"../{input_node_name}").geometry().prim(0).attribValue("facade_orientation")
+    facade_scale = hou.node(f"../{input_node_name}").geometry().prim(0).attribValue("facade_scale")
+    facade_rule_token = f'{facade_orientation}{facade_scale}'
+    
+    # evaluate_shape_grammar(level_index, facade_rule_token, P0, P1)
+
+    return floor_data
+   
