@@ -87,7 +87,7 @@ def evaluate_bucket(bucket, evaluated_buckets):
             evaluated_buckets.append({ "type":"module", "parts":[key], "star": False, "max_rep":1})
 
 
-def evaluate_shape_grammar(level_index, facade_rule_token, P0, P1):
+def evaluate_shape_grammar(building_style, level_index, facade_rule_token, P0, P1):
     """
     Parse a single floor shape grammar rule string ("C|(W)|C") and
     return a list of world space split positions (Vector3).
@@ -111,8 +111,8 @@ def evaluate_shape_grammar(level_index, facade_rule_token, P0, P1):
         {"type":"module", "parts":["C"], "star":False, "max_rep":1}
     """
     
-    levels_data = read_bdf_data()['levels']
-    modules_data = read_bdf_data()['modules']
+    levels_data = read_bdf_data(building_style)['levels']
+    modules_data = read_bdf_data(building_style)['modules']
 
     rule_varialtion = 0
     floor_rule = levels_data[str(level_index)]['floor_rule'][facade_rule_token][rule_varialtion]
@@ -204,16 +204,16 @@ def evaluate_shape_grammar(level_index, facade_rule_token, P0, P1):
             # (Optional) Recompute cursor = facade_length if you need it later
             cursor = facade_length
 
-    # Build world-space points from local cursor positions
-    placement_positions = []
-    for module_placement in module_placements.values():
-        cursor = module_placement['cursor']
-        world_position = P0 + split_axis * cursor
-        placement_positions.append(world_position)
+    # # Build world-space points from local cursor positions
+    # placement_positions = []
+    # for module_placement in module_placements.values():
+    #     cursor = module_placement['cursor']
+    #     world_position = P0 + split_axis * cursor
+    #     placement_positions.append(world_position)
 
-    print(f'module_placements: {module_placements}')
+    # print(f'module_placements: {module_placements}')
 
-    return module_placements, placement_positions
+    return module_placements
 
 
 # Houdini Calls
@@ -257,20 +257,29 @@ def evaluate_floor_data(input_node_name):
     floor_data = {module_index: {module_name: "A", position: 0.0, module_width: 2.0, module_scale: 1.0}}
     """
     
-    floor_data = {
-        "0": {"module_name": "A", "x": 1.0, "y": 0.0, "z": 0.0, "module_width": 2.0, "module_scale": 1.0},
-        "1": {"module_name": "B", "x": 3.0, "y": 0.0, "z": 0.0, "module_width": 4.0, "module_scale": 1.0}
-    }
+    # floor_data = {
+    #     "0": {"module_code": "A", "x": 1.0, "y": 0.0, "z": 0.0, "module_width": 2.0, "module_scale": 1.0},
+    #     "1": {"module_code": "B", "x": 3.0, "y": 0.0, "z": 0.0, "module_width": 4.0, "module_scale": 1.0}
+    # }
 
+    building_style = hou.node(f"../{input_node_name}").geometry().prim(0).attribValue("building_style")
     level_index = hou.node(f"../{input_node_name}").geometry().prim(0).attribValue("level_index")
     P0 = hou.Vector3(hou.node(f"../{input_node_name}").geometry().prim(0).attribValue("P0"))
     P1 = hou.Vector3(hou.node(f"../{input_node_name}").geometry().prim(0).attribValue("P1"))
-    X = hou.Vector3(hou.node(f"../{input_node_name}").geometry().prim(0).attribValue("X"))
+    split_axis = hou.Vector3(hou.node(f"../{input_node_name}").geometry().prim(0).attribValue("X"))
     facade_orientation = hou.node(f"../{input_node_name}").geometry().prim(0).attribValue("facade_orientation")
     facade_scale = hou.node(f"../{input_node_name}").geometry().prim(0).attribValue("facade_scale")
     facade_rule_token = f'{facade_orientation}{facade_scale}'
     
-    # evaluate_shape_grammar(level_index, facade_rule_token, P0, P1)
+    module_placements = evaluate_shape_grammar(building_style, level_index, facade_rule_token, P0, P1)
+
+    floor_data = {}
+
+    for module_index, module_data in module_placements.items():
+        module_code = module_data['module_code']
+        cursor = module_data['cursor']
+        world_position = P0 + split_axis * cursor
+        floor_data[str(module_index)] = {"module_code": module_code, "x": world_position[0], "y":  world_position[1], "z":  world_position[2]}
 
     return floor_data
    
