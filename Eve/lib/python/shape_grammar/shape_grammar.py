@@ -54,12 +54,12 @@ def get_mass_model_attributes(mass_model_node_name, facade_index):
     mass_model_geo = mass_model_node.geometry()
     facade_prim = mass_model_geo.prim(facade_index)
 
-    facade_orientation = facade_prim.attribValue("facade_orientation")
-    facade_scale = facade_prim.attribValue("facade_scale")
     building_style = facade_prim.attribValue("building_style")
-    facade_rule_token = f'{facade_orientation}{facade_scale}'   
+    # facade_orientation = facade_prim.attribValue("facade_orientation")
+    # facade_scale = facade_prim.attribValue("facade_scale")
+    # facade_rule_token = f'{facade_orientation}{facade_scale}'   
 
-    return facade_rule_token, building_style
+    return building_style
 
 
 def populate_levels_data(levels_data):
@@ -71,6 +71,15 @@ def populate_levels_data(levels_data):
 
     geo.addAttrib(hou.attribType.Global, "levels_data", {})
     geo.setGlobalAttribValue("levels_data", levels_data)
+    
+
+def populate_floor_data(floor_data):
+
+    geo = hou.pwd().geometry()
+
+    geo.addAttrib(hou.attribType.Global, "floor_data", {})
+    geo.setGlobalAttribValue("floor_data", floor_data)
+
     
 
 def get_floors_data(bdf_data, facade_rule_token):
@@ -136,13 +145,13 @@ def get_floor_coordinates(bdf_data):
 # Rule Parsinhg
 def evaluate_levels_data(mass_model_node_name, facade_index):
     """
-    Evaluate levels data
+    Evaluate levels data for Vertical split building into floors
 
     levels_data = {floor_index: {level_index: 0, floor_index: 0, position: (0.0, 0.0, 0.0)}}
     """
-    
+
     # Get facade attributes
-    facade_rule_token, building_style = get_mass_model_attributes(mass_model_node_name, facade_index)
+    building_style = get_mass_model_attributes(mass_model_node_name, facade_index)
     
     bdf_data = read_bdf_data(building_style)
     levels_data = bdf_data['levels']
@@ -167,16 +176,37 @@ def evaluate_levels_data(mass_model_node_name, facade_index):
     return expanded_levels_data
 
 
-def evaluate_floors_data():
+def evaluate_floor_data(input_node_name):
     """
     Evaluate floors data: how we place modules based of floor rule
 
-    floors_data = {module_index: {module_name: "A", position: 0.0, module_width: 2.0, module_scale: 1.0}}
+    floor_data = {module_index: {module_name: "A", position: 0.0, module_width: 2.0, module_scale: 1.0}}
     """
     
-    levels_data = {}
+    floor_data = {
+        "0": {"module_name": "A", "x": 1.0, "y": 0.0, "z": 0.0, "module_width": 2.0, "module_scale": 1.0},
+        "1": {"module_name": "B", "x": 3.0, "y": 0.0, "z": 0.0, "module_width": 4.0, "module_scale": 1.0}
+    }
 
-    return levels_data
+    level_index = hou.node(f"../{input_node_name}").geometry().prim(0).attribValue("level_index")
+    P0 = hou.Vector3(hou.node(f"../{input_node_name}").geometry().prim(0).attribValue("P0"))
+    P1 = hou.Vector3(hou.node(f"../{input_node_name}").geometry().prim(0).attribValue("P1"))
+    X = hou.Vector3(hou.node(f"../{input_node_name}").geometry().prim(0).attribValue("X"))
+    facade_orientation = hou.node(f"../{input_node_name}").geometry().prim(0).attribValue("facade_orientation")
+    facade_scale = hou.node(f"../{input_node_name}").geometry().prim(0).attribValue("facade_scale")
+    facade_rule_token = f'{facade_orientation}{facade_scale}'
+
+    # print(f'level_index: {level_index}')
+    # print(f'P0: {P0}')
+    # print(f'P1: {P1}')
+    # print(f'X: {X}')
+    # print(f'facade_orientation: {facade_orientation}')
+    # print(f'facade_scale: {facade_scale}')
+    # print(f'facade_rule_token: {facade_rule_token}')
+    
+    # evaluate_shape_grammar(level_index, facade_rule_token, P0, P1)
+
+    return floor_data
 
 
 def evaluate_bucket(bucket, evaluated_buckets):
