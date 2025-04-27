@@ -61,7 +61,7 @@ def populate_floor_data(floor_data):
     geo.setGlobalAttribValue("floor_data", floor_data)
 
 
-# Rule Parsing
+# Rule Parsing: shape grammar magic
 def evaluate_bucket(bucket, evaluated_buckets):
     """
     Build an abstract syntax tree (AST) from a bucket (inside | |).
@@ -73,6 +73,7 @@ def evaluate_bucket(bucket, evaluated_buckets):
     """
 
     bucket_is_macro = re.match(r"^\(([^)]+)\)(?:\*|(?:\[(\d+)\]))?$", bucket)
+    print(f'>> bucket_is_macro: {bucket_is_macro}')
 
     if bucket_is_macro:
         inner = bucket_is_macro.group(1)     # e.g. 'A' or 'W-A'
@@ -116,6 +117,7 @@ def evaluate_shape_grammar(building_style, level_index, facade_rule_token, P0, P
 
     rule_varialtion = 0
     floor_rule = levels_data[str(level_index)]['floor_rule'][facade_rule_token][rule_varialtion]
+    print(f'>> floor_rule: {floor_rule}')
 
     facade_length = (P1 - P0).length()
     split_axis = (P1 - P0).normalized()  # Facade local X axis
@@ -130,6 +132,7 @@ def evaluate_shape_grammar(building_style, level_index, facade_rule_token, P0, P
         evaluate_bucket(bucket, evaluated_buckets)
 
     print(f'evaluated_buckets: {evaluated_buckets}')
+    return
 
     # First pass: place mandatory copies and collect loop-macros
     module_placements = {}  # (module_code, cursor, module_width) data. To set prim attributes later in Houdini
@@ -231,7 +234,7 @@ def evaluate_levels_data(mass_model_node_name, facade_index):
     levels_data = bdf_data['levels']
 
     floor_index = 0
-    floor_coordinates = [0.0]  # List to store floor coordinates
+    floor_coordinates = [0.0]  # List to store Y coordinates of each floor
     expanded_levels_data = {}
 
     for level_index, floor_data in levels_data.items():
@@ -239,7 +242,10 @@ def evaluate_levels_data(mass_model_node_name, facade_index):
             floor_height = floor_data['floor_height']
 
             # Store expanded floor data
-            expanded_floor_data = {"level_index": level_index, "floor_index": floor_index, "floor_coordinate": floor_coordinates[-1]}
+            expanded_floor_data = {"level_index": level_index, 
+                                   "floor_index": floor_index,
+                                   "floor_coordinate": floor_coordinates[-1]}
+            
             expanded_levels_data[str(floor_index)] = expanded_floor_data
 
             # Update counters
@@ -279,7 +285,10 @@ def evaluate_floor_data(input_node_name):
         module_code = module_data['module_code']
         cursor = module_data['cursor']
         world_position = P0 + split_axis * cursor
-        floor_data[str(module_index)] = {"module_code": module_code, "x": world_position[0], "y":  world_position[1], "z":  world_position[2]}
+        floor_data[str(module_index)] = {"module_code": module_code, 
+                                         "x": world_position[0], 
+                                         "y": world_position[1], 
+                                         "z": world_position[2]}
 
     return floor_data
    
