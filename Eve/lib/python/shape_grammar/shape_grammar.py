@@ -77,7 +77,7 @@ def preprocess_buckets(buckets):
             module = match.group(1)
             count = int(match.group(2))
             # Convert to a standard macro with repeated modules
-            result.append('(' + module * count + ')')
+            result.append('(' + '-'.join([module] * count) + ')')
         else:
             result.append(bucket)
             
@@ -133,10 +133,9 @@ def get_pattern_width(pattern, modules_data):
     """
     Width of the pattern inside a (…) bucket
     """
-
     inner = pattern.strip("()*")
-
-    return sum(modules_data[m]["width"] for m in inner)
+    module_names = inner.split('-')  # <-- Split on hyphen
+    return sum(modules_data[m]["width"] for m in module_names)
 
 
 def expand_hyphenated_modules(bucket, modules_data):
@@ -261,8 +260,9 @@ def evaluate_floor_rule(building_style, level_index, facade_rule_token, P0, P1):
 
         elif bucket_type.startswith("macro"):
             inner = bucket.strip("()*")
+            module_names = inner.split('-')  # <-- Split on hyphen
             for _ in range(pattern_count):
-                for module_name in inner:
+                for module_name in module_names:
                     module_width = modules_data[module_name]["width"] * scale
                     set_module_placement(module_placements, idx, module_name, x, module_width, scale)
                     x += module_width
