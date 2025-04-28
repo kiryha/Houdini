@@ -113,9 +113,8 @@ def evaluate_floor_rule(rule, facade_length, modules):
     tokens = _preprocess_tokens(tokens)
     token_types = [_classify(t) for t in tokens]
 
-    # Only one repeating bucket in the requested cases
-    repeating_idx = next((i for i, typ in enumerate(token_types)
-                          if typ.startswith("macro")), None)
+    # Find the index of the first macro token (repeating bucket)
+    repeating_bucket_index = next((i for i, typ in enumerate(token_types) if typ.startswith("macro")), None)
 
     # Sum all fixed widths (regular modules)
     fixed_width = 0.0
@@ -124,16 +123,16 @@ def evaluate_floor_rule(rule, facade_length, modules):
             fixed_width += _get_module_width(t, modules)
 
     # Pattern data for the repeating bucket (if any)
-    if repeating_idx is not None:
-        pattern = tokens[repeating_idx]
-        p_width = _pattern_width(pattern, modules)
+    if repeating_bucket_index is not None:
+        pattern = tokens[repeating_bucket_index]
+        pattern_width = _pattern_width(pattern, modules)
         leftover = facade_length - fixed_width
-        if token_types[repeating_idx] == "macro":
-            count = int(math.floor(leftover / p_width))
+        if token_types[repeating_bucket_index] == "macro":
+            count = int(leftover // pattern_width)
             scale = 1.0
         else:  # macro_star
-            count = int(max(1, math.floor(leftover / p_width)))
-            scale = leftover / (count * p_width)
+            count = max(1, int(leftover // pattern_width))
+            scale = leftover / (count * pattern_width)
     else:
         count = scale = 0.0  # not used
 

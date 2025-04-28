@@ -62,74 +62,93 @@ def populate_floor_data(floor_data):
     geo.setGlobalAttribValue("floor_data", floor_data)
 
 # Rule parsing logic
-def _tokenize(rule):
+def preprocess_buckets(buckets):
     """
-    Split and clean from empty stringsa bucket grammar rule (separated by '|') into tokens
-    """
-
-    return [t for t in rule.split("|") if t]
-
-
-def _preprocess_tokens(tokens):
-    """
-    Preprocess tokens to handle [A]n syntax by converting them to macro form
+    Preprocess buckets to handle [A]n syntax by converting them to macro form
 
     Converts [A]2 to (AA) for processing by the existing macro logic.
     """
 
     result = []
-    for token in tokens:
+    for bucket in buckets:
         # Check if the token matches [X]n pattern
-        match = re.match(r'\[(.+)\](\d+)$', token)
+        match = re.match(r'\[(.+)\](\d+)$', bucket)
         if match:
             module = match.group(1)
             count = int(match.group(2))
             # Convert to a standard macro with repeated modules
             result.append('(' + module * count + ')')
         else:
-            result.append(token)
+            result.append(bucket)
+            
     return result
 
 
-def _classify(token):
+def split_rule(rule):
     """
-    Return one of: 'module', 'macro', 'macro_star'
+    Split and clean from empty stringsa bucket grammar rule (separated by '|') into tokens
     """
 
-    if token.startswith("(") and token.endswith(")*"):
-        return "macro_star"
-    if token.startswith("(") and token.endswith(")"):
-        return "macro"
+    buckets = [bucket for bucket in rule.split("|") if bucket]
+    # Preprocess [A]n syntax into macro form
+    buckets = preprocess_buckets(buckets)
 
-    return "module"
+    return buckets
 
 
-def _pattern_width(pattern, modules):
+def classify_buckets(buckets):
+    """
+    Create a list of all possible bucket types 
+    
+    ('module', 'macro', 'macro_star')
+    """
+
+    bucket_types = []
+    for bucket in buckets:
+        # Determine if bucket is a module name or expression (macro and macro with a star)
+        if bucket.startswith("(") and bucket.endswith(")*"):
+            bucket_types.append("macro_star")
+        elif bucket.startswith("(") and bucket.endswith(")"):
+            bucket_types.append("macro")
+        else:
+            bucket_types.append("module")
+
+    return bucket_types
+
+
+def get_module_width(bucket, modules_data):
+    """
+    Get the width of a module token, handling both simple and hyphenated names
+    """
+
+    if "-" in bucket:
+        module_names = bucket.split("-")
+
+        return sum(modules_data[name]["width"] for name in module_names)
+    
+    return modules_data[bucket]["width"]
+
+
+def get_pattern_width(pattern, modules_data):
     """
     Width of the pattern inside a (…) bucket
     """
+
     inner = pattern.strip("()*")
-    return sum(modules[m]["width"] for m in inner)
+
+    return sum(modules_data[m]["width"] for m in inner)
 
 
-def _expand_hyphenated_modules(module_token, modules):
+def expand_hyphenated_modules(bucket, modules_data):
     """
     Expand hyphenated module names like "A-B-C" into individual modules ["A", "B", "C"]
     Returns a list of individual module names
     """
-    if "-" in module_token:
-        return module_token.split("-")
-    return [module_token]
-
-
-def _get_module_width(module_token, modules):
-    """
-    Get the width of a module token, handling both simple and hyphenated names
-    """
-    if "-" in module_token:
-        module_names = module_token.split("-")
-        return sum(modules[name]["width"] for name in module_names)
-    return modules[module_token]["width"]
+    
+    if "-" in bucket:
+        return bucket.split("-")
+    
+    return [bucket]
 
 
 def local_x_to_world(p0, p1, x_values):
@@ -141,12 +160,26 @@ def local_x_to_world(p0, p1, x_values):
     return [p0 + axis * v for v in x_values]
 
 
+def set_module_placement(module_placements, idx, module_name, x, module_width, module_scale):
+    """
+    Set the placement of a module in the module_placements dictionary
+    """
+    
+    module_placements[idx] = {
+        "module_name": module_name,
+        "position": x,
+        "module_width": module_width,
+        "module_scale": module_scale,
+    }
+
+
 def evaluate_floor_rule(building_style, level_index, facade_rule_token, P0, P1):
     """
     Return split positions (local X) and a per-module dictionary
     {index: {'module_name', 'position', 'module_width', 'module_scale'}}
 
     Supports several patterns:
+    - "A"       - place module A
     - "(A)"     - repeat whole modules
     - "(A)*"    - repeat, scale to fill
     - "C|(W)|C" - fixed modules + repeating bucket
@@ -168,70 +201,70 @@ def evaluate_floor_rule(building_style, level_index, facade_rule_token, P0, P1):
     levels_data = read_bdf_data(building_style)['levels']
     modules_data = read_bdf_data(building_style)['modules']
     floor_rule = levels_data[str(level_index)]['floor_rule'][facade_rule_token][rule_varialtion]
+    
     print(f'>> floor_rule: {floor_rule}')
 
-    tokens = _tokenize(floor_rule)
-    # Preprocess [A]n syntax into macro form
-    tokens = _preprocess_tokens(tokens)
-    token_types = [_classify(t) for t in tokens]
+    buckets = split_rule(floor_rule)  # "A|(B)*|C" -> ["A", "(B)*", "C"]
+    bucket_types = classify_buckets(buckets)  # 'module', 'macro', 'macro_star'
 
-    # Only one repeating bucket in the requested cases
-    repeating_idx = next((i for i, typ in enumerate(token_types)
-                          if typ.startswith("macro")), None)
+    print(f'buckets: {buckets}')
+    print(f'bucket_types: {bucket_types}')
+
+    # Find the index of the first macro token (repeating bucket)
+    repeating_bucket_index = None
+    for i, token_type in enumerate(bucket_types):
+        if token_type.startswith("macro"):
+            repeating_bucket_index = i
+            break
+    
+    print(f'repeating_bucket_index: {repeating_bucket_index}')
 
     # Sum all fixed widths (regular modules)
     fixed_width = 0.0
-    for t, typ in zip(tokens, token_types):
-        if typ == "module":
-            fixed_width += _get_module_width(t, modules_data)
+    for bucket, bucket_type in zip(buckets, bucket_types):
+        if bucket_type  == "module":
+            fixed_width += get_module_width(bucket, modules_data)  # "A" -> 2.0
+    
+    print(f'fixed_width: {fixed_width}')
 
-    # Pattern data for the repeating bucket (if any)
-    if repeating_idx is not None:
-        pattern = tokens[repeating_idx]
-        p_width = _pattern_width(pattern, modules_data)
-        leftover = facade_length - fixed_width
-        if token_types[repeating_idx] == "macro":
-            count = int(math.floor(leftover / p_width))
+    #  How many patterns can fit the available space and whether to scale it
+    pattern_count = 0
+    scale = 0.0 
+    if repeating_bucket_index is not None:
+        pattern = buckets[repeating_bucket_index]  # ['(A)'][0] -> '(A)'
+        pattern_width = get_pattern_width(pattern, modules_data)  # 2.0
+        leftover = facade_length - fixed_width  # 5.0 - 2.0 = 3.0
+        if bucket_types[repeating_bucket_index] == "macro":
+            pattern_count = int(leftover // pattern_width)  # 3 // 2 = 1
             scale = 1.0
         else:  # macro_star
-            count = int(max(1, math.floor(leftover / p_width)))
-            scale = leftover / (count * p_width)
-    else:
-        count = scale = 0.0  # not used
+            pattern_count = max(1, int(leftover // pattern_width))
+            scale = leftover / (pattern_count * pattern_width)
+    
+    print(f'pattern_count: {pattern_count}')
 
     # Emit positions
     x = 0.0
     module_placements = {}
     idx = 0
 
-    for i, (tok, typ) in enumerate(zip(tokens, token_types)):
-        if typ == "module":
+    for bucket, bucket_type in zip(buckets, bucket_types):
+        if bucket_type == "module":
             # Handle hyphenated modules (A-B-C)
-            module_names = _expand_hyphenated_modules(tok, modules_data)
+            module_names = expand_hyphenated_modules(bucket, modules_data)  # "A-B-C" -> ["A", "B", "C"]
             for module_name in module_names:
-                w = modules_data[module_name]["width"]
-                module_placements[idx] = {
-                    "module_name": module_name,
-                    "position": x,
-                    "module_width": w,
-                    "module_scale": 1.0,
-                }
-                x += w
+                module_width = modules_data[module_name]["width"]
+                set_module_placement(module_placements, idx, module_name, x, module_width, 1.0)
+                x += module_width
                 idx += 1
 
-        elif typ.startswith("macro"):
-            inner = tok.strip("()*")
-            inner_w = _pattern_width(tok, modules_data) * scale
-            for _ in range(count):
-                for m in inner:
-                    w = modules_data[m]["width"] * scale
-                    module_placements[idx] = {
-                        "module_name": m,
-                        "position": x,
-                        "module_width": w,
-                        "module_scale": scale,
-                    }
-                    x += w
+        elif bucket_type.startswith("macro"):
+            inner = bucket.strip("()*")
+            for _ in range(pattern_count):
+                for module_name in inner:
+                    module_width = modules_data[module_name]["width"] * scale
+                    set_module_placement(module_placements, idx, module_name, x, module_width, scale)
+                    x += module_width
                     idx += 1
 
     return module_placements
