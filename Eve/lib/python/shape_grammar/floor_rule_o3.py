@@ -95,10 +95,11 @@ def local_x_to_world(p0, p1, x_values):
     return [p0 + axis * v for v in x_values]
 
 
-def evaluate_bucket_rule(rule, facade_length, modules):
+def evaluate_floor_rule(rule, facade_length, modules):
     """
-    Return split positions (local X) and a per-module dictionary
-    {index: {'module_name', 'position', 'module_width', 'module_scale'}}.
+    Return a dictionary with module placements information:
+    {module_index: {'module_name', 'position', 'module_width', 'module_scale'}}
+    
     Supports several patterns:
     - "(A)"     - repeat whole modules
     - "(A)*"    - repeat, scale to fill
@@ -138,8 +139,7 @@ def evaluate_bucket_rule(rule, facade_length, modules):
 
     # Emit positions
     x = 0.0
-    splits: List[float] = []
-    meta: Dict[int, Dict] = {}
+    module_placements = {}
     idx = 0
 
     for i, (tok, typ) in enumerate(zip(tokens, token_types)):
@@ -147,9 +147,8 @@ def evaluate_bucket_rule(rule, facade_length, modules):
             # Handle hyphenated modules (A-B-C)
             module_names = _expand_hyphenated_modules(tok, modules)
             for module_name in module_names:
-                splits.append(x)
                 w = modules[module_name]["width"]
-                meta[idx] = {
+                module_placements[idx] = {
                     "module_name": module_name,
                     "position": x,
                     "module_width": w,
@@ -163,9 +162,8 @@ def evaluate_bucket_rule(rule, facade_length, modules):
             inner_w = _pattern_width(tok, modules) * scale
             for _ in range(count):
                 for m in inner:
-                    splits.append(x)
                     w = modules[m]["width"] * scale
-                    meta[idx] = {
+                    module_placements[idx] = {
                         "module_name": m,
                         "position": x,
                         "module_width": w,
@@ -174,7 +172,7 @@ def evaluate_bucket_rule(rule, facade_length, modules):
                     x += w
                     idx += 1
 
-    return splits, meta
+    return module_placements
 
 
 if __name__ == "__main__":
@@ -193,10 +191,13 @@ if __name__ == "__main__":
     façade_len = (P1 - P0).length()
 
     for rule in ["A", "A|B", "[A]2", "(C)", "(C)*", "C|(W)|C",  "C|A-B|(A)*|A-B|C"]:
-        splits, info = evaluate_bucket_rule(rule, façade_len, MODULES)
-        w_points = local_x_to_world(P0, P1, splits)
+        # building_style, level_index, facade_rule_token, P0, P1
+        module_placements = evaluate_floor_rule(rule, façade_len, MODULES)
+        
+        # Extract positions from the module placements dictionary for world conversion
+        positions = [data["position"] for data in module_placements.values()]
+        w_points = local_x_to_world(P0, P1, positions)
 
         print(f"\nRule: {rule}")
-        print("split positions (local X):", splits)
-        print("module dict:", info)
+        print("module_placements:", module_placements)
         print("world points:", [tuple(p) for p in w_points])

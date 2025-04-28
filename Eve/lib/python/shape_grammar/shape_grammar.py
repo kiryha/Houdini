@@ -4,6 +4,7 @@ Parse BDF data
 
 import re
 import hou
+import math
 import json
 
    
@@ -60,161 +61,178 @@ def populate_floor_data(floor_data):
     geo.addAttrib(hou.attribType.Global, "floor_data", {})
     geo.setGlobalAttribValue("floor_data", floor_data)
 
-
-# Rule Parsing: shape grammar magic
-def evaluate_bucket(bucket, evaluated_buckets):
+# Rule parsing logic
+def _tokenize(rule):
     """
-    Build an abstract syntax tree (AST) from a bucket (inside | |).
-
-    if we find a "matches", then token is a macro (e.g. "(A)"), otherwise it is a module (e.g. "A")
-
-    ast_macro =[{'type': 'macro', 'parts': ['A'], 'star': False, 'max_rep': None}]
-    ast_module =[{'type': 'module', 'parts': ['A'], 'star': False, 'max_rep': 1}]
+    Split and clean from empty stringsa bucket grammar rule (separated by '|') into tokens
     """
 
-    bucket_is_macro = re.match(r"^\(([^)]+)\)(?:\*|(?:\[(\d+)\]))?$", bucket)
-    print(f'>> bucket_is_macro: {bucket_is_macro}')
-
-    if bucket_is_macro:
-        inner = bucket_is_macro.group(1)     # e.g. 'A' or 'W-A'
-        star  = bucket.endswith("*")
-        cap   = bucket_is_macro.group(2)
-        max_rep = int(cap) if cap else None
-        parts = inner.split("-")
-        evaluated_buckets.append({"type":"macro", "parts":parts, "star":star, "max_rep":max_rep}) 
-    else:  # Bucket is a module_code (e.g. "C")
-        key = bucket.strip()
-        if key:
-            evaluated_buckets.append({ "type":"module", "parts":[key], "star": False, "max_rep":1})
+    return [t for t in rule.split("|") if t]
 
 
-def evaluate_shape_grammar(building_style, level_index, facade_rule_token, P0, P1):
+def _preprocess_tokens(tokens):
     """
-    Parse a single floor shape grammar rule string ("C|(W)|C") and
-    return a list of world space split positions (Vector3).
+    Preprocess tokens to handle [A]n syntax by converting them to macro form
 
-    level_index: number of current level (0, 1, 2, ...)
-    facade_rule_token: facade orientation + facade sacale factor (F0, S0, F1, etc) - comes from mass model
-    P0: Facade start point
-    P1: Facade end point
-
-    # Data examples
-    floor_rule = "(A)"
-    modules_data = {"A": {"width": 2.0}}
-    module_placements = {'0': {'module_code': 'A', 'cursor': 0.0, 'module_width': 1.8}, 
-                         '1': {'module_code': 'A', 'cursor': 2.0, 'module_width': 1.8}, ...}
-
-
-    
-    evaluated_buckets for "C|(W)|C" ([]):
-        {"type":"module", "parts":["C"], "star":False, "max_rep":1},
-        {"type":"macro",  "parts":["W"], "star":False, "max_rep":None},
-        {"type":"module", "parts":["C"], "star":False, "max_rep":1}
+    Converts [A]2 to (AA) for processing by the existing macro logic.
     """
-    
+
+    result = []
+    for token in tokens:
+        # Check if the token matches [X]n pattern
+        match = re.match(r'\[(.+)\](\d+)$', token)
+        if match:
+            module = match.group(1)
+            count = int(match.group(2))
+            # Convert to a standard macro with repeated modules
+            result.append('(' + module * count + ')')
+        else:
+            result.append(token)
+    return result
+
+
+def _classify(token):
+    """
+    Return one of: 'module', 'macro', 'macro_star'
+    """
+
+    if token.startswith("(") and token.endswith(")*"):
+        return "macro_star"
+    if token.startswith("(") and token.endswith(")"):
+        return "macro"
+
+    return "module"
+
+
+def _pattern_width(pattern, modules):
+    """
+    Width of the pattern inside a (…) bucket
+    """
+    inner = pattern.strip("()*")
+    return sum(modules[m]["width"] for m in inner)
+
+
+def _expand_hyphenated_modules(module_token, modules):
+    """
+    Expand hyphenated module names like "A-B-C" into individual modules ["A", "B", "C"]
+    Returns a list of individual module names
+    """
+    if "-" in module_token:
+        return module_token.split("-")
+    return [module_token]
+
+
+def _get_module_width(module_token, modules):
+    """
+    Get the width of a module token, handling both simple and hyphenated names
+    """
+    if "-" in module_token:
+        module_names = module_token.split("-")
+        return sum(modules[name]["width"] for name in module_names)
+    return modules[module_token]["width"]
+
+
+def local_x_to_world(p0, p1, x_values):
+    """
+    Convert local-X offsets to world positions along the P0-P1 vector
+    """
+
+    axis = (p1 - p0).normalized()
+    return [p0 + axis * v for v in x_values]
+
+
+def evaluate_floor_rule(building_style, level_index, facade_rule_token, P0, P1):
+    """
+    Return split positions (local X) and a per-module dictionary
+    {index: {'module_name', 'position', 'module_width', 'module_scale'}}
+
+    Supports several patterns:
+    - "(A)"     - repeat whole modules
+    - "(A)*"    - repeat, scale to fill
+    - "C|(W)|C" - fixed modules + repeating bucket
+    - "[A]n"    - repeat module A exactly n times (converted to macro)
+    - "A-B-C"   - place modules A, B, C in sequence
+
+    building_style:: string code of the building style.
+    We have one Building Definition File for each building style (brownstone, glass tower, pre‑war masonry, etc).
+    The BDF name defined by building style.
+    level_index:: number of current level (0, 1, 2, ...)
+    facade_rule_token:: facade orientation + facade sacale factor (F0, S0, F1, etc) - comes from mass model
+    P0:: Facade start point
+    P1:: Facade end point
+    """
+
+    # Read BDF data
+    rule_varialtion = 0
+    facade_length = (P1 - P0).length()
     levels_data = read_bdf_data(building_style)['levels']
     modules_data = read_bdf_data(building_style)['modules']
-
-    rule_varialtion = 0
     floor_rule = levels_data[str(level_index)]['floor_rule'][facade_rule_token][rule_varialtion]
     print(f'>> floor_rule: {floor_rule}')
 
-    facade_length = (P1 - P0).length()
-    split_axis = (P1 - P0).normalized()  # Facade local X axis
-    # print(f'split_axis: {split_axis}))  #  facade_length: {facade_length}'
+    tokens = _tokenize(floor_rule)
+    # Preprocess [A]n syntax into macro form
+    tokens = _preprocess_tokens(tokens)
+    token_types = [_classify(t) for t in tokens]
 
-    # Tokenize buckets (tokens)
-    buckets = floor_rule.split("|")
+    # Only one repeating bucket in the requested cases
+    repeating_idx = next((i for i, typ in enumerate(token_types)
+                          if typ.startswith("macro")), None)
 
-    # For each bucket, build a minimal Abstract Syntax Tree
-    evaluated_buckets = []
-    for bucket in buckets:
-        evaluate_bucket(bucket, evaluated_buckets)
+    # Sum all fixed widths (regular modules)
+    fixed_width = 0.0
+    for t, typ in zip(tokens, token_types):
+        if typ == "module":
+            fixed_width += _get_module_width(t, modules_data)
 
-    print(f'evaluated_buckets: {evaluated_buckets}')
-    return
+    # Pattern data for the repeating bucket (if any)
+    if repeating_idx is not None:
+        pattern = tokens[repeating_idx]
+        p_width = _pattern_width(pattern, modules_data)
+        leftover = facade_length - fixed_width
+        if token_types[repeating_idx] == "macro":
+            count = int(math.floor(leftover / p_width))
+            scale = 1.0
+        else:  # macro_star
+            count = int(max(1, math.floor(leftover / p_width)))
+            scale = leftover / (count * p_width)
+    else:
+        count = scale = 0.0  # not used
 
-    # First pass: place mandatory copies and collect loop-macros
-    module_placements = {}  # (module_code, cursor, module_width) data. To set prim attributes later in Houdini
-    loopers    = []  # macros that can repeat indefinitely
-    cursor     = 0.0 # cursor: module X position on facade in local facade coordinates
-    module_index = 0 # Iteration of module placement
+    # Emit positions
+    x = 0.0
+    module_placements = {}
+    idx = 0
 
-    for bucket in evaluated_buckets:
-        for module_code in bucket["parts"]:
-            module_width = modules_data[module_code]['width']
-            placement = {"module_code": module_code, "cursor": cursor, "module_width": module_width}
-            module_placements[str(module_index)] = placement
+    for i, (tok, typ) in enumerate(zip(tokens, token_types)):
+        if typ == "module":
+            # Handle hyphenated modules (A-B-C)
+            module_names = _expand_hyphenated_modules(tok, modules_data)
+            for module_name in module_names:
+                w = modules_data[module_name]["width"]
+                module_placements[idx] = {
+                    "module_name": module_name,
+                    "position": x,
+                    "module_width": w,
+                    "module_scale": 1.0,
+                }
+                x += w
+                idx += 1
 
-            cursor += module_width
-            module_index += 1
-
-        if bucket["type"]=="macro" and bucket["max_rep"] is None:
-            loopers.append(bucket)
-
-    # print(f'module_placements 1: {module_placements}')
-    # print(f'loopers: {loopers}')
-
-    # Loop-append phase
-    remaining = facade_length - cursor
-    # print(f'remaining: {remaining}')
-    for bucket in loopers:
-        macro_width = sum(modules_data[module_code]['width'] for module_code in bucket["parts"])
-        full_copies = int( remaining // macro_width )  # how many full copies fit?
-        
-        if bucket["max_rep"] is not None: # cap if fixed max_rep
-            full_copies = min(full_copies, bucket["max_rep"])
-            
-        for i in range(full_copies + 1):
-            for module_code in bucket["parts"]:
-                module_width = modules_data[module_code]['width']
-                placement = {"module_code": module_code, "cursor": cursor, "module_width": module_width}
-                module_placements[str(module_index)] = placement
-
-                cursor += module_width
-                module_index += 1
-           
-            remaining -= macro_width
-   
-    # # tar-scale last macro to absorb final slack
-    # if evaluated_buckets and evaluated_buckets[-1]["star"]:
-    #     slack = facade_length - cursor          # positive gap still empty
-    #     if slack > 1e-6:
-    #         parts = evaluated_buckets[-1]["parts"]
-    #         total_nom = sum(modules_data[p]['width'] for p in parts)
-    #         ratio = (slack + total_nom) / total_nom
-
-    #         # find the last |parts| placements we just wrote
-    #         for i, part in enumerate(parts[::-1], 1):
-    #             idx = str(module_index - i)     # last entries in dict
-    #             new_w = modules_data[part]['width'] * ratio
-    #             module_placements[idx]["module_width"] = new_w
-
-    # 7) STAR-BUCKET SCALING: if the last bucket was marked star, 
-    #    stretch ALL of its placements to fill exactly facade_length.
-    if evaluated_buckets and evaluated_buckets[-1]["star"]:
-        total_used = cursor                                  # current total span
-        if total_used > 1e-6:
-            # print(f'total_used: {total_used}')
-            scale_ratio = facade_length / total_used         # how much to stretch
-            # Stretch every placement of THAT bucket
-            last_parts = set(evaluated_buckets[-1]["parts"]) # e.g. {'A'}
-            for key, placement in module_placements.items():
-                if placement["module_code"] in last_parts:
-                    # resize each A by the same ratio:
-                    placement["module_width"] *= scale_ratio
-
-            # (Optional) Recompute cursor = facade_length if you need it later
-            cursor = facade_length
-
-    # # Build world-space points from local cursor positions
-    # placement_positions = []
-    # for module_placement in module_placements.values():
-    #     cursor = module_placement['cursor']
-    #     world_position = P0 + split_axis * cursor
-    #     placement_positions.append(world_position)
-
-    # print(f'module_placements: {module_placements}')
+        elif typ.startswith("macro"):
+            inner = tok.strip("()*")
+            inner_w = _pattern_width(tok, modules_data) * scale
+            for _ in range(count):
+                for m in inner:
+                    w = modules_data[m]["width"] * scale
+                    module_placements[idx] = {
+                        "module_name": m,
+                        "position": x,
+                        "module_width": w,
+                        "module_scale": scale,
+                    }
+                    x += w
+                    idx += 1
 
     return module_placements
 
@@ -260,13 +278,8 @@ def evaluate_floor_data(input_node_name):
     """
     Evaluate floors data: how we place modules based of floor rule
 
-    floor_data = {module_index: {module_name: "A", position: 0.0, module_width: 2.0, module_scale: 1.0}}
+    module_placements = {module_index: {module_name: "A", position: 0.0, module_width: 2.0, module_scale: 1.0}}
     """
-    
-    # floor_data = {
-    #     "0": {"module_code": "A", "x": 1.0, "y": 0.0, "z": 0.0, "module_width": 2.0, "module_scale": 1.0},
-    #     "1": {"module_code": "B", "x": 3.0, "y": 0.0, "z": 0.0, "module_width": 4.0, "module_scale": 1.0}
-    # }
 
     building_style = hou.node(f"../{input_node_name}").geometry().prim(0).attribValue("building_style")
     level_index = hou.node(f"../{input_node_name}").geometry().prim(0).attribValue("level_index")
@@ -277,18 +290,20 @@ def evaluate_floor_data(input_node_name):
     facade_scale = hou.node(f"../{input_node_name}").geometry().prim(0).attribValue("facade_scale")
     facade_rule_token = f'{facade_orientation}{facade_scale}'
     
-    module_placements = evaluate_shape_grammar(building_style, level_index, facade_rule_token, P0, P1)
+    module_placements = evaluate_floor_rule(building_style, level_index, facade_rule_token, P0, P1)
 
     floor_data = {}
 
     for module_index, module_data in module_placements.items():
-        module_code = module_data['module_code']
-        cursor = module_data['cursor']
-        world_position = P0 + split_axis * cursor
-        floor_data[str(module_index)] = {"module_code": module_code, 
+        module_name = module_data['module_name']
+        position = module_data['position']
+        world_position = P0 + split_axis * position
+        floor_data[str(module_index)] = {"module_name": module_name, 
                                          "x": world_position[0], 
                                          "y": world_position[1], 
                                          "z": world_position[2]}
+        
+    print(f'>> floor_data: {floor_data}')
 
     return floor_data
    
