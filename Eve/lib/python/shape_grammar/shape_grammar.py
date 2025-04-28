@@ -18,7 +18,7 @@ def read_bdf_data(building_style):
     with open(bdf_file_path, 'r') as f:
         bdf_data = json.load(f)
 
-    print(f'>> BDF data file: {bdf_file_path.split("/")[-1]}')
+    # print(f'>> BDF data file: {bdf_file_path.split("/")[-1]}')
 
     return bdf_data 
 
@@ -202,13 +202,13 @@ def evaluate_floor_rule(building_style, level_index, facade_rule_token, P0, P1):
     modules_data = read_bdf_data(building_style)['modules']
     floor_rule = levels_data[str(level_index)]['floor_rule'][facade_rule_token][rule_varialtion]
     
-    print(f'>> floor_rule: {floor_rule}')
+    # print(f'>> floor_rule: {floor_rule}')
 
     buckets = split_rule(floor_rule)  # "A|(B)*|C" -> ["A", "(B)*", "C"]
     bucket_types = classify_buckets(buckets)  # 'module', 'macro', 'macro_star'
 
-    print(f'buckets: {buckets}')
-    print(f'bucket_types: {bucket_types}')
+    # print(f'buckets: {buckets}')
+    # print(f'bucket_types: {bucket_types}')
 
     # Find the index of the first macro token (repeating bucket)
     repeating_bucket_index = None
@@ -217,7 +217,7 @@ def evaluate_floor_rule(building_style, level_index, facade_rule_token, P0, P1):
             repeating_bucket_index = i
             break
     
-    print(f'repeating_bucket_index: {repeating_bucket_index}')
+    # print(f'repeating_bucket_index: {repeating_bucket_index}')
 
     # Sum all fixed widths (regular modules)
     fixed_width = 0.0
@@ -225,7 +225,7 @@ def evaluate_floor_rule(building_style, level_index, facade_rule_token, P0, P1):
         if bucket_type  == "module":
             fixed_width += get_module_width(bucket, modules_data)  # "A" -> 2.0
     
-    print(f'fixed_width: {fixed_width}')
+    # print(f'fixed_width: {fixed_width}')
 
     #  How many patterns can fit the available space and whether to scale it
     pattern_count = 0
@@ -241,7 +241,8 @@ def evaluate_floor_rule(building_style, level_index, facade_rule_token, P0, P1):
             pattern_count = max(1, int(leftover // pattern_width))
             scale = leftover / (pattern_count * pattern_width)
     
-    print(f'pattern_count: {pattern_count}')
+    # print(f'pattern_count: {pattern_count}')
+    # print(f'scale: {scale}')
 
     # Emit positions
     x = 0.0
@@ -278,6 +279,8 @@ def evaluate_levels_data(mass_model_node_name, facade_index):
     levels_data = {floor_index: {level_index: 0, floor_index: 0, position: (0.0, 0.0, 0.0)}}
     """
 
+    # print(f'>> Evaluating levels...')
+
     # Get facade attributes
     building_style = get_mass_model_attributes(mass_model_node_name, facade_index)
     
@@ -304,6 +307,8 @@ def evaluate_levels_data(mass_model_node_name, facade_index):
             floor_coordinates.append(floor_coordinate)
             floor_index += 1            
     
+    # print(f'>> Levels completed')
+
     return expanded_levels_data
 
 
@@ -313,6 +318,8 @@ def evaluate_floor_data(input_node_name):
 
     module_placements = {module_index: {module_name: "A", position: 0.0, module_width: 2.0, module_scale: 1.0}}
     """
+
+    # print(f'>> Evaluating floor data...')   
 
     building_style = hou.node(f"../{input_node_name}").geometry().prim(0).attribValue("building_style")
     level_index = hou.node(f"../{input_node_name}").geometry().prim(0).attribValue("level_index")
@@ -332,11 +339,12 @@ def evaluate_floor_data(input_node_name):
         position = module_data['position']
         world_position = P0 + split_axis * position
         floor_data[str(module_index)] = {"module_name": module_name, 
+                                         "module_scale": module_data['module_scale'],
                                          "x": world_position[0], 
                                          "y": world_position[1], 
                                          "z": world_position[2]}
-        
-    print(f'>> floor_data: {floor_data}')
+    
+    # print(f'>> Floors completed')
 
     return floor_data
    
