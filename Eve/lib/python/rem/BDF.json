@@ -2,11 +2,11 @@
   "levels": {
     "0": {
       "level_index": 0,
-      "floor_height": 5.0,
-      "floor_repeat": 1,
+      "floor_height": 2.5,
+      "floor_repeat": 2,
       "floor_rule": {
         "F0": [
-          "(A)"
+          "CORNER|(WINDOW)*|CORNER"
         ]
       }
     },
@@ -16,7 +16,7 @@
       "floor_repeat": 4,
       "floor_rule": {
         "F0": [
-          "(W)"
+          "WINDOW|(WALL)*|WINDOW"
         ]
       }
     },
@@ -26,23 +26,23 @@
       "floor_repeat": 1,
       "floor_rule": {
         "F0": [
-          "(R)"
+          "CORNER|(ROOF)*|CORNER"
         ]
       }
     }
   },
   "modules": {
-    "C": {
-      "width": 0.5
+    "WINDOW": {
+      "width": 0.6
     },
-    "A": {
+    "ROOF": {
+      "width": 1.0
+    },
+	"CORNER": {
       "width": 2.0
     },
-    "W": {
+    "WALL": {
       "width": 3.5
-    },
-    "R": {
-      "width": 0.5
     }
   }
 }

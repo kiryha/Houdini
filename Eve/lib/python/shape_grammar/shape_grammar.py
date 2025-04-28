@@ -1,10 +1,20 @@
 """
-Parse BDF data
+Module to calculate facade slicing into floors and modules according to text rule (Building Definition File, JSON)
+
+Input:
+    - grammar_rule: text rule
+    - P0: start point of the floor
+    - P1: end point of the floor
+    - axis: local X axis of facade, slice happens along this axis
+    - modules_data: modules name and size dictionary
+
+Output:
+    Floor slicing instructions:
+    {module_index: {module_name: "A", position: 0.0, module_width: 2.0, module_scale: 1.0}}
 """
 
 import re
 import hou
-import math
 import json
 
    
