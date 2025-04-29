@@ -33,6 +33,29 @@ def read_bdf_data(building_style):
     return bdf_data 
 
 
+def get_floor_rule(levels_data, level_index, facade_rule_token, rule_varialtion):
+    """
+    Get floor rule from levels data dictionary
+    """
+
+    floor_rule = None
+    level_data = levels_data.get(str(level_index))
+    if level_data:
+        floor_rules = level_data['floor_rule'].get(facade_rule_token)
+        if floor_rules:
+            floor_rule = floor_rules[rule_varialtion]
+            if floor_rule:
+                return floor_rule
+            else:
+                print(f'>> ERROR! Missing floor rule for rule variation: {rule_varialtion}')
+        else:
+            print(f'>> ERROR! Missing facade rule token: {facade_rule_token}')
+    else:
+        print(f'>> ERROR! Missing level data for level index: {level_index}')
+
+    return None
+
+
 def get_mass_model_attributes(mass_model_node_name, facade_index):
     """
     Get attributes from current Mass Model.
@@ -209,7 +232,11 @@ def evaluate_floor_rule(building_style, level_index, facade_rule_token, P0, P1):
     facade_length = (P1 - P0).length()
     levels_data = read_bdf_data(building_style)['levels']
     modules_data = read_bdf_data(building_style)['modules']
-    floor_rule = levels_data[str(level_index)]['floor_rule'][facade_rule_token][rule_varialtion]
+    floor_rule = get_floor_rule(levels_data, level_index, facade_rule_token, rule_varialtion)
+
+    if not floor_rule:
+        print(f'>> ERROR! Data missing in BDF!')
+        return 
     
     # print(f'>> floor_rule: {floor_rule}')
 
@@ -331,6 +358,9 @@ def evaluate_floor_data(input_node_name):
 
     # print(f'>> Evaluating floor data...')   
 
+    
+    floor_data = {}
+
     building_style = hou.node(f"../{input_node_name}").geometry().prim(0).attribValue("building_style")
     level_index = hou.node(f"../{input_node_name}").geometry().prim(0).attribValue("level_index")
     P0 = hou.Vector3(hou.node(f"../{input_node_name}").geometry().prim(0).attribValue("P0"))
@@ -342,7 +372,8 @@ def evaluate_floor_data(input_node_name):
     
     module_placements = evaluate_floor_rule(building_style, level_index, facade_rule_token, P0, P1)
 
-    floor_data = {}
+    if not module_placements:
+        return floor_data
 
     for module_index, module_data in module_placements.items():
         module_name = module_data['module_name']
