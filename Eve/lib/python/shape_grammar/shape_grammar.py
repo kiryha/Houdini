@@ -230,7 +230,7 @@ def evaluate_floor_rule(building_style, level_index, facade_rule_token, P0, P1):
     # Read BDF data
     rule_varialtion = 0
     facade_length = (P1 - P0).length()
-    levels_data = read_bdf_data(building_style)['levels']
+    levels_data = read_bdf_data(building_style)['levels']  
     modules_data = read_bdf_data(building_style)['modules']
     floor_rule = get_floor_rule(levels_data, level_index, facade_rule_token, rule_varialtion)
 
@@ -243,67 +243,70 @@ def evaluate_floor_rule(building_style, level_index, facade_rule_token, P0, P1):
     buckets = split_rule(floor_rule)  # "A|(B)*|C" -> ["A", "(B)*", "C"]
     bucket_types = classify_buckets(buckets)  # 'module', 'macro', 'macro_star'
 
-    # print(f'buckets: {buckets}')
-    # print(f'bucket_types: {bucket_types}')
-
-    # Find the index of the first macro token (repeating bucket)
-    repeating_bucket_index = None
-    for i, token_type in enumerate(bucket_types):
-        if token_type.startswith("macro"):
-            repeating_bucket_index = i
-            break
-    
-    # print(f'repeating_bucket_index: {repeating_bucket_index}')
-
-    # Sum all fixed widths (regular modules)
+    # First pass: calculate total fixed width and identify macro regions
     fixed_width = 0.0
-    for bucket, bucket_type in zip(buckets, bucket_types):
-        if bucket_type  == "module":
-            fixed_width += get_module_width(bucket, modules_data)  # "A" -> 2.0
+    macro_regions = []  # Store info about each macro region
+    current_fixed_width = 0.0
     
-    # print(f'fixed_width: {fixed_width}')
-
-    #  How many patterns can fit the available space and whether to scale it
-    pattern_count = 0
-    scale = 0.0 
-    if repeating_bucket_index is not None:
-        pattern = buckets[repeating_bucket_index]  # ['(A)'][0] -> '(A)'
-        pattern_width = get_pattern_width(pattern, modules_data)  # 2.0
-        leftover = facade_length - fixed_width  # 5.0 - 2.0 = 3.0
-        if bucket_types[repeating_bucket_index] == "macro":
-            pattern_count = int(leftover // pattern_width)  # 3 // 2 = 1
-            scale = 1.0
-        else:  # macro_star
-            pattern_count = max(1, int(leftover // pattern_width))
-            scale = leftover / (pattern_count * pattern_width)
+    for i, (bucket, bucket_type) in enumerate(zip(buckets, bucket_types)):
+        if bucket_type == "module":
+            width = get_module_width(bucket, modules_data) # "A" -> 2.0
+            fixed_width += width
+            current_fixed_width += width
+        elif bucket_type.startswith("macro"):
+            pattern = bucket
+            pattern_width = get_pattern_width(pattern, modules_data)
+            macro_regions.append({
+                'index': i,
+                'pattern': pattern,
+                'pattern_width': pattern_width,
+                'type': bucket_type,
+                'preceding_fixed_width': current_fixed_width
+            })
     
-    # print(f'pattern_count: {pattern_count}')
-    # print(f'scale: {scale}')
-
+    # Calculate available space for each macro region
+    remaining_length = facade_length - fixed_width
+    if macro_regions:
+        space_per_region = remaining_length / len(macro_regions)
+        
     # Emit positions
     x = 0.0
     module_placements = {}
     idx = 0
+    current_macro_region = 0
 
     for bucket, bucket_type in zip(buckets, bucket_types):
         if bucket_type == "module":
             # Handle hyphenated modules (A-B-C)
-            module_names = expand_hyphenated_modules(bucket, modules_data)  # "A-B-C" -> ["A", "B", "C"]
+            module_names = expand_hyphenated_modules(bucket, modules_data) # "A-B-C" -> ["A", "B", "C"]
             for module_name in module_names:
                 module_width = modules_data[module_name]["width"]
                 set_module_placement(module_placements, idx, module_name, x, module_width, 1.0)
                 x += module_width
                 idx += 1
-
         elif bucket_type.startswith("macro"):
+            # Get current macro region info
+            region = macro_regions[current_macro_region]
+            pattern_width = region['pattern_width']
+            available_space = space_per_region
+            
+            if bucket_type == "macro":
+                pattern_count = int(available_space // pattern_width)
+                scale = 1.0
+            else:  # macro_star
+                pattern_count = max(1, int(available_space // pattern_width))
+                scale = available_space / (pattern_count * pattern_width)
+            
             inner = bucket.strip("()*")
-            module_names = inner.split('-')  # <-- Split on hyphen
+            module_names = inner.split('-')
             for _ in range(pattern_count):
                 for module_name in module_names:
                     module_width = modules_data[module_name]["width"] * scale
                     set_module_placement(module_placements, idx, module_name, x, module_width, scale)
                     x += module_width
                     idx += 1
+            
+            current_macro_region += 1
 
     return module_placements
 
