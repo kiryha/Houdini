@@ -56,7 +56,7 @@ def get_floor_rule(levels_data, level_index, facade_rule_token, rule_varialtion)
     return None
 
 
-def get_mass_model_attributes(mass_model_node_name, facade_index):
+def get_mass_model_attributes(input_node_name):
     """
     Get attributes from current Mass Model.
     
@@ -67,13 +67,14 @@ def get_mass_model_attributes(mass_model_node_name, facade_index):
     """
     
     # Read current Mass Model data
-    mass_model_node = hou.node(f"../{mass_model_node_name}")  
-    mass_model_geo = mass_model_node.geometry()
-    facade_prim = mass_model_geo.prim(facade_index)
+    input_node = hou.node(f"../{input_node_name}")  
+    mass_model_geo = input_node.geometry()
+    facade_prim = mass_model_geo.prim(0)
 
     building_style = facade_prim.attribValue("building_style")
+    facade_height = facade_prim.attribValue("facade_height")
 
-    return building_style
+    return building_style, facade_height
 
 
 def populate_levels_data(levels_data):
@@ -94,7 +95,63 @@ def populate_floor_data(floor_data):
     geo.addAttrib(hou.attribType.Global, "floor_data", {})
     geo.setGlobalAttribValue("floor_data", floor_data)
 
+
 # Rule parsing logic
+def get_number_of_floors(facade_height, floor_height, current_level_index, levels_data):
+    """
+    Calculate how many floors can fit within the facade height while maintaining fixed floor heights.
+    Each repeating level will get the same number of floors to maintain pattern consistency.
+    The total height may be less than facade height to preserve floor heights.
+    
+    Args:
+        facade_height (float): Total height of the facade
+        floor_height (float): Height of a single floor (must remain fixed)
+        current_level_index (str): Current level being processed
+        levels_data (dict): Complete levels data from BDF
+        
+    Returns:
+        int: Number of floors for the current level
+    """
+    
+    if floor_height <= 0:
+        print(">> WARNING: Floor height is zero or negative, defaulting to 1 floor")
+        return 1
+
+    # First pass: Calculate fixed height and identify repeating levels
+    fixed_height = 0
+    repeating_levels = []
+    
+    # Go through all levels in order
+    for level_idx, level_data in levels_data.items():
+        if level_data['floor_repeat'] == "*":
+            repeating_levels.append({
+                'index': level_idx,
+                'height': level_data['floor_height']
+            })
+        else:
+            fixed_height += level_data['floor_height'] * level_data['floor_repeat']
+
+    # Available height for repeating levels
+    available_height = facade_height - fixed_height
+    
+    if available_height <= 0:
+        print(">> WARNING: No space left for repeating floors after accounting for fixed levels")
+        return 1
+
+    # Find current level in repeating levels
+    current_level = next((level for level in repeating_levels 
+                         if level['index'] == current_level_index), None)
+    
+    if not current_level:
+        print(">> ERROR: Current level not found in repeating levels")
+        return 1
+
+    # Calculate how many complete sets of repeating floors can fit
+    # Each repeating level must have the same number of floors to maintain pattern
+    floors_per_level = available_height // (sum(level['height'] for level in repeating_levels))
+    
+    return max(1, int(floors_per_level))
+
 def preprocess_buckets(buckets):
     """
     Preprocess buckets to handle [A]n syntax by converting them to macro form
@@ -166,9 +223,12 @@ def get_pattern_width(pattern, modules_data):
     """
     Width of the pattern inside a (…) bucket
     """
+
     inner = pattern.strip("()*")
     module_names = inner.split('-')  # <-- Split on hyphen
-    return sum(modules_data[m]["width"] for m in module_names)
+    pattern_width = sum(modules_data[m]["width"] for m in module_names)
+
+    return pattern_width
 
 
 def expand_hyphenated_modules(bucket, modules_data):
@@ -312,7 +372,7 @@ def evaluate_floor_rule(building_style, level_index, facade_rule_token, P0, P1):
 
 
 # Houdini Calls
-def evaluate_levels_data(mass_model_node_name, facade_index):
+def evaluate_levels_data(mass_model_node_name):
     """
     Evaluate levels data for Vertical split building into floors
 
@@ -322,7 +382,7 @@ def evaluate_levels_data(mass_model_node_name, facade_index):
     # print(f'>> Evaluating levels...')
 
     # Get facade attributes
-    building_style = get_mass_model_attributes(mass_model_node_name, facade_index)
+    building_style, facade_height = get_mass_model_attributes(mass_model_node_name)
     
     bdf_data = read_bdf_data(building_style)
     levels_data = bdf_data['levels']
@@ -332,9 +392,16 @@ def evaluate_levels_data(mass_model_node_name, facade_index):
     expanded_levels_data = {}
 
     for level_index, floor_data in levels_data.items():
-        for floor in range(floor_data['floor_repeat']):
-            floor_height = floor_data['floor_height']
 
+        # If the floor should be repeated to fit facade height
+        floor_height = floor_data['floor_height']
+        floor_repeat = floor_data['floor_repeat']  # int or "*"
+        if floor_repeat == "*":
+            number_of_floors = get_number_of_floors(facade_height, floor_height, level_index, levels_data)   
+        else:
+            number_of_floors = floor_repeat
+        
+        for _ in range(number_of_floors):
             # Store expanded floor data
             expanded_floor_data = {"level_index": level_index, 
                                    "floor_index": floor_index,
@@ -388,7 +455,7 @@ def evaluate_floor_data(input_node_name):
                                          "y": world_position[1], 
                                          "z": world_position[2]}
     
-    # print(f'>> Floors completed')
+    # # print(f'>> Floors completed')
 
     return floor_data
    
