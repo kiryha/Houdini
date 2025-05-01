@@ -152,6 +152,7 @@ def get_number_of_floors(facade_height, floor_height, current_level_index, level
     
     return max(1, int(floors_per_level))
 
+
 def preprocess_buckets(buckets):
     """
     Preprocess buckets to handle [A]n syntax by converting them to macro form
@@ -459,3 +460,27 @@ def evaluate_floor_data(input_node_name):
 
     return floor_data
    
+
+def set_module_index(building_style):
+    """
+    Set module_index attribute for each modyle placement point
+    A1 > 0, E1 > 1, etc
+
+    We sort list of modules by name and assign corresponding index from sorted list to each module
+    We need to use same procedure when connecting all assets to SWITCH node
+    (when copy modules to modyle placement points)
+    """
+
+    modules_data = read_bdf_data(building_style)['modules']
+
+    module_names = list(modules_data.keys())
+    module_names.sort()
+
+    geo = hou.pwd().geometry()
+    building_style = geo.point(0).attribValue("building_style")
+    module_name = geo.point(0).attribValue("module_name")
+    geo.addAttrib(hou.attribType.Point, "module_index", 256)
+
+    for index, _module_name in enumerate(module_names):
+        if module_name == _module_name:
+            geo.points()[0].setAttribValue("module_index", index)
