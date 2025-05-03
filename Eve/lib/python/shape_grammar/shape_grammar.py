@@ -388,30 +388,69 @@ def evaluate_levels_data(mass_model_node_name):
     bdf_data = read_bdf_data(building_style)
     levels_data = bdf_data['levels']
 
+    # First pass: Calculate total fixed height and identify repeatable levels
+    fixed_height = 0
+    repeatable_height = 0
+    repeatable_levels = []
+    
+    for level_index, level_data in levels_data.items():
+        floor_height = level_data['floor_height']
+        floor_repeat = level_data['floor_repeat']
+        
+        if floor_repeat == "*":
+            # For repeatable levels, calculate how many floors and store info
+            number_of_floors = get_number_of_floors(facade_height, floor_height, level_index, levels_data)
+            repeatable_levels.append({
+                'level_index': level_index,
+                'floor_height': floor_height,
+                'number_of_floors': number_of_floors
+            })
+            # Add to repeatable height separately
+            repeatable_height += floor_height * number_of_floors
+        else:
+            # For fixed levels, add to fixed height
+            fixed_height += floor_height * floor_repeat
+    
+    # Calculate scale factor for repeatable levels
+    floor_scale = 1.0
+    if repeatable_levels and repeatable_height > 0:
+        # Available height after accounting for fixed floors
+        available_height = facade_height - fixed_height
+        
+        # Calculate scale factor to fit repeatable floors in available height
+        if available_height > 0:
+            floor_scale = available_height / repeatable_height
+    
+    # Second pass: Build expanded levels data
     floor_index = 0
     floor_coordinates = [0.0]  # List to store Y coordinates of each floor
     expanded_levels_data = {}
 
-    for level_index, floor_data in levels_data.items():
-
-        # If the floor should be repeated to fit facade height
-        floor_height = floor_data['floor_height']
-        floor_repeat = floor_data['floor_repeat']  # int or "*"
+    for level_index, level_data in levels_data.items():
+        floor_height = level_data['floor_height']
+        floor_repeat = level_data['floor_repeat']
+        
+        # Determine number of floors and scale for this level
         if floor_repeat == "*":
-            number_of_floors = get_number_of_floors(facade_height, floor_height, level_index, levels_data)   
+            number_of_floors = get_number_of_floors(facade_height, floor_height, level_index, levels_data)
+            level_floor_scale = floor_scale  # Use the calculated scale for repeatable levels
         else:
             number_of_floors = floor_repeat
+            level_floor_scale = 1.0  # No scaling for fixed floors
+        
+        scaled_floor_height = floor_height * level_floor_scale
         
         for _ in range(number_of_floors):
             # Store expanded floor data
             expanded_floor_data = {"level_index": level_index, 
-                                   "floor_index": floor_index,
-                                   "floor_coordinate": floor_coordinates[-1]}
+                                  "floor_index": floor_index,
+                                  "floor_scale": level_floor_scale,
+                                  "floor_coordinate": floor_coordinates[-1]}
             
             expanded_levels_data[str(floor_index)] = expanded_floor_data
 
             # Update counters
-            floor_coordinate = floor_height + floor_coordinates[-1]
+            floor_coordinate = scaled_floor_height + floor_coordinates[-1]
             floor_coordinates.append(floor_coordinate)
             floor_index += 1            
     
