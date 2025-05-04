@@ -444,6 +444,7 @@ def evaluate_levels_data(mass_model_node_name):
             # Store expanded floor data
             expanded_floor_data = {"level_index": level_index, 
                                   "floor_index": floor_index,
+                                  "floor_height": floor_height,
                                   "floor_scale": level_floor_scale,
                                   "floor_coordinate": floor_coordinates[-1]}
             
@@ -490,6 +491,7 @@ def evaluate_floor_data(input_node_name):
         position = module_data['position']
         world_position = P0 + split_axis * position
         floor_data[str(module_index)] = {"module_name": module_name, 
+                                         "module_width": module_data['module_width'],
                                          "module_scale": module_data['module_scale'],
                                          "x": world_position[0], 
                                          "y": world_position[1], 
