@@ -88,14 +88,6 @@ def populate_levels_data(levels_data):
     geo.setGlobalAttribValue("levels_data", levels_data)
     
 
-def populate_floor_data(floor_data):
-
-    geo = hou.pwd().geometry()
-
-    geo.addAttrib(hou.attribType.Global, "floor_data", {})
-    geo.setGlobalAttribValue("floor_data", floor_data)
-
-
 # Rule parsing logic
 def get_number_of_floors(facade_height, floor_height, current_level_index, levels_data):
     """
@@ -362,9 +354,9 @@ def evaluate_floor_rule(building_style, level_index, facade_rule_token, P0, P1):
             module_names = inner.split('-')
             for _ in range(pattern_count):
                 for module_name in module_names:
-                    module_width = modules_data[module_name]["width"] * scale
+                    module_width = modules_data[module_name]["width"]
                     set_module_placement(module_placements, idx, module_name, x, module_width, scale)
-                    x += module_width
+                    x += module_width * scale
                     idx += 1
             
             current_macro_region += 1
@@ -525,3 +517,11 @@ def set_module_index(building_style):
     for index, _module_name in enumerate(module_names):
         if module_name == _module_name:
             geo.points()[0].setAttribValue("module_index", index)
+
+
+def populate_floor_data(floor_data):
+
+    geo = hou.pwd().geometry()
+
+    geo.addAttrib(hou.attribType.Global, "floor_data", {})
+    geo.setGlobalAttribValue("floor_data", floor_data)
