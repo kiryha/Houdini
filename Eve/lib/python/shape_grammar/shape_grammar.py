@@ -527,3 +527,23 @@ def populate_floor_data(floor_data):
 
     geo.addAttrib(hou.attribType.Global, "floor_data", {})
     geo.setGlobalAttribValue("floor_data", floor_data)
+
+
+def get_floor_coordinates(levels_data):
+    """
+    Calculate list of floor coordinates for current level
+    Set resuld as detail attribute
+    """
+
+    # Convert string keys to integers for numerical sorting instead of lexicographical
+    floor_dict = {}
+    for key in levels_data:
+        floor_dict[int(key)] = levels_data[key]
+    
+    # Sort keys numerically
+    sorted_keys = sorted(floor_dict.keys())
+    floor_coordinates = [floor_dict[key]["floor_coordinate"] for key in sorted_keys]
+
+    geo = hou.pwd().geometry()
+    geo.addArrayAttrib(hou.attribType.Global, "floor_coordinates", hou.attribData.Float)
+    geo.setGlobalAttribValue("floor_coordinates", floor_coordinates)
