@@ -365,7 +365,7 @@ def evaluate_floor_rule(building_style, level_index, facade_rule_token, P0, P1):
 
 
 # Houdini Calls
-def evaluate_levels_data(mass_model_node_name):
+def evaluate_levels_data(mass_model_node_name, facade_bottom):
     """
     Evaluate levels data for Vertical split building into floors
 
@@ -415,7 +415,7 @@ def evaluate_levels_data(mass_model_node_name):
     
     # Second pass: Build expanded levels data
     floor_index = 0
-    floor_coordinates = [0.0]  # List to store Y coordinates of each floor
+    floor_coordinates = [facade_bottom]  # List to store Y coordinates of each floor
     expanded_levels_data = {}
 
     for level_index, level_data in levels_data.items():
@@ -464,13 +464,15 @@ def evaluate_floor_data(input_node_name):
     
     floor_data = {}
 
-    building_style = hou.node(f"../{input_node_name}").geometry().prim(0).attribValue("building_style")
-    level_index = hou.node(f"../{input_node_name}").geometry().prim(0).attribValue("level_index")
-    P0 = hou.Vector3(hou.node(f"../{input_node_name}").geometry().prim(0).attribValue("P0"))
-    P1 = hou.Vector3(hou.node(f"../{input_node_name}").geometry().prim(0).attribValue("P1"))
-    split_axis = hou.Vector3(hou.node(f"../{input_node_name}").geometry().prim(0).attribValue("X"))
-    facade_orientation = hou.node(f"../{input_node_name}").geometry().prim(0).attribValue("facade_orientation")
-    facade_scale = hou.node(f"../{input_node_name}").geometry().prim(0).attribValue("facade_scale")
+    prim = hou.node(f"../{input_node_name}").geometry().prim(0)
+
+    building_style = prim.attribValue("building_style")
+    level_index = prim.attribValue("level_index")
+    P0 = hou.Vector3(prim.attribValue("P0"))
+    P1 = hou.Vector3(prim.attribValue("P1"))
+    split_axis = hou.Vector3(prim.attribValue("X"))
+    facade_orientation = prim.attribValue("facade_orientation")
+    facade_scale = prim.attribValue("facade_scale")
     facade_rule_token = f'{facade_orientation}{facade_scale}'
     
     module_placements = evaluate_floor_rule(building_style, level_index, facade_rule_token, P0, P1)
