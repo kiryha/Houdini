@@ -288,10 +288,12 @@ def evaluate_floor_rule(building_style, level_index, facade_rule_token, P0, P1):
 
     # Read BDF data
     rule_varialtion = 0
-    facade_length = (P1 - P0).length()
+    facade_length = round((P1 - P0).length(), 4)  # Round to 4 decimal places to avoid floating point issues
     levels_data = read_bdf_data(building_style)['levels']  
     modules_data = read_bdf_data(building_style)['modules']
     floor_rule = get_floor_rule(levels_data, level_index, facade_rule_token, rule_varialtion)
+
+    # print(f'>> facade_length: {facade_length}')
 
     if not floor_rule:
         print(f'>> ERROR! Data missing in BDF!')
@@ -480,7 +482,7 @@ def evaluate_floor_data(input_node_name):
     facade_orientation = prim.attribValue("facade_orientation")
     facade_scale = prim.attribValue("facade_scale")
     facade_rule_token = f'{facade_orientation}{facade_scale}'
-    
+   
     module_placements = evaluate_floor_rule(building_style, level_index, facade_rule_token, P0, P1)
     # print(f'>> module_placements: {module_placements}')
 
