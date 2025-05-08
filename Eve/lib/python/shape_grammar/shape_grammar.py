@@ -36,6 +36,8 @@ def read_bdf_data(building_style):
 def get_floor_rule(levels_data, level_index, facade_rule_token, rule_varialtion):
     """
     Get floor rule from levels data dictionary
+
+    facade_rule_token:: string code of the facade rule key (F0, S0, R1, etc)
     """
 
     floor_rule = None
@@ -127,7 +129,7 @@ def get_number_of_floors(facade_height, floor_height, current_level_index, level
     available_height = facade_height - fixed_height
     
     if available_height <= 0:
-        print(">> WARNING: No space left for repeating floors after accounting for fixed levels")
+        # print(">> WARNING: No space left for repeating floors after accounting for fixed levels")
         return 1
 
     # Find current level in repeating levels
@@ -279,6 +281,10 @@ def evaluate_floor_rule(building_style, level_index, facade_rule_token, P0, P1):
     P0:: Facade start point
     P1:: Facade end point
     """
+
+    # print(f'>> building_style: {building_style}')
+    # print(f'>> level_index: {level_index}')
+    # print(f'>> facade_rule_token: {facade_rule_token}')
 
     # Read BDF data
     rule_varialtion = 0
@@ -476,6 +482,7 @@ def evaluate_floor_data(input_node_name):
     facade_rule_token = f'{facade_orientation}{facade_scale}'
     
     module_placements = evaluate_floor_rule(building_style, level_index, facade_rule_token, P0, P1)
+    # print(f'>> module_placements: {module_placements}')
 
     if not module_placements:
         return floor_data
