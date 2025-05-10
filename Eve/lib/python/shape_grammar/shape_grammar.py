@@ -501,13 +501,14 @@ def evaluate_floor_data(input_node_name):
                                          "z": world_position[2]}
     
     # # print(f'>> Floors completed')
+    # print(f'>> floor_data: {floor_data}')
 
     return floor_data
    
 
 def set_module_index(building_style):
     """
-    Set module_index attribute for each modyle placement point
+    Set module_index attribute for each modyle placement point when assemble buildings
     A1 > 0, E1 > 1, etc
 
     We sort list of modules by name and assign corresponding index from sorted list to each module
@@ -530,17 +531,9 @@ def set_module_index(building_style):
             geo.points()[0].setAttribValue("module_index", index)
 
 
-def populate_floor_data(floor_data):
-
-    geo = hou.pwd().geometry()
-
-    geo.addAttrib(hou.attribType.Global, "floor_data", {})
-    geo.setGlobalAttribValue("floor_data", floor_data)
-
-
 def get_floor_coordinates(levels_data):
     """
-    Calculate list of floor coordinates for current level
+    Get list of floor coordinates for current level (to calculate floor indexes of split facade)
     Set resuld as detail attribute
     """
 
@@ -556,3 +549,60 @@ def get_floor_coordinates(levels_data):
     geo = hou.pwd().geometry()
     geo.addArrayAttrib(hou.attribType.Global, "floor_coordinates", hou.attribData.Float)
     geo.setGlobalAttribValue("floor_coordinates", floor_coordinates)
+
+
+def populate_floor_attributes(input_node_name, iterator_node_name):
+    """
+    Set level number for each facade primitive
+    """
+
+    geo = hou.pwd().geometry()
+
+    levels_data = hou.node(f"../{input_node_name}").geometry().attribValue("levels_data")
+    floor_index = hou.node(f"../{iterator_node_name}").geometry().attribValue("iteration")
+    floor_index = str(floor_index)
+
+    level_index = levels_data[floor_index]['level_index']
+    floor_scale = levels_data[floor_index]['floor_scale']
+    floor_height = levels_data[floor_index]['floor_height']
+
+    # Assign values to each primitive
+    for prim in geo.prims():
+        prim.setAttribValue("level_index", int(level_index))
+        prim.setAttribValue("floor_index", int(floor_index))
+        prim.setAttribValue("floor_scale", floor_scale)
+        prim.setAttribValue("floor_height", floor_height)
+
+
+def populate_floor_data(floor_data):
+
+    geo = hou.pwd().geometry()
+
+    geo.addAttrib(hou.attribType.Global, "floor_data", {})
+    geo.setGlobalAttribValue("floor_data", floor_data)
+
+
+def populate_module_data(input_node_name, iterator_node_name):
+    """
+    Evaluate floor modules parameters and store them on primitives
+    """
+
+    geo = hou.pwd().geometry()
+
+    floor_data = hou.node(f"../{input_node_name}").geometry().attribValue("floor_data")
+    module_index = hou.node(f"../{iterator_node_name}").geometry().attribValue("iteration")
+    module_index = str(module_index)
+    
+    # Skip if floor_data is wrong
+    if not floor_data.get(module_index):
+        return
+
+    module_name = floor_data[module_index]['module_name']
+    module_scale = floor_data[module_index]['module_scale']
+    module_width = floor_data[module_index]['module_width']
+
+    # Assign values to each primitive
+    for prim in geo.prims():
+        prim.setAttribValue("module_name", module_name)
+        prim.setAttribValue("module_scale", module_scale)
+        prim.setAttribValue("module_width", module_width)
