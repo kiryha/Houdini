@@ -25,6 +25,7 @@ def read_bdf_data(building_style):
     """
     
     bdf_file_path = f"C:/Users/kko8/OneDrive/projects/procedural_city/PROD/3D/lib/grammar/{building_style}.json"
+
     with open(bdf_file_path, 'r') as f:
         bdf_data = json.load(f)
 
