@@ -21,21 +21,10 @@ The best places to start with VEX and Python:
 - [AI for artists](https://github.com/kiryha/Houdini/wikiai-for-artists)
 
 ### How to use Eve
-[Install necessary components](https://github.com/kiryha/Houdini/wiki/pipeline-tutorials#installation). 
-Clone this repository to a local drive and run **Project Manager** tool with `project_manager.bat`. 
-Select directory to hold the new project under 
-`Eve` control, enter project name and press "Create New Project" button to build a folder structure with necessary data.
-
-Create assets and shots in database with **Project Manager** tool and you ar ready to produce the CGI magic with Houdini!
-
-Project Manager is a system which controls your pipeline data. It serves to replicate basic Shotgun functionality. 
-
 Check [Eve tutorials](https://github.com/kiryha/Houdini/wiki/pipeline-tutorials) for quick start.
 
 #### Project Manager tool
-
 Here you can create projects with assets and shots, launch Houdini in a project context.
-
 [![](https://live.staticflickr.com/65535/50114534717_510ee4905c_o.png)](https://live.staticflickr.com/65535/50114534717_510ee4905c_o.png)
  
 
