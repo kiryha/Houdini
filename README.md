@@ -29,14 +29,8 @@ Attempt to make first steps with Houdini, Programming or Math? In addition to `E
 The best places to start with VEX and Python:
 - [VEX for artists](https://github.com/kiryha/Houdini/wiki/vex-for-artists)  
 - [Python for artists](https://github.com/kiryha/Houdini/wiki//python-for-artists)
-- [Procedural Geometry and USD](https://github.com/kiryha/Houdini/wiki/pixar-usd-python-api)
-
-Don't miss [Programming basics](https://github.com/kiryha/Houdini/wiki//programming-basics) if you don't have programming experience!
-
-Applied Python in Houdini: [Python snippets](https://github.com/kiryha/Houdini/wiki/python-snippets)  
-Applied VEX: [VEX snippets](https://github.com/kiryha/Houdini/wiki//vex-snippets)   
-Small solutions as a HIP files: [HIP Examples](https://github.com/kiryha/Houdini/wiki//examples)
-
+- [USD for artists](https://github.com/kiryha/Houdini/wiki/pixar-usd-python-api)
+- [AI for artists](https://github.com/kiryha/Houdini/wikiai-for-artists)
 
 ### Features:
 #### Supported OS: 
