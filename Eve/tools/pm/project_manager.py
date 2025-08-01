@@ -432,6 +432,7 @@ class ProjectManager(QtWidgets.QMainWindow,  ui_pm_main.Ui_ProjectManager):
         # Project properties
         self.project_properties_ui.btnCreateProject.clicked.connect(self.run_create_project)
         self.project_properties_ui.btnLaunchHoudini.clicked.connect(self.launch_houdini)
+        self.project_properties_ui.btnLaunchUnreal.clicked.connect(self.launch_unreal)
 
         # Asset properties
         self.asset_properties_ui.btnUpdateAsset.clicked.connect(self.update_asset)
@@ -1063,6 +1064,19 @@ class ProjectManager(QtWidgets.QMainWindow,  ui_pm_main.Ui_ProjectManager):
                                      script=script,
                                      id=id)
 
+    def launch_unreal(self, script=None, id=None):
+        """
+        project = '{0}/{1}/3D/data/ASSETS/{2}/UEP/UEP.uproject'.format(settings.PROJECTS, self.selected_project.name, self.selected_asset.name)
+
+        command = [settings.UNREAL, project]
+        subprocess.Popen(command)
+        """
+
+        UNREAL = settings.UNREAL
+
+        subprocess.Popen(UNREAL)
+        
+        
     def build_folder_structure(self, ASSETS, SHOTS):
         """
         Create list for project folder structure
@@ -1302,4 +1316,4 @@ if __name__ == "__main__":
     PM = ProjectManager()
     PM.setWindowIcon(QtGui.QIcon(f'{eve_root}/tools/pm/icons/icon_PM_A.ico'))
     PM.show()
-    app.exec_()
+    app.exec()

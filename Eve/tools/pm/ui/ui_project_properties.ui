@@ -14,7 +14,7 @@
    <string>Form</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
-   <property name="margin">
+   <property name="margin" stdset="0">
     <number>0</number>
    </property>
    <item>
@@ -23,7 +23,7 @@
    <item>
     <spacer name="verticalSpacer">
      <property name="orientation">
-      <enum>Qt::Vertical</enum>
+      <enum>Qt::Orientation::Vertical</enum>
      </property>
      <property name="sizeHint" stdset="0">
       <size>
@@ -49,21 +49,26 @@
    <item>
     <widget class="QSplitter" name="splitter_7">
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
      <widget class="QPushButton" name="btnLaunchHoudini">
       <property name="text">
-       <string>Launch Houdini</string>
+       <string>Houdini</string>
       </property>
      </widget>
      <widget class="QPushButton" name="btnLaunchNuke">
       <property name="text">
-       <string>Launch Nuke</string>
+       <string>Nuke</string>
       </property>
      </widget>
      <widget class="QPushButton" name="btnOpenFolder">
       <property name="text">
        <string>Open Folder</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btnLaunchUnreal">
+      <property name="text">
+       <string>Unreal</string>
       </property>
      </widget>
     </widget>

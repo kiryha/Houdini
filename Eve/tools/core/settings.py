@@ -9,6 +9,8 @@ PROJECTS = 'C:/Users/kko8/OneDrive/projects'
 # Houdini bin
 default_build = '19.5.368'
 HOUDINI = 'E:/Programs/Houdini {0}/bin/houdini.exe'
+# Unreal Engine bin
+UNREAL = 'E:/Programs/Epic Games/UE_5.5/Engine/Binaries/Win64/UnrealEditor.exe'
 # File formats
 HIP = 'hipnc'
 # Eve documentation
