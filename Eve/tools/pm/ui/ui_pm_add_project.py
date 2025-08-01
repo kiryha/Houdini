@@ -1,33 +1,49 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'E:\Eve\Eve\tools\pm\ui\ui_pm_add_project.ui',
-# licensing of 'E:\Eve\Eve\tools\pm\ui\ui_pm_add_project.ui' applies.
-#
-# Created: Mon Dec 23 15:24:49 2019
-#      by: pyside2-uic  running on PySide2 5.9.0a1.dev1528389443
-#
-# WARNING! All changes made in this file will be lost!
+################################################################################
+## Form generated from reading UI file 'ui_pm_add_project.ui'
+##
+## Created by: Qt User Interface Compiler version 6.9.1
+##
+## WARNING! All changes made in this file will be lost when recompiling UI file!
+################################################################################
 
-from PySide2 import QtCore, QtGui, QtWidgets
+from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
+    QMetaObject, QObject, QPoint, QRect,
+    QSize, QTime, QUrl, Qt)
+from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
+    QFont, QFontDatabase, QGradient, QIcon,
+    QImage, QKeySequence, QLinearGradient, QPainter,
+    QPalette, QPixmap, QRadialGradient, QTransform)
+from PySide6.QtWidgets import (QApplication, QPushButton, QSizePolicy, QVBoxLayout,
+    QWidget)
 
 class Ui_AddProject(object):
     def setupUi(self, AddProject):
-        AddProject.setObjectName("AddProject")
+        if not AddProject.objectName():
+            AddProject.setObjectName(u"AddProject")
         AddProject.resize(369, 92)
-        self.verticalLayout = QtWidgets.QVBoxLayout(AddProject)
-        self.verticalLayout.setObjectName("verticalLayout")
-        self.layoutProject = QtWidgets.QVBoxLayout()
-        self.layoutProject.setObjectName("layoutProject")
+        self.verticalLayout = QVBoxLayout(AddProject)
+        self.verticalLayout.setObjectName(u"verticalLayout")
+        self.layoutProject = QVBoxLayout()
+        self.layoutProject.setObjectName(u"layoutProject")
+
         self.verticalLayout.addLayout(self.layoutProject)
-        self.btnAddProject = QtWidgets.QPushButton(AddProject)
-        self.btnAddProject.setMinimumSize(QtCore.QSize(0, 40))
-        self.btnAddProject.setObjectName("btnAddProject")
+
+        self.btnAddProject = QPushButton(AddProject)
+        self.btnAddProject.setObjectName(u"btnAddProject")
+        self.btnAddProject.setMinimumSize(QSize(0, 40))
+
         self.verticalLayout.addWidget(self.btnAddProject)
 
+
         self.retranslateUi(AddProject)
-        QtCore.QMetaObject.connectSlotsByName(AddProject)
+
+        QMetaObject.connectSlotsByName(AddProject)
+    # setupUi
 
     def retranslateUi(self, AddProject):
-        AddProject.setWindowTitle(QtWidgets.QApplication.translate("AddProject", "Add Project", None, -1))
-        self.btnAddProject.setText(QtWidgets.QApplication.translate("AddProject", "Add Project", None, -1))
+        AddProject.setWindowTitle(QCoreApplication.translate("AddProject", u"Add Project", None))
+        self.btnAddProject.setText(QCoreApplication.translate("AddProject", u"Add Project", None))
+    # retranslateUi
 

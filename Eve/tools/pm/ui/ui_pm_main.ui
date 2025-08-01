@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1107</width>
-    <height>890</height>
+    <width>1013</width>
+    <height>939</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,6 +17,9 @@
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
      <widget class="QGroupBox" name="boxProjects">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
       <property name="maximumSize">
        <size>
         <width>150</width>
@@ -26,6 +29,9 @@
       <property name="title">
        <string>Projects</string>
       </property>
+      <property name="flat">
+       <bool>true</bool>
+      </property>
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
         <widget class="QListView" name="listProjects"/>
@@ -33,7 +39,7 @@
        <item>
         <widget class="QSplitter" name="splitter">
          <property name="orientation">
-          <enum>Qt::Horizontal</enum>
+          <enum>Qt::Orientation::Horizontal</enum>
          </property>
          <widget class="QPushButton" name="btnAddProject">
           <property name="text">
@@ -61,6 +67,9 @@
       <property name="title">
        <string>Assets</string>
       </property>
+      <property name="flat">
+       <bool>true</bool>
+      </property>
       <layout class="QVBoxLayout" name="verticalLayout_4">
        <item>
         <widget class="QListView" name="listAssets"/>
@@ -68,7 +77,7 @@
        <item>
         <widget class="QSplitter" name="splitter_2">
          <property name="orientation">
-          <enum>Qt::Horizontal</enum>
+          <enum>Qt::Orientation::Horizontal</enum>
          </property>
          <widget class="QPushButton" name="btnAddAsset">
           <property name="text">
@@ -96,6 +105,9 @@
       <property name="title">
        <string>Sequences | Shots</string>
       </property>
+      <property name="flat">
+       <bool>true</bool>
+      </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
         <widget class="QListView" name="listSequences"/>
@@ -103,7 +115,7 @@
        <item>
         <widget class="QSplitter" name="splitter_3">
          <property name="orientation">
-          <enum>Qt::Horizontal</enum>
+          <enum>Qt::Orientation::Horizontal</enum>
          </property>
          <widget class="QPushButton" name="btnAddSequence">
           <property name="text">
@@ -123,7 +135,7 @@
        <item>
         <widget class="QSplitter" name="splitter_4">
          <property name="orientation">
-          <enum>Qt::Horizontal</enum>
+          <enum>Qt::Orientation::Horizontal</enum>
          </property>
          <widget class="QPushButton" name="btnAddShot">
           <property name="text">
@@ -157,6 +169,9 @@
       <property name="title">
        <string>Properties</string>
       </property>
+      <property name="flat">
+       <bool>true</bool>
+      </property>
       <layout class="QVBoxLayout" name="verticalLayout_3">
        <item>
         <layout class="QVBoxLayout" name="layoutProperties"/>
@@ -167,7 +182,7 @@
     <item>
      <spacer name="horizontalSpacer">
       <property name="orientation">
-       <enum>Qt::Horizontal</enum>
+       <enum>Qt::Orientation::Horizontal</enum>
       </property>
       <property name="sizeHint" stdset="0">
        <size>
@@ -184,8 +199,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1107</width>
-     <height>21</height>
+     <width>1013</width>
+     <height>33</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuHelp">

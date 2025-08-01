@@ -3,4 +3,4 @@ set UIDIR=%~dp$PATH:1
 set FILENAME=%~n1
 set SNAME=%UIDIR%%FILENAME%.py
 
-CALL E:\Projects\Python27\Scripts\pyside2-uic.exe %UIFILE% -o %SNAME%
+CALL C:\Users\kko8\AppData\Local\Programs\Python\Python311\Scripts\pyside6-uic.exe %UIFILE% -o %SNAME%

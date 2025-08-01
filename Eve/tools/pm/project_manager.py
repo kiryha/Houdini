@@ -3,7 +3,7 @@ import sys
 import sqlite3
 import subprocess
 import webbrowser
-from PySide2 import QtCore, QtWidgets, QtGui
+from PySide6 import QtCore, QtWidgets, QtGui
 
 # Set environment to run this file without launcher
 eve_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))

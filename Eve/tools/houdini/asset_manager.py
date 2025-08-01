@@ -1,6 +1,6 @@
 import hou
 import os
-from PySide2 import QtCore, QtWidgets
+from PySide6 import QtCore, QtWidgets
 from houdini.ui import ui_asset_manager
 
 from core import settings

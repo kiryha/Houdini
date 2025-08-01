@@ -1,36 +1,54 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'E:\Eve\Eve\tools\pm\ui\ui_sequence_properties.ui',
-# licensing of 'E:\Eve\Eve\tools\pm\ui\ui_sequence_properties.ui' applies.
-#
-# Created: Wed Feb 05 11:14:17 2020
-#      by: pyside2-uic  running on PySide2 5.9.0a1.dev1528389443
-#
-# WARNING! All changes made in this file will be lost!
+################################################################################
+## Form generated from reading UI file 'ui_sequence_properties.ui'
+##
+## Created by: Qt User Interface Compiler version 6.9.1
+##
+## WARNING! All changes made in this file will be lost when recompiling UI file!
+################################################################################
 
-from PySide2 import QtCore, QtGui, QtWidgets
+from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
+    QMetaObject, QObject, QPoint, QRect,
+    QSize, QTime, QUrl, Qt)
+from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
+    QFont, QFontDatabase, QGradient, QIcon,
+    QImage, QKeySequence, QLinearGradient, QPainter,
+    QPalette, QPixmap, QRadialGradient, QTransform)
+from PySide6.QtWidgets import (QApplication, QPushButton, QSizePolicy, QSpacerItem,
+    QVBoxLayout, QWidget)
 
 class Ui_SequenceProperties(object):
     def setupUi(self, SequenceProperties):
-        SequenceProperties.setObjectName("SequenceProperties")
+        if not SequenceProperties.objectName():
+            SequenceProperties.setObjectName(u"SequenceProperties")
         SequenceProperties.resize(369, 103)
-        self.verticalLayout = QtWidgets.QVBoxLayout(SequenceProperties)
+        self.verticalLayout = QVBoxLayout(SequenceProperties)
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
-        self.verticalLayout.setObjectName("verticalLayout")
-        self.layoutSequence = QtWidgets.QVBoxLayout()
-        self.layoutSequence.setObjectName("layoutSequence")
+        self.verticalLayout.setObjectName(u"verticalLayout")
+        self.layoutSequence = QVBoxLayout()
+        self.layoutSequence.setObjectName(u"layoutSequence")
+
         self.verticalLayout.addLayout(self.layoutSequence)
-        spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.verticalLayout.addItem(spacerItem)
-        self.btnUpdateSequence = QtWidgets.QPushButton(SequenceProperties)
-        self.btnUpdateSequence.setMinimumSize(QtCore.QSize(0, 45))
-        self.btnUpdateSequence.setObjectName("btnUpdateSequence")
+
+        self.verticalSpacer_4 = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.verticalLayout.addItem(self.verticalSpacer_4)
+
+        self.btnUpdateSequence = QPushButton(SequenceProperties)
+        self.btnUpdateSequence.setObjectName(u"btnUpdateSequence")
+        self.btnUpdateSequence.setMinimumSize(QSize(0, 45))
+
         self.verticalLayout.addWidget(self.btnUpdateSequence)
 
+
         self.retranslateUi(SequenceProperties)
-        QtCore.QMetaObject.connectSlotsByName(SequenceProperties)
+
+        QMetaObject.connectSlotsByName(SequenceProperties)
+    # setupUi
 
     def retranslateUi(self, SequenceProperties):
-        SequenceProperties.setWindowTitle(QtWidgets.QApplication.translate("SequenceProperties", "Form", None, -1))
-        self.btnUpdateSequence.setText(QtWidgets.QApplication.translate("SequenceProperties", "Update Sequence Data", None, -1))
+        SequenceProperties.setWindowTitle(QCoreApplication.translate("SequenceProperties", u"Form", None))
+        self.btnUpdateSequence.setText(QCoreApplication.translate("SequenceProperties", u"Update Sequence Data", None))
+    # retranslateUi
 

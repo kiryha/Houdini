@@ -1,49 +1,72 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'E:\Eve\Eve\tools\pm\ui\ui_project_properties.ui',
-# licensing of 'E:\Eve\Eve\tools\pm\ui\ui_project_properties.ui' applies.
-#
-# Created: Tue Dec 24 13:05:54 2019
-#      by: pyside2-uic  running on PySide2 5.9.0a1.dev1528389443
-#
-# WARNING! All changes made in this file will be lost!
+################################################################################
+## Form generated from reading UI file 'ui_project_properties.ui'
+##
+## Created by: Qt User Interface Compiler version 6.9.1
+##
+## WARNING! All changes made in this file will be lost when recompiling UI file!
+################################################################################
 
-from PySide2 import QtCore, QtGui, QtWidgets
+from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
+    QMetaObject, QObject, QPoint, QRect,
+    QSize, QTime, QUrl, Qt)
+from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
+    QFont, QFontDatabase, QGradient, QIcon,
+    QImage, QKeySequence, QLinearGradient, QPainter,
+    QPalette, QPixmap, QRadialGradient, QTransform)
+from PySide6.QtWidgets import (QApplication, QPushButton, QSizePolicy, QSpacerItem,
+    QSplitter, QVBoxLayout, QWidget)
 
 class Ui_ProjectProperties(object):
     def setupUi(self, ProjectProperties):
-        ProjectProperties.setObjectName("ProjectProperties")
+        if not ProjectProperties.objectName():
+            ProjectProperties.setObjectName(u"ProjectProperties")
         ProjectProperties.resize(368, 138)
-        self.verticalLayout = QtWidgets.QVBoxLayout(ProjectProperties)
+        self.verticalLayout = QVBoxLayout(ProjectProperties)
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
-        self.verticalLayout.setObjectName("verticalLayout")
-        self.layoutProject = QtWidgets.QVBoxLayout()
-        self.layoutProject.setObjectName("layoutProject")
+        self.verticalLayout.setObjectName(u"verticalLayout")
+        self.layoutProject = QVBoxLayout()
+        self.layoutProject.setObjectName(u"layoutProject")
+
         self.verticalLayout.addLayout(self.layoutProject)
-        spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.verticalLayout.addItem(spacerItem)
-        self.btnCreateProject = QtWidgets.QPushButton(ProjectProperties)
-        self.btnCreateProject.setMinimumSize(QtCore.QSize(0, 40))
-        self.btnCreateProject.setObjectName("btnCreateProject")
+
+        self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.verticalLayout.addItem(self.verticalSpacer)
+
+        self.btnCreateProject = QPushButton(ProjectProperties)
+        self.btnCreateProject.setObjectName(u"btnCreateProject")
+        self.btnCreateProject.setMinimumSize(QSize(0, 40))
+
         self.verticalLayout.addWidget(self.btnCreateProject)
-        self.splitter_7 = QtWidgets.QSplitter(ProjectProperties)
-        self.splitter_7.setOrientation(QtCore.Qt.Horizontal)
-        self.splitter_7.setObjectName("splitter_7")
-        self.btnLaunchHoudini = QtWidgets.QPushButton(self.splitter_7)
-        self.btnLaunchHoudini.setObjectName("btnLaunchHoudini")
-        self.btnLaunchNuke = QtWidgets.QPushButton(self.splitter_7)
-        self.btnLaunchNuke.setObjectName("btnLaunchNuke")
-        self.btnOpenFolder = QtWidgets.QPushButton(self.splitter_7)
-        self.btnOpenFolder.setObjectName("btnOpenFolder")
+
+        self.splitter_7 = QSplitter(ProjectProperties)
+        self.splitter_7.setObjectName(u"splitter_7")
+        self.splitter_7.setOrientation(Qt.Horizontal)
+        self.btnLaunchHoudini = QPushButton(self.splitter_7)
+        self.btnLaunchHoudini.setObjectName(u"btnLaunchHoudini")
+        self.splitter_7.addWidget(self.btnLaunchHoudini)
+        self.btnLaunchNuke = QPushButton(self.splitter_7)
+        self.btnLaunchNuke.setObjectName(u"btnLaunchNuke")
+        self.splitter_7.addWidget(self.btnLaunchNuke)
+        self.btnOpenFolder = QPushButton(self.splitter_7)
+        self.btnOpenFolder.setObjectName(u"btnOpenFolder")
+        self.splitter_7.addWidget(self.btnOpenFolder)
+
         self.verticalLayout.addWidget(self.splitter_7)
 
+
         self.retranslateUi(ProjectProperties)
-        QtCore.QMetaObject.connectSlotsByName(ProjectProperties)
+
+        QMetaObject.connectSlotsByName(ProjectProperties)
+    # setupUi
 
     def retranslateUi(self, ProjectProperties):
-        ProjectProperties.setWindowTitle(QtWidgets.QApplication.translate("ProjectProperties", "Form", None, -1))
-        self.btnCreateProject.setText(QtWidgets.QApplication.translate("ProjectProperties", "Create Project", None, -1))
-        self.btnLaunchHoudini.setText(QtWidgets.QApplication.translate("ProjectProperties", "Launch Houdini", None, -1))
-        self.btnLaunchNuke.setText(QtWidgets.QApplication.translate("ProjectProperties", "Launch Nuke", None, -1))
-        self.btnOpenFolder.setText(QtWidgets.QApplication.translate("ProjectProperties", "Open Folder", None, -1))
+        ProjectProperties.setWindowTitle(QCoreApplication.translate("ProjectProperties", u"Form", None))
+        self.btnCreateProject.setText(QCoreApplication.translate("ProjectProperties", u"Create Project", None))
+        self.btnLaunchHoudini.setText(QCoreApplication.translate("ProjectProperties", u"Launch Houdini", None))
+        self.btnLaunchNuke.setText(QCoreApplication.translate("ProjectProperties", u"Launch Nuke", None))
+        self.btnOpenFolder.setText(QCoreApplication.translate("ProjectProperties", u"Open Folder", None))
+    # retranslateUi
 

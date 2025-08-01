@@ -1,33 +1,49 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'E:\Eve\Eve\tools\pm\ui\ui_pm_add_sequence.ui',
-# licensing of 'E:\Eve\Eve\tools\pm\ui\ui_pm_add_sequence.ui' applies.
-#
-# Created: Wed Feb 05 11:57:12 2020
-#      by: pyside2-uic  running on PySide2 5.9.0a1.dev1528389443
-#
-# WARNING! All changes made in this file will be lost!
+################################################################################
+## Form generated from reading UI file 'ui_pm_add_sequence.ui'
+##
+## Created by: Qt User Interface Compiler version 6.9.1
+##
+## WARNING! All changes made in this file will be lost when recompiling UI file!
+################################################################################
 
-from PySide2 import QtCore, QtGui, QtWidgets
+from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
+    QMetaObject, QObject, QPoint, QRect,
+    QSize, QTime, QUrl, Qt)
+from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
+    QFont, QFontDatabase, QGradient, QIcon,
+    QImage, QKeySequence, QLinearGradient, QPainter,
+    QPalette, QPixmap, QRadialGradient, QTransform)
+from PySide6.QtWidgets import (QApplication, QPushButton, QSizePolicy, QVBoxLayout,
+    QWidget)
 
 class Ui_AddSequence(object):
     def setupUi(self, AddSequence):
-        AddSequence.setObjectName("AddSequence")
+        if not AddSequence.objectName():
+            AddSequence.setObjectName(u"AddSequence")
         AddSequence.resize(370, 89)
-        self.verticalLayout = QtWidgets.QVBoxLayout(AddSequence)
-        self.verticalLayout.setObjectName("verticalLayout")
-        self.layoutSequence = QtWidgets.QVBoxLayout()
-        self.layoutSequence.setObjectName("layoutSequence")
+        self.verticalLayout = QVBoxLayout(AddSequence)
+        self.verticalLayout.setObjectName(u"verticalLayout")
+        self.layoutSequence = QVBoxLayout()
+        self.layoutSequence.setObjectName(u"layoutSequence")
+
         self.verticalLayout.addLayout(self.layoutSequence)
-        self.btnAddSequence = QtWidgets.QPushButton(AddSequence)
-        self.btnAddSequence.setMinimumSize(QtCore.QSize(0, 40))
-        self.btnAddSequence.setObjectName("btnAddSequence")
+
+        self.btnAddSequence = QPushButton(AddSequence)
+        self.btnAddSequence.setObjectName(u"btnAddSequence")
+        self.btnAddSequence.setMinimumSize(QSize(0, 40))
+
         self.verticalLayout.addWidget(self.btnAddSequence)
 
+
         self.retranslateUi(AddSequence)
-        QtCore.QMetaObject.connectSlotsByName(AddSequence)
+
+        QMetaObject.connectSlotsByName(AddSequence)
+    # setupUi
 
     def retranslateUi(self, AddSequence):
-        AddSequence.setWindowTitle(QtWidgets.QApplication.translate("AddSequence", "Add Sequence", None, -1))
-        self.btnAddSequence.setText(QtWidgets.QApplication.translate("AddSequence", "Add Sequence", None, -1))
+        AddSequence.setWindowTitle(QCoreApplication.translate("AddSequence", u"Add Sequence", None))
+        self.btnAddSequence.setText(QCoreApplication.translate("AddSequence", u"Add Sequence", None))
+    # retranslateUi
 

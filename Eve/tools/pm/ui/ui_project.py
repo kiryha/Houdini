@@ -1,87 +1,123 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'E:\Eve\Eve\tools\pm\ui\ui_project.ui',
-# licensing of 'E:\Eve\Eve\tools\pm\ui\ui_project.ui' applies.
-#
-# Created: Tue Dec 24 12:56:45 2019
-#      by: pyside2-uic  running on PySide2 5.9.0a1.dev1528389443
-#
-# WARNING! All changes made in this file will be lost!
+################################################################################
+## Form generated from reading UI file 'ui_project.ui'
+##
+## Created by: Qt User Interface Compiler version 6.9.1
+##
+## WARNING! All changes made in this file will be lost when recompiling UI file!
+################################################################################
 
-from PySide2 import QtCore, QtGui, QtWidgets
+from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
+    QMetaObject, QObject, QPoint, QRect,
+    QSize, QTime, QUrl, Qt)
+from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
+    QFont, QFontDatabase, QGradient, QIcon,
+    QImage, QKeySequence, QLinearGradient, QPainter,
+    QPalette, QPixmap, QRadialGradient, QTransform)
+from PySide6.QtWidgets import (QApplication, QLabel, QLineEdit, QSizePolicy,
+    QSpacerItem, QSplitter, QTextEdit, QVBoxLayout,
+    QWidget)
 
 class Ui_Project(object):
     def setupUi(self, Project):
-        Project.setObjectName("Project")
+        if not Project.objectName():
+            Project.setObjectName(u"Project")
         Project.resize(367, 262)
-        self.shotLayout = QtWidgets.QVBoxLayout(Project)
+        self.shotLayout = QVBoxLayout(Project)
         self.shotLayout.setContentsMargins(0, 0, 0, 0)
-        self.shotLayout.setObjectName("shotLayout")
-        self.splitter = QtWidgets.QSplitter(Project)
-        self.splitter.setOrientation(QtCore.Qt.Horizontal)
-        self.splitter.setObjectName("splitter")
-        self.label = QtWidgets.QLabel(self.splitter)
-        self.label.setMinimumSize(QtCore.QSize(120, 0))
-        self.label.setMaximumSize(QtCore.QSize(120, 16777215))
-        self.label.setObjectName("label")
-        self.linProjectName = QtWidgets.QLineEdit(self.splitter)
-        self.linProjectName.setAlignment(QtCore.Qt.AlignCenter)
-        self.linProjectName.setObjectName("linProjectName")
+        self.shotLayout.setObjectName(u"shotLayout")
+        self.splitter = QSplitter(Project)
+        self.splitter.setObjectName(u"splitter")
+        self.splitter.setOrientation(Qt.Horizontal)
+        self.label = QLabel(self.splitter)
+        self.label.setObjectName(u"label")
+        self.label.setMinimumSize(QSize(120, 0))
+        self.label.setMaximumSize(QSize(120, 16777215))
+        self.splitter.addWidget(self.label)
+        self.linProjectName = QLineEdit(self.splitter)
+        self.linProjectName.setObjectName(u"linProjectName")
+        self.linProjectName.setAlignment(Qt.AlignCenter)
+        self.splitter.addWidget(self.linProjectName)
+
         self.shotLayout.addWidget(self.splitter)
-        self.splitter_2 = QtWidgets.QSplitter(Project)
-        self.splitter_2.setOrientation(QtCore.Qt.Horizontal)
-        self.splitter_2.setObjectName("splitter_2")
-        self.label_4 = QtWidgets.QLabel(self.splitter_2)
-        self.label_4.setMinimumSize(QtCore.QSize(120, 0))
-        self.label_4.setMaximumSize(QtCore.QSize(120, 16777215))
-        self.label_4.setObjectName("label_4")
-        self.linProjectLocation = QtWidgets.QLineEdit(self.splitter_2)
-        self.linProjectLocation.setAlignment(QtCore.Qt.AlignCenter)
-        self.linProjectLocation.setObjectName("linProjectLocation")
+
+        self.splitter_2 = QSplitter(Project)
+        self.splitter_2.setObjectName(u"splitter_2")
+        self.splitter_2.setOrientation(Qt.Horizontal)
+        self.label_4 = QLabel(self.splitter_2)
+        self.label_4.setObjectName(u"label_4")
+        self.label_4.setMinimumSize(QSize(120, 0))
+        self.label_4.setMaximumSize(QSize(120, 16777215))
+        self.splitter_2.addWidget(self.label_4)
+        self.linProjectLocation = QLineEdit(self.splitter_2)
+        self.linProjectLocation.setObjectName(u"linProjectLocation")
+        self.linProjectLocation.setAlignment(Qt.AlignCenter)
+        self.splitter_2.addWidget(self.linProjectLocation)
+
         self.shotLayout.addWidget(self.splitter_2)
-        self.splitter_5 = QtWidgets.QSplitter(Project)
-        self.splitter_5.setOrientation(QtCore.Qt.Horizontal)
-        self.splitter_5.setObjectName("splitter_5")
-        self.label_3 = QtWidgets.QLabel(self.splitter_5)
-        self.label_3.setMinimumSize(QtCore.QSize(120, 0))
-        self.label_3.setMaximumSize(QtCore.QSize(120, 16777215))
-        self.label_3.setObjectName("label_3")
-        self.linHoudini = QtWidgets.QLineEdit(self.splitter_5)
-        self.linHoudini.setAlignment(QtCore.Qt.AlignCenter)
-        self.linHoudini.setObjectName("linHoudini")
+
+        self.splitter_5 = QSplitter(Project)
+        self.splitter_5.setObjectName(u"splitter_5")
+        self.splitter_5.setOrientation(Qt.Horizontal)
+        self.label_3 = QLabel(self.splitter_5)
+        self.label_3.setObjectName(u"label_3")
+        self.label_3.setMinimumSize(QSize(120, 0))
+        self.label_3.setMaximumSize(QSize(120, 16777215))
+        self.splitter_5.addWidget(self.label_3)
+        self.linHoudini = QLineEdit(self.splitter_5)
+        self.linHoudini.setObjectName(u"linHoudini")
+        self.linHoudini.setAlignment(Qt.AlignCenter)
+        self.splitter_5.addWidget(self.linHoudini)
+
         self.shotLayout.addWidget(self.splitter_5)
-        self.splitter_3 = QtWidgets.QSplitter(Project)
-        self.splitter_3.setOrientation(QtCore.Qt.Horizontal)
-        self.splitter_3.setObjectName("splitter_3")
-        self.label_5 = QtWidgets.QLabel(self.splitter_3)
-        self.label_5.setMinimumSize(QtCore.QSize(120, 0))
-        self.label_5.setMaximumSize(QtCore.QSize(120, 16777215))
-        self.label_5.setObjectName("label_5")
-        self.linProjectWidth = QtWidgets.QLineEdit(self.splitter_3)
-        self.linProjectWidth.setAlignment(QtCore.Qt.AlignCenter)
-        self.linProjectWidth.setObjectName("linProjectWidth")
-        self.linProjectHeight = QtWidgets.QLineEdit(self.splitter_3)
-        self.linProjectHeight.setAlignment(QtCore.Qt.AlignCenter)
-        self.linProjectHeight.setObjectName("linProjectHeight")
+
+        self.splitter_3 = QSplitter(Project)
+        self.splitter_3.setObjectName(u"splitter_3")
+        self.splitter_3.setOrientation(Qt.Horizontal)
+        self.label_5 = QLabel(self.splitter_3)
+        self.label_5.setObjectName(u"label_5")
+        self.label_5.setMinimumSize(QSize(120, 0))
+        self.label_5.setMaximumSize(QSize(120, 16777215))
+        self.splitter_3.addWidget(self.label_5)
+        self.linProjectWidth = QLineEdit(self.splitter_3)
+        self.linProjectWidth.setObjectName(u"linProjectWidth")
+        self.linProjectWidth.setAlignment(Qt.AlignCenter)
+        self.splitter_3.addWidget(self.linProjectWidth)
+        self.linProjectHeight = QLineEdit(self.splitter_3)
+        self.linProjectHeight.setObjectName(u"linProjectHeight")
+        self.linProjectHeight.setAlignment(Qt.AlignCenter)
+        self.splitter_3.addWidget(self.linProjectHeight)
+
         self.shotLayout.addWidget(self.splitter_3)
-        self.label_2 = QtWidgets.QLabel(Project)
-        self.label_2.setObjectName("label_2")
+
+        self.label_2 = QLabel(Project)
+        self.label_2.setObjectName(u"label_2")
+
         self.shotLayout.addWidget(self.label_2)
-        self.txtDescription = QtWidgets.QTextEdit(Project)
-        self.txtDescription.setMaximumSize(QtCore.QSize(16777215, 100))
-        self.txtDescription.setObjectName("txtDescription")
+
+        self.txtDescription = QTextEdit(Project)
+        self.txtDescription.setObjectName(u"txtDescription")
+        self.txtDescription.setMaximumSize(QSize(16777215, 100))
+
         self.shotLayout.addWidget(self.txtDescription)
-        spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.shotLayout.addItem(spacerItem)
+
+        self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.shotLayout.addItem(self.verticalSpacer)
+
 
         self.retranslateUi(Project)
-        QtCore.QMetaObject.connectSlotsByName(Project)
+
+        QMetaObject.connectSlotsByName(Project)
+    # setupUi
 
     def retranslateUi(self, Project):
-        Project.setWindowTitle(QtWidgets.QApplication.translate("Project", "Form", None, -1))
-        self.label.setText(QtWidgets.QApplication.translate("Project", "Project Name", None, -1))
-        self.label_4.setText(QtWidgets.QApplication.translate("Project", "Project Location: ", None, -1))
-        self.label_3.setText(QtWidgets.QApplication.translate("Project", "Houdini Build", None, -1))
-        self.label_5.setText(QtWidgets.QApplication.translate("Project", "Project Resolution", None, -1))
-        self.label_2.setText(QtWidgets.QApplication.translate("Project", "Project Description:", None, -1))
+        Project.setWindowTitle(QCoreApplication.translate("Project", u"Form", None))
+        self.label.setText(QCoreApplication.translate("Project", u"Project Name", None))
+        self.label_4.setText(QCoreApplication.translate("Project", u"Project Location: ", None))
+        self.label_3.setText(QCoreApplication.translate("Project", u"Houdini Build", None))
+        self.label_5.setText(QCoreApplication.translate("Project", u"Project Resolution", None))
+        self.label_2.setText(QCoreApplication.translate("Project", u"Project Description:", None))
+    # retranslateUi
 

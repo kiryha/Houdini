@@ -1,46 +1,68 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'E:\Eve\Eve\tools\pm\ui\ui_asset_properties.ui',
-# licensing of 'E:\Eve\Eve\tools\pm\ui\ui_asset_properties.ui' applies.
-#
-# Created: Thu Feb 06 13:35:38 2020
-#      by: pyside2-uic  running on PySide2 5.9.0a1.dev1528389443
-#
-# WARNING! All changes made in this file will be lost!
+################################################################################
+## Form generated from reading UI file 'ui_asset_properties.ui'
+##
+## Created by: Qt User Interface Compiler version 6.9.1
+##
+## WARNING! All changes made in this file will be lost when recompiling UI file!
+################################################################################
 
-from PySide2 import QtCore, QtGui, QtWidgets
+from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
+    QMetaObject, QObject, QPoint, QRect,
+    QSize, QTime, QUrl, Qt)
+from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
+    QFont, QFontDatabase, QGradient, QIcon,
+    QImage, QKeySequence, QLinearGradient, QPainter,
+    QPalette, QPixmap, QRadialGradient, QTransform)
+from PySide6.QtWidgets import (QApplication, QPushButton, QSizePolicy, QSpacerItem,
+    QSplitter, QVBoxLayout, QWidget)
 
 class Ui_AssetProperties(object):
     def setupUi(self, AssetProperties):
-        AssetProperties.setObjectName("AssetProperties")
+        if not AssetProperties.objectName():
+            AssetProperties.setObjectName(u"AssetProperties")
         AssetProperties.resize(369, 101)
-        self.verticalLayout = QtWidgets.QVBoxLayout(AssetProperties)
+        self.verticalLayout = QVBoxLayout(AssetProperties)
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
-        self.verticalLayout.setObjectName("verticalLayout")
-        self.layoutAsset = QtWidgets.QVBoxLayout()
-        self.layoutAsset.setObjectName("layoutAsset")
+        self.verticalLayout.setObjectName(u"verticalLayout")
+        self.layoutAsset = QVBoxLayout()
+        self.layoutAsset.setObjectName(u"layoutAsset")
+
         self.verticalLayout.addLayout(self.layoutAsset)
-        spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.verticalLayout.addItem(spacerItem)
-        self.btnUpdateAsset = QtWidgets.QPushButton(AssetProperties)
-        self.btnUpdateAsset.setMinimumSize(QtCore.QSize(0, 45))
-        self.btnUpdateAsset.setObjectName("btnUpdateAsset")
+
+        self.verticalSpacer_4 = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.verticalLayout.addItem(self.verticalSpacer_4)
+
+        self.btnUpdateAsset = QPushButton(AssetProperties)
+        self.btnUpdateAsset.setObjectName(u"btnUpdateAsset")
+        self.btnUpdateAsset.setMinimumSize(QSize(0, 45))
+
         self.verticalLayout.addWidget(self.btnUpdateAsset)
-        self.splitter_5 = QtWidgets.QSplitter(AssetProperties)
-        self.splitter_5.setOrientation(QtCore.Qt.Horizontal)
-        self.splitter_5.setObjectName("splitter_5")
-        self.btnCreateHoudiniFile = QtWidgets.QPushButton(self.splitter_5)
-        self.btnCreateHoudiniFile.setObjectName("btnCreateHoudiniFile")
-        self.btnOpenHoudiniFile = QtWidgets.QPushButton(self.splitter_5)
-        self.btnOpenHoudiniFile.setObjectName("btnOpenHoudiniFile")
+
+        self.splitter_5 = QSplitter(AssetProperties)
+        self.splitter_5.setObjectName(u"splitter_5")
+        self.splitter_5.setOrientation(Qt.Horizontal)
+        self.btnCreateHoudiniFile = QPushButton(self.splitter_5)
+        self.btnCreateHoudiniFile.setObjectName(u"btnCreateHoudiniFile")
+        self.splitter_5.addWidget(self.btnCreateHoudiniFile)
+        self.btnOpenHoudiniFile = QPushButton(self.splitter_5)
+        self.btnOpenHoudiniFile.setObjectName(u"btnOpenHoudiniFile")
+        self.splitter_5.addWidget(self.btnOpenHoudiniFile)
+
         self.verticalLayout.addWidget(self.splitter_5)
 
+
         self.retranslateUi(AssetProperties)
-        QtCore.QMetaObject.connectSlotsByName(AssetProperties)
+
+        QMetaObject.connectSlotsByName(AssetProperties)
+    # setupUi
 
     def retranslateUi(self, AssetProperties):
-        AssetProperties.setWindowTitle(QtWidgets.QApplication.translate("AssetProperties", "Form", None, -1))
-        self.btnUpdateAsset.setText(QtWidgets.QApplication.translate("AssetProperties", "Update Asset Data", None, -1))
-        self.btnCreateHoudiniFile.setText(QtWidgets.QApplication.translate("AssetProperties", "Create Houdini Scene", None, -1))
-        self.btnOpenHoudiniFile.setText(QtWidgets.QApplication.translate("AssetProperties", "Open Houdini Scene", None, -1))
+        AssetProperties.setWindowTitle(QCoreApplication.translate("AssetProperties", u"Form", None))
+        self.btnUpdateAsset.setText(QCoreApplication.translate("AssetProperties", u"Update Asset Data", None))
+        self.btnCreateHoudiniFile.setText(QCoreApplication.translate("AssetProperties", u"Create Houdini Scene", None))
+        self.btnOpenHoudiniFile.setText(QCoreApplication.translate("AssetProperties", u"Open Houdini Scene", None))
+    # retranslateUi
 
