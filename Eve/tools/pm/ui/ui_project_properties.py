@@ -50,12 +50,12 @@ class Ui_ProjectProperties(object):
         self.btnLaunchNuke = QPushButton(self.splitter_7)
         self.btnLaunchNuke.setObjectName(u"btnLaunchNuke")
         self.splitter_7.addWidget(self.btnLaunchNuke)
-        self.btnOpenFolder = QPushButton(self.splitter_7)
-        self.btnOpenFolder.setObjectName(u"btnOpenFolder")
-        self.splitter_7.addWidget(self.btnOpenFolder)
         self.btnLaunchUnreal = QPushButton(self.splitter_7)
         self.btnLaunchUnreal.setObjectName(u"btnLaunchUnreal")
         self.splitter_7.addWidget(self.btnLaunchUnreal)
+        self.btnOpenFolder = QPushButton(self.splitter_7)
+        self.btnOpenFolder.setObjectName(u"btnOpenFolder")
+        self.splitter_7.addWidget(self.btnOpenFolder)
 
         self.verticalLayout.addWidget(self.splitter_7)
 
@@ -70,7 +70,7 @@ class Ui_ProjectProperties(object):
         self.btnCreateProject.setText(QCoreApplication.translate("ProjectProperties", u"Create Project", None))
         self.btnLaunchHoudini.setText(QCoreApplication.translate("ProjectProperties", u"Houdini", None))
         self.btnLaunchNuke.setText(QCoreApplication.translate("ProjectProperties", u"Nuke", None))
-        self.btnOpenFolder.setText(QCoreApplication.translate("ProjectProperties", u"Open Folder", None))
         self.btnLaunchUnreal.setText(QCoreApplication.translate("ProjectProperties", u"Unreal", None))
+        self.btnOpenFolder.setText(QCoreApplication.translate("ProjectProperties", u"Open Folder", None))
     # retranslateUi
 

@@ -1073,9 +1073,9 @@ class ProjectManager(QtWidgets.QMainWindow,  ui_pm_main.Ui_ProjectManager):
         """
 
         UNREAL = settings.UNREAL
+        project = "E:/Projects/Nautilus/Nautilus.uproject"
 
-        subprocess.Popen(UNREAL)
-        
+        subprocess.Popen([UNREAL, project])
         
     def build_folder_structure(self, ASSETS, SHOTS):
         """

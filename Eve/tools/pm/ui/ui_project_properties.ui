@@ -61,14 +61,14 @@
        <string>Nuke</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="btnOpenFolder">
-      <property name="text">
-       <string>Open Folder</string>
-      </property>
-     </widget>
      <widget class="QPushButton" name="btnLaunchUnreal">
       <property name="text">
        <string>Unreal</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btnOpenFolder">
+      <property name="text">
+       <string>Open Folder</string>
       </property>
      </widget>
     </widget>
