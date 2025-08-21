@@ -56,11 +56,6 @@ def run_houdini(eve_root, projects_root, HOUDINI, project_name, script=None, id=
     :param HOUDINI: (C:/Program Files/Side Effects Software/Houdini 18.0.460/bin/houdinifx.exe)
     :param project_name: (Inception)
 
-    Rem
-    # ACES (Download from imageworks github OpenColorIO-Confih repo)
-    # os.environ['OCIO'] = '{}/OCIO/Aces1.0.3/config.ocio'.format(eve_root)
-    # os.environ['OCIO'] = "D:/256/OpenColorIO/aces_1.0.3/config.ocio"
-
     # Rebelway ML course
     py3_libs = 'C:/Users/kko8/AppData/Local/Programs/Python/Python310/Lib/site-packages'
     ubuntu_libs = "//wsl.localhost/Ubuntu/home/kiryha/miniconda3/envs/houdini/lib/python3.10/site-packages"
@@ -101,8 +96,6 @@ def run_houdini(eve_root, projects_root, HOUDINI, project_name, script=None, id=
     shape_grammar_module = f'{eve_root}/lib/python/shape_grammar/'
     # shape_grammar_module =  f'{project_root}/prod/3d/lib/python/'
     os.environ['PYTHONPATH'] = os.pathsep.join([os.environ['PYTHONPATH'], shape_grammar_module])
-    # ACES
-    os.environ['OCIO'] = "C:/Users/kko8/OneDrive/projects/aces_1.0.3/config.ocio"
 
     if script:
         # command = ['C:/temp/asset.hipnc'], ['C:/temp/script.py'], 'AAA', 'BBB'
