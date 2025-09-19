@@ -30,7 +30,7 @@ Eve can generate/analyze 3 types of path:
 
 import os
 import glob
-from PySide2 import QtWidgets, QtCore
+from PySide6 import QtCore, QtWidgets, QtGui
 from . import settings
 
 
