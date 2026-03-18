@@ -18,7 +18,8 @@ The best places to start with VEX and Python:
 - [VEX for artists](https://github.com/kiryha/Houdini/wiki/vex-for-artists)  
 - [Python for artists](https://github.com/kiryha/Houdini/wiki//python-for-artists)
 - [USD for artists](https://github.com/kiryha/Houdini/wiki/pixar-usd-python-api)
-- [AI for artists](https://github.com/kiryha/Houdini/wikiai-for-artists)
+- [AI for artists](https://github.com/kiryha/Houdini/wiki/ai-for-artists)
+- [Houdini Procedural City](https://github.com/kiryha/Houdini/wiki/procedural-city)
 
 ### How to use Eve
 Check [Eve tutorials](https://github.com/kiryha/Houdini/wiki/pipeline-tutorials) for quick start.
