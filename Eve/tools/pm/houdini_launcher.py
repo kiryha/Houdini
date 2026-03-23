@@ -97,6 +97,10 @@ def run_houdini(eve_root, projects_root, HOUDINI, project_name, script=None, id=
     # shape_grammar_module =  f'{project_root}/prod/3d/lib/python/'
     os.environ['PYTHONPATH'] = os.pathsep.join([os.environ['PYTHONPATH'], shape_grammar_module])
 
+    # Add path to Neuron DATAGEN
+    neuron_module = 'C:/Users/kko8/OneDrive/dev/neuron'  
+    os.environ['PYTHONPATH'] = os.pathsep.join([os.environ['PYTHONPATH'], neuron_module])
+
     if script:
         # command = ['C:/temp/asset.hipnc'], ['C:/temp/script.py'], 'AAA', 'BBB'
         # command = ['C:/temp/script.py'], 'AAA', 'BBB'
