@@ -9,7 +9,7 @@
     <memberTool name="snv"/>
     <memberTool name="asm"/>
     <memberTool name="shm"/>
-    <memberTool name="neuron"/>
+    <memberTool name="datagen"/>
   </toolshelf>
 
   <tool name="snv" label="SNV" icon="PLASMA_App">
