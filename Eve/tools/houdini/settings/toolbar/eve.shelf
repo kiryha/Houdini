@@ -29,4 +29,10 @@ asset_manager.run_asset_manager()
 shot_manager.run_shot_manager()
         ]]></script>
   </tool>
+
+  <tool name="datagen" label="DataGen" icon="PLASMA_App">
+    <script scriptType="python"><![CDATA[from datagen import datagen
+datagen.run_datagen()
+        ]]></script>
+  </tool>
 </shelfDocument>
