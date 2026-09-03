@@ -10,6 +10,7 @@
     <memberTool name="asm"/>
     <memberTool name="shm"/>
     <memberTool name="datagen"/>
+    <memberTool name="datarender"/>
   </toolshelf>
 
   <tool name="snv" label="SNV" icon="PLASMA_App">
@@ -33,6 +34,11 @@ shot_manager.run_shot_manager()
   <tool name="datagen" label="DataGen" icon="PLASMA_App">
     <script scriptType="python"><![CDATA[from datagen import datagen
 datagen.run_datagen()
+        ]]></script>
+
+<tool name="datagen" label="DataGen" icon="PLASMA_App">
+    <script scriptType="python"><![CDATA[from datagen import datarender
+datarender.run_datarender()
         ]]></script>
   </tool>
 </shelfDocument>
